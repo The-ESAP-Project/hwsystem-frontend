@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiEye, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router";
-import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,

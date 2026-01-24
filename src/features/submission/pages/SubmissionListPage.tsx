@@ -36,11 +36,11 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import {
   useHomework,
   useHomeworkStats,
 } from "@/features/homework/hooks/useHomework";
-import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import {
   useSubmissionSummary,
   useUserSubmissionsForTeacher,

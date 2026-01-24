@@ -9,11 +9,11 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { Section } from "@/components/landing/Section";
 import { LandingCard } from "@/components/landing/LandingCard";
-import { Card, CardContent } from "@/components/ui/card";
+import { Section } from "@/components/landing/Section";
 import { Button } from "@/components/ui/button";
-import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
 
 const features = [
   { key: "multiRole", icon: FiUsers },

@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useClassList } from "@/features/class/hooks/useClass";
-import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
+import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
 import { useCurrentUser } from "@/stores/useUserStore";
 
 export function TeacherDashboardPage() {

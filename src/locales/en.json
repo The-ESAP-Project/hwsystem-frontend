@@ -17,7 +17,12 @@
     "loading": "Loading...",
     "noData": "No data",
     "viewAll": "View All",
-    "manage": "Manage"
+    "manage": "Manage",
+    "loadError": "Failed to load, please refresh",
+    "unknownError": "An unknown error occurred, please try again",
+    "operationFailed": "Operation failed",
+    "retry": "Retry",
+    "refresh": "Refresh"
   },
   "sidebar": {
     "navigation": "Navigation",

@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import { FiMail, FiMapPin, FiMessageCircle, FiPhone } from "react-icons/fi";
 import { Link } from "react-router";
 import { Section } from "@/components/landing/Section";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { staggerContainer, fadeInUp } from "@/lib/motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { fadeInUp, staggerContainer } from "@/lib/motion";
 
 const contactInfo = [
   { key: "email", icon: FiMail, color: "blue" },

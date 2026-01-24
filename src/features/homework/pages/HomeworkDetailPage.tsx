@@ -234,7 +234,9 @@ export function HomeworkDetailPage() {
                     )}
                     <div className="flex gap-3">
                       <Button variant="outline" asChild>
-                        <Link to={`${prefix}/homework/${homeworkId}/submissions`}>
+                        <Link
+                          to={`${prefix}/homework/${homeworkId}/submissions`}
+                        >
                           查看提交历史
                         </Link>
                       </Button>

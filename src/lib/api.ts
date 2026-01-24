@@ -7,19 +7,36 @@ import { useUserStore } from "@/stores/useUserStore";
 import type { ApiResponse } from "@/types/generated";
 import { type ApiError, getErrorMessage } from "./errors";
 
-// 用于防止并发刷新
-let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
+// Token 刷新 Promise（用于防止并发刷新）
+let refreshPromise: Promise<string> | null = null;
 
-function subscribeTokenRefresh(callback: (token: string) => void) {
-  refreshSubscribers.push(callback);
-}
+/**
+ * 获取刷新后的 Token
+ * 使用 Promise 链式管理，确保多个并发请求只触发一次刷新
+ */
+function getRefreshToken(): Promise<string> {
+  if (refreshPromise) return refreshPromise;
 
-function onTokenRefreshed(token: string) {
-  for (const callback of refreshSubscribers) {
-    callback(token);
-  }
-  refreshSubscribers = [];
+  refreshPromise = axios
+    .post<ApiResponse<{ access_token: string; expires_in: number }>>(
+      `${api.defaults.baseURL}/auth/refresh`,
+      {},
+      { withCredentials: true },
+    )
+    .then((response) => {
+      const { access_token, expires_in } = response.data.data!;
+      localStorage.setItem("authToken", access_token);
+      localStorage.setItem("tokenExpiresIn", expires_in.toString());
+      return access_token;
+    })
+    .finally(() => {
+      // 延迟清除 Promise，避免极短时间内的重复刷新
+      setTimeout(() => {
+        refreshPromise = null;
+      }, 100);
+    });
+
+  return refreshPromise;
 }
 
 const api = axios.create({
@@ -83,42 +100,16 @@ api.interceptors.response.use(
 
       originalRequest._retry = true;
 
-      // 如果正在刷新，等待刷新完成后重试
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token: string) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            resolve(api.request(originalRequest));
-          });
-        });
-      }
-
-      isRefreshing = true;
-
-      // 使用 axios 直接调用 refresh 端点，避免循环依赖
-      return axios
-        .post<ApiResponse<{ access_token: string; expires_in: number }>>(
-          `${api.defaults.baseURL}/auth/refresh`,
-          {},
-          { withCredentials: true },
-        )
-        .then((response) => {
-          const { access_token, expires_in } = response.data.data!;
-          localStorage.setItem("authToken", access_token);
-          localStorage.setItem("tokenExpiresIn", expires_in.toString());
-          onTokenRefreshed(access_token);
-
-          // 重试原请求
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+      // 使用 Promise 链式管理，多个请求共享同一个刷新 Promise
+      return getRefreshToken()
+        .then((token) => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
           return api.request(originalRequest);
         })
         .catch((refreshError) => {
           useUserStore.getState().clearAuthData();
           window.dispatchEvent(new CustomEvent("auth:unauthorized"));
           return Promise.reject(refreshError);
-        })
-        .finally(() => {
-          isRefreshing = false;
         });
     }
 

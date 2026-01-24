@@ -3,9 +3,9 @@ import type { IconType } from "react-icons";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { fadeInUp, scaleIn } from "@/lib/motion";
 import { cn } from "@/lib/utils";

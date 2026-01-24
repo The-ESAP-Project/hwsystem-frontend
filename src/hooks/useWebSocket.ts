@@ -19,6 +19,7 @@ export interface UseWebSocketOptions {
   reconnect?: boolean;
   maxReconnectAttempts?: number;
   reconnectInterval?: number;
+  maxReconnectInterval?: number; // 新增：最大重连间隔
   heartbeatInterval?: number;
   onMessage?: (message: WebSocketMessage) => void;
   onConnect?: () => void;
@@ -31,6 +32,7 @@ const DEFAULT_OPTIONS = {
   reconnect: true,
   maxReconnectAttempts: 5,
   reconnectInterval: 1000,
+  maxReconnectInterval: 30000, // 最大 30 秒
   heartbeatInterval: 30000,
 } as const;
 
@@ -41,6 +43,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     reconnect = DEFAULT_OPTIONS.reconnect,
     maxReconnectAttempts = DEFAULT_OPTIONS.maxReconnectAttempts,
     reconnectInterval = DEFAULT_OPTIONS.reconnectInterval,
+    maxReconnectInterval = DEFAULT_OPTIONS.maxReconnectInterval,
     heartbeatInterval = DEFAULT_OPTIONS.heartbeatInterval,
     onMessage,
     onConnect,
@@ -165,7 +168,11 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
 
         // 尝试重连
         if (reconnect && reconnectAttemptsRef.current < maxReconnectAttempts) {
-          const delay = reconnectInterval * 2 ** reconnectAttemptsRef.current;
+          // 指数退避，但限制最大间隔
+          const delay = Math.min(
+            reconnectInterval * 2 ** reconnectAttemptsRef.current,
+            maxReconnectInterval,
+          );
           reconnectAttemptsRef.current++;
 
           reconnectTimeoutRef.current = setTimeout(() => {
@@ -188,6 +195,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     reconnect,
     maxReconnectAttempts,
     reconnectInterval,
+    maxReconnectInterval,
     onConnect,
     onDisconnect,
     onError,
@@ -217,6 +225,33 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       disconnect();
     };
   }, [autoConnect, isAuthenticated, connect, disconnect]);
+
+  // 网络状态监听：网络恢复时立即重连
+  useEffect(() => {
+    const handleOnline = () => {
+      if (isAuthenticated && status === "disconnected") {
+        // 重置重连计数，立即尝试重连
+        reconnectAttemptsRef.current = 0;
+        connect();
+      }
+    };
+
+    const handleOffline = () => {
+      // 网络断开时清除重连定时器
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, [isAuthenticated, status, connect]);
 
   return {
     status,

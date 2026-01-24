@@ -4,6 +4,9 @@ import { authService } from "@/features/auth/services/auth";
 import type { LoginRequest, User } from "@/types/generated";
 import { useNotificationStore } from "./useNotificationStore";
 
+// 初始化 Promise 缓存（防止并发调用 initAuth）
+let initPromise: Promise<void> | null = null;
+
 interface UserState {
   // 状态
   currentUser: User | null;
@@ -68,29 +71,35 @@ export const useUserStore = create<UserState>()(
       },
 
       initAuth: async () => {
+        // 如果已经有初始化 Promise 在执行，直接返回它
+        if (initPromise) return initPromise;
         if (get().isInitialized) return;
 
-        set({ isInitialized: true, isLoading: true });
+        initPromise = (async () => {
+          set({ isInitialized: true, isLoading: true });
 
-        try {
-          const token = localStorage.getItem("authToken");
-          const storedUser = get().currentUser;
+          try {
+            const token = localStorage.getItem("authToken");
+            const storedUser = get().currentUser;
 
-          if (token && storedUser) {
-            // 异步验证 Token
-            const result = await authService.verifyToken();
+            if (token && storedUser) {
+              // 异步验证 Token
+              const result = await authService.verifyToken();
 
-            if (!result.isValid) {
-              if (!result.isNetworkError) {
-                get().clearAuthData();
+              if (!result.isValid) {
+                if (!result.isNetworkError) {
+                  get().clearAuthData();
+                }
               }
             }
+          } catch {
+            // 初始化认证时的错误静默处理
+          } finally {
+            set({ isLoading: false });
           }
-        } catch {
-          // 初始化认证时的错误静默处理
-        } finally {
-          set({ isLoading: false });
-        }
+        })();
+
+        return initPromise;
       },
 
       refreshUserInfo: async () => {

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { FiClock } from "react-icons/fi";
 import { Link } from "react-router";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import {
   getDeadlineStatus,
 } from "@/lib/utils";
 import type { HomeworkListItemStringified } from "../services/homeworkService";
-import { useTranslation } from "react-i18next";
 
 const deadlineColorMap: Record<DeadlineStatus, string> = {
   expired: "text-destructive",

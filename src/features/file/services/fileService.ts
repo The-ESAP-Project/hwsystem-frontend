@@ -5,6 +5,20 @@ import type { FileUploadResponse } from "@/types/generated";
 // 直接使用生成的类型
 export type FileUploadResult = Stringify<FileUploadResponse>;
 
+/**
+ * 将 API 响应转换为 FileUploadResult
+ * 显式转换函数替代 as unknown as 类型断言
+ */
+function toFileUploadResult(raw: FileUploadResponse): FileUploadResult {
+  return {
+    download_token: raw.download_token,
+    file_name: raw.file_name,
+    size: String(raw.size),
+    content_type: raw.content_type,
+    created_at: raw.created_at,
+  };
+}
+
 export const fileService = {
   // 上传文件
   upload: async (file: File): Promise<FileUploadResult> => {
@@ -20,7 +34,7 @@ export const fileService = {
         },
       },
     );
-    return data.data as unknown as FileUploadResult;
+    return toFileUploadResult(data.data);
   },
 
   // 获取下载 URL（仅用于构建 URL，不直接用于下载）

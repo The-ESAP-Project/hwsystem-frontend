@@ -30,9 +30,9 @@ import {
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
 import { useHomework } from "@/features/homework/hooks/useHomework";
-import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { notify } from "@/stores/useNotificationStore";
 import {
   useCreateSubmission,
@@ -264,7 +264,9 @@ export function SubmitHomeworkPage() {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`)
+                    navigate(
+                      `${prefix}/classes/${classId}/homework/${homeworkId}`,
+                    )
                   }
                 >
                   取消

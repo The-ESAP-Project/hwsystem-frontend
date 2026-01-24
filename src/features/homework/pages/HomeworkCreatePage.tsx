@@ -24,9 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
 import { notify } from "@/stores/useNotificationStore";
-import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useCreateHomework } from "../hooks/useHomework";
 
 const formSchema = z.object({

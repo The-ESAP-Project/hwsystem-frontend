@@ -8,7 +8,6 @@ import {
 import { Link, useParams } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import {
   Card,
   CardContent,
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useHomework, useHomeworkStats } from "../hooks/useHomework";
 
 export function HomeworkStatsPage() {

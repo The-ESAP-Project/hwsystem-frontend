@@ -17,7 +17,12 @@
     "loading": "加载中...",
     "noData": "暂无数据",
     "viewAll": "查看全部",
-    "manage": "管理"
+    "manage": "管理",
+    "loadError": "加载失败，请刷新重试",
+    "unknownError": "发生未知错误，请稍后重试",
+    "operationFailed": "操作失败",
+    "retry": "重试",
+    "refresh": "刷新"
   },
   "sidebar": {
     "navigation": "导航",

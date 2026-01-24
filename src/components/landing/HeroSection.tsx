@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { FiBook, FiUsers, FiClipboard } from "react-icons/fi";
+import { FiBook, FiClipboard, FiUsers } from "react-icons/fi";
 import {
+  useCurrentUser,
   useDashboardPath,
   useIsAuthenticated,
-  useCurrentUser,
 } from "@/stores/useUserStore";
 import { RoleEntryCard } from "./RoleEntryCard";
 

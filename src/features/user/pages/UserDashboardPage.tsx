@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useClassList } from "@/features/class/hooks/useClass";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
 import { useUnreadCount } from "@/features/notification/hooks/useNotification";
-import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useCurrentUser } from "@/stores/useUserStore";
 
 export function UserDashboardPage() {
@@ -222,7 +222,10 @@ export function UserDashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t("dashboard.user.myClasses")}</CardTitle>
             <Button variant="link" asChild className="p-0 h-auto">
-              <Link to={`${prefix}/classes`} className="flex items-center gap-1">
+              <Link
+                to={`${prefix}/classes`}
+                className="flex items-center gap-1"
+              >
                 {t("dashboard.user.viewAll")}
                 <FiChevronRight className="h-4 w-4" />
               </Link>

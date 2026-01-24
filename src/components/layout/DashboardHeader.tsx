@@ -4,8 +4,8 @@ import {
   FiBell,
   FiGlobe,
   FiLogOut,
-  FiMoon,
   FiMonitor,
+  FiMoon,
   FiSun,
 } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -28,8 +28,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { useDarkMode } from "@/hooks/useDarkMode";
 import { useUnreadCount } from "@/features/notification/hooks/useNotification";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import {
   useCurrentUser,
   useRoleText,

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router";
 import type { IconType } from "react-icons";
+import { Link } from "react-router";
 import { cn } from "@/lib/utils";
 
 interface RoleEntryCardProps {
