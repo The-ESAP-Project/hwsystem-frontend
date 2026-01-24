@@ -29,14 +29,14 @@ export function GlowButton({
       "hover:bg-[hsl(var(--landing-gradient-via))]",
       "rounded-full px-8 py-3 h-auto font-semibold",
       "shadow-md hover:shadow-lg",
-      "transition-all duration-200"
+      "transition-all duration-200",
     ),
     outline: cn(
       buttonVariants({ variant: "outline", size }),
       "border-2 border-[hsl(var(--landing-gradient-from))] text-[hsl(var(--landing-gradient-from))]",
       "bg-transparent hover:bg-[hsl(var(--landing-gradient-from)/0.05)]",
       "rounded-full px-8 py-3 h-auto font-semibold",
-      "transition-all duration-200"
+      "transition-all duration-200",
     ),
     white: cn(
       buttonVariants({ variant: "default", size }),
@@ -44,7 +44,7 @@ export function GlowButton({
       "hover:bg-gray-50",
       "rounded-full px-8 py-3 h-auto font-semibold",
       "shadow-md hover:shadow-lg",
-      "transition-all duration-200"
+      "transition-all duration-200",
     ),
   };
 

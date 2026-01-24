@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { notify } from "@/stores/useNotificationStore";
+import { useCurrentUser } from "@/stores/useUserStore";
 import type { NotificationType, ReferenceType } from "@/types/generated";
 import {
   useDeleteNotification,
@@ -53,12 +54,21 @@ const notificationTypeLabels: Record<NotificationType, string> = {
 
 export function NotificationListPage() {
   const [filter, setFilter] = useState<string>("all");
+  const currentUser = useCurrentUser();
   const { data, isLoading, error } = useNotificationList({
     is_read: filter === "unread" ? false : filter === "read" ? true : undefined,
   });
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
   const deleteNotification = useDeleteNotification();
+
+  // 根据用户角色确定路由前缀
+  const rolePrefix =
+    currentUser?.role === "admin"
+      ? "admin"
+      : currentUser?.role === "teacher"
+        ? "teacher"
+        : "user";
 
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,15 +107,19 @@ export function NotificationListPage() {
     if (!notification.reference_type || !notification.reference_id) {
       return null;
     }
+
+    // 根据角色和引用类型生成跳转路径
     switch (notification.reference_type) {
       case "homework":
-        return `/user/homework/${notification.reference_id}`;
+        // 教师/管理员跳转到已布置作业页面，学生跳转到我的作业页面
+        return `/${rolePrefix}/homeworks`;
       case "submission":
-        return `/user/submissions/${notification.reference_id}`;
+        // 所有角色都有提交相关页面
+        return `/${rolePrefix}/homeworks`;
       case "class":
-        return `/user/classes/${notification.reference_id}`;
+        return `/${rolePrefix}/classes/${notification.reference_id}`;
       case "grade":
-        return `/user/grades/${notification.reference_id}`;
+        return `/${rolePrefix}/homeworks`;
       default:
         return null;
     }

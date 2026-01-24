@@ -25,6 +25,7 @@
     "myClasses": "My Classes",
     "mySubmissions": "My Submissions",
     "myHomeworks": "My Homework",
+    "assignedHomeworks": "Assigned Homework",
     "classManagement": "Class Management",
     "studentManagement": "Student Management",
     "userManagement": "User Management",
@@ -67,7 +68,13 @@
       },
       "recentClasses": "My Classes",
       "emptyClasses": "You haven't created any classes yet",
-      "createClassHint": "Create a class to start teaching"
+      "createClassHint": "Create a class to start teaching",
+      "quickActions": {
+        "title": "Quick Actions",
+        "createHomework": "Create Homework",
+        "gradeHomework": "Grade Homework",
+        "viewClasses": "View Classes"
+      }
     },
     "admin": {
       "title": "Admin Dashboard",
@@ -685,6 +692,7 @@
     "status": {
       "notSubmitted": "Not submitted",
       "submitted": "Submitted",
+      "submittedStats": "Submitted {{submitted}}/{{total}}",
       "graded": "Graded",
       "late": "Late"
     },
@@ -710,11 +718,104 @@
     "noSubmitted": "No homework awaiting review",
     "noGraded": "No graded homework yet"
   },
+  "teacherHomeworks": {
+    "title": "Assigned Homework",
+    "description": "View homework assignments across all classes",
+    "tabs": {
+      "active": "Active",
+      "expired": "Expired",
+      "all": "All"
+    },
+    "submitted": "Submitted",
+    "pendingGrade": "Pending",
+    "noActive": "No active homework",
+    "noExpired": "No expired homework",
+    "noHomeworks": "No homework assigned yet",
+    "actions": {
+      "edit": "Edit",
+      "stats": "Statistics",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete homework?",
+      "description": "\"{{title}}\" will be permanently deleted."
+    }
+  },
   "nav": {
     "home": "Home",
     "about": "About",
     "contact": "Contact",
     "privacy": "Privacy",
     "terms": "Terms"
+  },
+  "submission": {
+    "list": {
+      "title": "Submissions",
+      "totalStudents": "{{count}} students total",
+      "tabs": {
+        "all": "All",
+        "submitted": "Submitted",
+        "unsubmitted": "Not Submitted"
+      },
+      "filter": {
+        "all": "All Status",
+        "pending": "Pending Review",
+        "graded": "Graded",
+        "late": "Late"
+      },
+      "filterBy": "Filter",
+      "unsubmittedBadge": "Not Submitted",
+      "noSubmissions": "No submissions yet",
+      "allSubmitted": "All students have submitted",
+      "noStudents": "No students",
+      "versions": "{{count}} versions",
+      "latest": "Latest",
+      "totalVersions": "{{count}} submission versions",
+      "selectVersion": "Select version",
+      "viewGrade": "View Grade",
+      "goGrade": "Grade",
+      "grade": "Grade",
+      "score": "Score",
+      "comment": "Comment",
+      "content": "Content",
+      "noContent": "(No content)",
+      "attachments": "Attachments"
+    }
+  },
+  "grade": {
+    "submissionContent": "Submission Content",
+    "submittedAt": "Submitted at",
+    "noContent": "No text content",
+    "attachments": "Attachments",
+    "studentInfo": "Student Info",
+    "grade": "Grade",
+    "editGrade": "Edit Grade",
+    "maxScore": "Max score",
+    "points": "pts",
+    "score": "Score",
+    "comment": "Comment",
+    "optional": "optional",
+    "commentPlaceholder": "Feedback for student...",
+    "submitting": "Submitting...",
+    "updateGrade": "Update Grade",
+    "submitGrade": "Submit Grade",
+    "success": {
+      "created": "Grade submitted",
+      "updated": "Grade updated"
+    },
+    "error": {
+      "failed": "Operation failed",
+      "retry": "Please try again"
+    },
+    "navigation": {
+      "prev": "Previous",
+      "next": "Next",
+      "progress": "Progress",
+      "pendingCount": "pending",
+      "backToList": "Back to List",
+      "allCompleted": "All pending reviews completed!",
+      "continueHint": "Click \"Next\" to continue grading",
+      "shortcutHint": "Quick switch"
+    }
   }
 }

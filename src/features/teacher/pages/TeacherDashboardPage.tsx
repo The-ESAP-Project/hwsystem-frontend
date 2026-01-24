@@ -4,6 +4,7 @@ import {
   FiChevronRight,
   FiClipboard,
   FiEdit,
+  FiEdit3,
   FiPlus,
   FiUserPlus,
   FiUsers,
@@ -14,18 +15,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useClassList } from "@/features/class/hooks/useClass";
+import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useCurrentUser } from "@/stores/useUserStore";
 
 export function TeacherDashboardPage() {
   const { t } = useTranslation();
+  const prefix = useRoutePrefix();
   const user = useCurrentUser();
   const { data: classData, isLoading } = useClassList();
 
   const classes = classData?.items ?? [];
+  const classIds = classes.map((cls) => String(cls.id));
   const totalStudents = classes.reduce(
     (sum, cls) => sum + Number(cls.member_count ?? 0),
     0,
   );
+
+  const { data: allHomeworks } = useAllClassesHomeworks(classIds, {
+    include_stats: true,
+  });
+
+  const pendingReviewCount = allHomeworks.reduce((sum, hw) => {
+    if (hw.stats_summary) {
+      return (
+        sum +
+        Number(hw.stats_summary.submitted_count) -
+        Number(hw.stats_summary.graded_count)
+      );
+    }
+    return sum;
+  }, 0);
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -35,7 +55,7 @@ export function TeacherDashboardPage() {
         descriptionParams={{ name: user?.display_name || user?.username || "" }}
         actions={
           <Button asChild>
-            <Link to="/teacher/classes/create">
+            <Link to={`${prefix}/classes/create`}>
               <FiPlus className="mr-2 h-4 w-4" />
               {t("common.create")}
             </Link>
@@ -59,19 +79,62 @@ export function TeacherDashboardPage() {
         />
         <StatCard
           icon={FiClipboard}
-          labelKey="dashboard.teacher.stats.quickActions"
-          value={t("common.manage")}
+          labelKey="dashboard.teacher.stats.pendingSubmissions"
+          value={pendingReviewCount}
           variant="purple"
-          href="/teacher/classes"
+          href={`${prefix}/homeworks`}
         />
       </div>
+
+      {/* 快捷操作 */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>{t("dashboard.teacher.quickActions.title")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Button
+              variant="outline"
+              className="h-auto py-4 flex flex-col gap-2"
+              asChild
+            >
+              <Link to={`${prefix}/classes`}>
+                <FiPlus className="h-5 w-5" />
+                <span>
+                  {t("dashboard.teacher.quickActions.createHomework")}
+                </span>
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-4 flex flex-col gap-2"
+              asChild
+            >
+              <Link to={`${prefix}/homeworks`}>
+                <FiEdit3 className="h-5 w-5" />
+                <span>{t("dashboard.teacher.quickActions.gradeHomework")}</span>
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-4 flex flex-col gap-2"
+              asChild
+            >
+              <Link to={`${prefix}/classes`}>
+                <FiUsers className="h-5 w-5" />
+                <span>{t("dashboard.teacher.quickActions.viewClasses")}</span>
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* 班级列表 */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{t("dashboard.teacher.recentClasses")}</CardTitle>
           <Button variant="link" asChild className="p-0 h-auto">
-            <Link to="/teacher/classes" className="flex items-center gap-1">
+            <Link to={`${prefix}/classes`} className="flex items-center gap-1">
               {t("common.viewAll")}
               <FiChevronRight className="h-4 w-4" />
             </Link>
@@ -97,7 +160,7 @@ export function TeacherDashboardPage() {
                 {t("dashboard.teacher.emptyClasses")}
               </p>
               <Button asChild>
-                <Link to="/teacher/classes/create">
+                <Link to={`${prefix}/classes/create`}>
                   <FiPlus className="mr-2 h-4 w-4" />
                   {t("common.create")}
                 </Link>
@@ -117,7 +180,7 @@ export function TeacherDashboardPage() {
                       </div>
                       <div>
                         <Link
-                          to={`/teacher/classes/${cls.id}`}
+                          to={`${prefix}/classes/${cls.id}`}
                           className="text-base font-medium hover:text-primary transition-colors"
                         >
                           {cls.name}
@@ -132,7 +195,7 @@ export function TeacherDashboardPage() {
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="icon" asChild>
                         <Link
-                          to={`/teacher/classes/${cls.id}/students`}
+                          to={`${prefix}/classes/${cls.id}/students`}
                           title={t("sidebar.studentManagement")}
                         >
                           <FiUserPlus className="h-4 w-4" />
@@ -140,14 +203,14 @@ export function TeacherDashboardPage() {
                       </Button>
                       <Button variant="ghost" size="icon" asChild>
                         <Link
-                          to={`/teacher/classes/${cls.id}/edit`}
+                          to={`${prefix}/classes/${cls.id}/edit`}
                           title={t("common.edit")}
                         >
                           <FiEdit className="h-4 w-4" />
                         </Link>
                       </Button>
                       <Button variant="ghost" size="icon" asChild>
-                        <Link to={`/teacher/classes/${cls.id}`}>
+                        <Link to={`${prefix}/classes/${cls.id}`}>
                           <FiChevronRight className="h-4 w-4" />
                         </Link>
                       </Button>

@@ -63,6 +63,7 @@ export function HomeworkListCard({
       isTeacher && onlyMine && currentUser?.id
         ? String(currentUser.id)
         : undefined,
+    include_stats: isTeacher,
   });
 
   const items = homeworkData?.items;
@@ -82,9 +83,7 @@ export function HomeworkListCard({
             hw.my_submission.status === "late"),
       );
     } else if (activeTab === "graded") {
-      result = result.filter(
-        (hw) => hw.my_submission?.status === "graded",
-      );
+      result = result.filter((hw) => hw.my_submission?.status === "graded");
     }
 
     // Sort
@@ -216,7 +215,12 @@ export function HomeworkListCard({
         ) : (
           <div className="space-y-3">
             {filteredItems.map((hw) => (
-              <HomeworkListItem key={hw.id} homework={hw} basePath={basePath} />
+              <HomeworkListItem
+                key={hw.id}
+                homework={hw}
+                basePath={basePath}
+                isTeacher={isTeacher}
+              />
             ))}
           </div>
         )}

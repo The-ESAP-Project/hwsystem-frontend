@@ -94,7 +94,11 @@ export function ClassStudentsPage() {
     return params;
   }, [debouncedSearch, roleFilter]);
 
-  const { data: membersData, isLoading, error } = useClassMembers(classId!, queryParams);
+  const {
+    data: membersData,
+    isLoading,
+    error,
+  } = useClassMembers(classId!, queryParams);
   const updateRole = useUpdateMemberRole(classId!);
   const removeMember = useRemoveMember(classId!);
 
@@ -153,9 +157,7 @@ export function ClassStudentsPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-destructive">
-          加载失败，请刷新重试
-        </div>
+        <div className="text-center text-destructive">加载失败，请刷新重试</div>
       </div>
     );
   }
@@ -280,11 +282,9 @@ export function ClassStudentsPage() {
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="text-xs">
-                            {(
-                              member.user.display_name ||
+                            {(member.user.display_name ||
                               member.user.username ||
-                              "?"
-                            )[0].toUpperCase()}
+                              "?")[0].toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <span className="font-medium">
@@ -298,9 +298,7 @@ export function ClassStudentsPage() {
                     <TableCell>{getRoleBadge(member.role)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {member.joined_at
-                        ? new Date(member.joined_at).toLocaleDateString(
-                            "zh-CN",
-                          )
+                        ? new Date(member.joined_at).toLocaleDateString("zh-CN")
                         : "-"}
                     </TableCell>
                     <TableCell className="text-right">

@@ -53,7 +53,11 @@ export function HomeworkDetailPage() {
   const { data: mySubmission } = useMyLatestSubmission(homeworkId!);
   const deleteHomework = useDeleteHomework();
 
-  const isTeacher = classData?.teacher?.id === user?.id || canDeleteHomework;
+  // 使用 URL 前缀判断视图类型，避免依赖异步加载的 classData
+  const isTeacherView = prefix === "/teacher" || prefix === "/admin";
+  // 保留原判断用于权限控制（如删除按钮）
+  const hasTeacherPermission =
+    classData?.teacher?.id === user?.id || canDeleteHomework;
   const isDeadlinePassed = homework?.deadline
     ? new Date(homework.deadline) < new Date()
     : false;
@@ -123,7 +127,7 @@ export function HomeworkDetailPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   {getStatusBadge()}
-                  {isTeacher && (
+                  {isTeacherView && hasTeacherPermission && (
                     <>
                       <Button variant="outline" size="sm" asChild>
                         <Link
@@ -191,7 +195,7 @@ export function HomeworkDetailPage() {
           </Card>
 
           {/* 我的提交 */}
-          {!isTeacher && (
+          {!isTeacherView && (
             <Card>
               <CardHeader>
                 <CardTitle>我的提交</CardTitle>
@@ -230,7 +234,7 @@ export function HomeworkDetailPage() {
                     )}
                     <div className="flex gap-3">
                       <Button variant="outline" asChild>
-                        <Link to={`/user/homework/${homeworkId}/submissions`}>
+                        <Link to={`${prefix}/homework/${homeworkId}/submissions`}>
                           查看提交历史
                         </Link>
                       </Button>
@@ -254,7 +258,7 @@ export function HomeworkDetailPage() {
                     {canSubmit ? (
                       <Button asChild>
                         <Link
-                          to={`/user/classes/${classId}/homework/${homeworkId}/submit`}
+                          to={`${prefix}/classes/${classId}/homework/${homeworkId}/submit`}
                         >
                           <FiUpload className="mr-2 h-4 w-4" />
                           提交作业
@@ -313,7 +317,7 @@ export function HomeworkDetailPage() {
             </CardContent>
           </Card>
 
-          {isTeacher && (
+          {isTeacherView && (
             <Card>
               <CardHeader>
                 <CardTitle>教师操作</CardTitle>

@@ -278,7 +278,7 @@ export function HomeworkCreatePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate(`/user/classes/${classId}`)}
+                  onClick={() => navigate(`${prefix}/classes/${classId}`)}
                 >
                   取消
                 </Button>

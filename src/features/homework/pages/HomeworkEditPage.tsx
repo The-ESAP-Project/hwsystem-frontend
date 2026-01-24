@@ -339,7 +339,7 @@ export function HomeworkEditPage() {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    navigate(`/user/classes/${classId}/homework/${homeworkId}`)
+                    navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`)
                   }
                 >
                   取消

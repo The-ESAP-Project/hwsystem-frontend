@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { FiBook, FiUsers, FiClipboard } from "react-icons/fi";
-import { useDashboardPath, useIsAuthenticated, useCurrentUser } from "@/stores/useUserStore";
+import {
+  useDashboardPath,
+  useIsAuthenticated,
+  useCurrentUser,
+} from "@/stores/useUserStore";
 import { RoleEntryCard } from "./RoleEntryCard";
 
 export function HeroSection() {
@@ -16,7 +20,10 @@ export function HeroSection() {
       icon: FiBook,
       title: t("home.roles.items.student.name"),
       description: t("home.hero.studentDesc"),
-      to: isAuthenticated && user?.role === "user" ? dashboardPath : "/auth/login",
+      to:
+        isAuthenticated && user?.role === "user"
+          ? dashboardPath
+          : "/auth/login",
     },
     {
       key: "monitor",
@@ -30,7 +37,10 @@ export function HeroSection() {
       icon: FiClipboard,
       title: t("home.roles.items.teacher.name"),
       description: t("home.hero.teacherDesc"),
-      to: isAuthenticated && user?.role === "teacher" ? dashboardPath : "/auth/login",
+      to:
+        isAuthenticated && user?.role === "teacher"
+          ? dashboardPath
+          : "/auth/login",
     },
   ];
 

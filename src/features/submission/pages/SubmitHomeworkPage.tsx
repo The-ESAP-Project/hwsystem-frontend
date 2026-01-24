@@ -159,7 +159,7 @@ export function SubmitHomeworkPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}/homework/${homeworkId}`}>
+        <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回作业详情
         </Link>
@@ -264,7 +264,7 @@ export function SubmitHomeworkPage() {
                   type="button"
                   variant="outline"
                   onClick={() =>
-                    navigate(`/user/classes/${classId}/homework/${homeworkId}`)
+                    navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`)
                   }
                 >
                   取消

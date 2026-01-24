@@ -1,6 +1,13 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { FiBell, FiGlobe, FiLogOut, FiMoon, FiMonitor, FiSun } from "react-icons/fi";
+import {
+  FiBell,
+  FiGlobe,
+  FiLogOut,
+  FiMoon,
+  FiMonitor,
+  FiSun,
+} from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -92,7 +99,7 @@ export function DashboardHeader() {
 
   const breadcrumbs = useMemo(
     () => generateBreadcrumbs(location.pathname),
-    [location.pathname]
+    [location.pathname],
   );
 
   const handleLogout = () => {
@@ -194,7 +201,10 @@ export function DashboardHeader() {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
+            <Button
+              variant="ghost"
+              className="relative h-9 w-9 rounded-full p-0"
+            >
               <Avatar className={avatarColor}>
                 <AvatarFallback className="text-white font-medium">
                   {avatar}

@@ -175,12 +175,25 @@ export const userNavItems: NavItem[] = [
 export const teacherNavItems: NavItem[] = [
   { to: "/teacher/dashboard", labelKey: "sidebar.dashboard", icon: FiHome },
   { to: "/teacher/classes", labelKey: "sidebar.classManagement", icon: FiBook },
-  { to: "/teacher/students", labelKey: "sidebar.studentManagement", icon: FiUsers },
+  {
+    to: "/teacher/homeworks",
+    labelKey: "sidebar.assignedHomeworks",
+    icon: FiClipboard,
+  },
+  {
+    to: "/teacher/students",
+    labelKey: "sidebar.studentManagement",
+    icon: FiUsers,
+  },
 ];
 
 export const adminNavItems: NavItem[] = [
   { to: "/admin/dashboard", labelKey: "sidebar.dashboard", icon: FiHome },
   { to: "/admin/users", labelKey: "sidebar.userManagement", icon: FiUsers },
   { to: "/admin/classes", labelKey: "sidebar.classManagement", icon: FiBook },
-  { to: "/admin/settings", labelKey: "sidebar.systemSettings", icon: FiSettings },
+  {
+    to: "/admin/settings",
+    labelKey: "sidebar.systemSettings",
+    icon: FiSettings,
+  },
 ];

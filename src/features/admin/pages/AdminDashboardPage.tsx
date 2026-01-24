@@ -159,33 +159,43 @@ export function AdminDashboardPage() {
 function RoleBadge({ role }: { role: string }) {
   const { t } = useTranslation();
 
-  const roleConfig: Record<string, { labelKey: string; variant: "destructive" | "default" | "secondary" | "outline" }> = {
+  const roleConfig: Record<
+    string,
+    {
+      labelKey: string;
+      variant: "destructive" | "default" | "secondary" | "outline";
+    }
+  > = {
     admin: { labelKey: "sidebar.admin", variant: "destructive" },
     teacher: { labelKey: "sidebar.teacher", variant: "default" },
     user: { labelKey: "sidebar.user", variant: "secondary" },
   };
 
-  const config = roleConfig[role] || { labelKey: role, variant: "outline" as const };
+  const config = roleConfig[role] || {
+    labelKey: role,
+    variant: "outline" as const,
+  };
 
-  return (
-    <Badge variant={config.variant}>
-      {t(config.labelKey)}
-    </Badge>
-  );
+  return <Badge variant={config.variant}>{t(config.labelKey)}</Badge>;
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  const statusConfig: Record<
+    string,
+    {
+      label: string;
+      variant: "default" | "secondary" | "destructive" | "outline";
+    }
+  > = {
     active: { label: "活跃", variant: "default" },
     inactive: { label: "未激活", variant: "secondary" },
     banned: { label: "封禁", variant: "destructive" },
   };
 
-  const config = statusConfig[status] || { label: status, variant: "outline" as const };
+  const config = statusConfig[status] || {
+    label: status,
+    variant: "outline" as const,
+  };
 
-  return (
-    <Badge variant={config.variant}>
-      {config.label}
-    </Badge>
-  );
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }

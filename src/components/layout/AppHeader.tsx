@@ -145,7 +145,11 @@ export function AppHeader() {
             {isAuthenticated ? (
               <>
                 {/* 前往控制台按钮 */}
-                <Button asChild variant="outline" className="hidden sm:inline-flex">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="hidden sm:inline-flex"
+                >
                   <Link to={dashboardPath}>
                     <FiGrid className="mr-2 h-4 w-4" />
                     {t("header.dashboard")}
@@ -171,7 +175,9 @@ export function AppHeader() {
                       <p className="font-medium">
                         {currentUser?.display_name || currentUser?.username}
                       </p>
-                      <p className="text-xs text-muted-foreground">{roleText}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {roleText}
+                      </p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild className="sm:hidden">

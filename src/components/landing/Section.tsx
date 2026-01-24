@@ -34,7 +34,7 @@ export function Section({
       className={cn(
         "py-[var(--landing-section-py)] sm:py-[var(--landing-section-py-sm)] relative overflow-hidden",
         variantStyles[variant],
-        className
+        className,
       )}
     >
       {withDecoration && variant !== "gradient" && (
@@ -54,9 +54,7 @@ export function Section({
               <h2
                 className={cn(
                   "text-3xl sm:text-4xl font-bold",
-                  variant === "gradient"
-                    ? "text-white"
-                    : "text-foreground"
+                  variant === "gradient" ? "text-white" : "text-foreground",
                 )}
               >
                 {t(titleKey)}
@@ -68,7 +66,7 @@ export function Section({
                   "mt-4 text-lg max-w-2xl mx-auto",
                   variant === "gradient"
                     ? "text-white/80"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 {t(descriptionKey)}

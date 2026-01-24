@@ -5,6 +5,7 @@ import type {
   HomeworkCreator,
   HomeworkDetail,
   HomeworkListResponse,
+  HomeworkStatsSummary,
   HomeworkStatsResponse,
   ScoreRange,
   ScoreStats,
@@ -52,6 +53,7 @@ export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
 export type HomeworkListItemStringified = Stringify<Homework> & {
   my_submission?: HomeworkMySubmission;
   creator?: HomeworkCreatorStringified;
+  stats_summary?: Stringify<HomeworkStatsSummary>;
 };
 
 // 作业列表响应类型
@@ -76,6 +78,7 @@ export const homeworkService = {
       status?: string;
       search?: string;
       created_by?: string;
+      include_stats?: boolean;
     },
   ) => {
     const { data } = await api.get<{ data: HomeworkListResponseStringified }>(
@@ -88,6 +91,7 @@ export const homeworkService = {
           status: params?.status,
           search: params?.search,
           created_by: params?.created_by,
+          include_stats: params?.include_stats,
         },
       },
     );

@@ -34,6 +34,7 @@ import { HomeworkDetailPage } from "@/features/homework/pages/HomeworkDetailPage
 import { HomeworkEditPage } from "@/features/homework/pages/HomeworkEditPage";
 import { HomeworkStatsPage } from "@/features/homework/pages/HomeworkStatsPage";
 import { MyHomeworksPage } from "@/features/homework/pages/MyHomeworksPage";
+import { TeacherHomeworksPage } from "@/features/homework/pages/TeacherHomeworksPage";
 // 通知页面
 import { NotificationListPage } from "@/features/notification/pages/NotificationListPage";
 import { AboutPage } from "@/features/public/pages/AboutPage";
@@ -54,7 +55,7 @@ import { HomeworkPage } from "@/features/user/pages/HomeworkPage";
 import { UserDashboardPage } from "@/features/user/pages/UserDashboardPage";
 // 学生页面
 import { UserIndexPage } from "@/features/user/pages/UserIndexPage";
-import { useUserStore } from "@/stores/useUserStore";
+import { useCurrentUser, useUserStore } from "@/stores/useUserStore";
 
 // 路由守卫 Loader
 const requireAuth = async () => {
@@ -109,6 +110,21 @@ const requireGuest = async () => {
 
   return null;
 };
+
+// 通知页面布局组件 - 根据用户角色选择对应的导航项
+function NotificationLayout() {
+  const user = useCurrentUser();
+  const navItems =
+    user?.role === "admin"
+      ? adminNavItems
+      : user?.role === "teacher"
+        ? teacherNavItems
+        : userNavItems;
+
+  return (
+    <DashboardLayout navItems={navItems} titleKey="common.notifications" />
+  );
+}
 
 export const router = createBrowserRouter([
   // 公共页面 (DefaultLayout)
@@ -173,15 +189,10 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // 通知页面 (所有登录用户可访问)
+  // 通知页面 (所有登录用户可访问，根据角色显示对应导航)
   {
     path: "/notifications",
-    element: (
-      <DashboardLayout
-        navItems={userNavItems}
-        titleKey="common.notifications"
-      />
-    ),
+    element: <NotificationLayout />,
     loader: requireRole(["user", "teacher", "admin"]),
     children: [{ index: true, element: <NotificationListPage /> }],
   },
@@ -199,6 +210,8 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <TeacherIndexPage /> },
       { path: "dashboard", element: <TeacherDashboardPage /> },
+      // 已布置作业
+      { path: "homeworks", element: <TeacherHomeworksPage /> },
       // 班级管理
       { path: "classes", element: <ClassListPage /> },
       { path: "classes/create", element: <ClassCreatePage /> },

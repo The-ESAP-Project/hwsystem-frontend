@@ -18,10 +18,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useClassList } from "@/features/class/hooks/useClass";
 import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
 import { useUnreadCount } from "@/features/notification/hooks/useNotification";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useCurrentUser } from "@/stores/useUserStore";
 
 export function UserDashboardPage() {
   const { t } = useTranslation();
+  const prefix = useRoutePrefix();
   const user = useCurrentUser();
   const { data: classData, isLoading: classLoading } = useClassList();
   const { data: unreadData } = useUnreadCount();
@@ -110,7 +112,7 @@ export function UserDashboardPage() {
               </Link>
             </Button>
             <Button asChild>
-              <Link to="/user/classes">
+              <Link to={`${prefix}/classes`}>
                 <FiBookOpen className="mr-2 h-4 w-4" />
                 {t("sidebar.myClasses")}
               </Link>
@@ -178,7 +180,7 @@ export function UserDashboardPage() {
                 {homeworkStats.upcomingHomeworks.map((hw) => (
                   <Link
                     key={hw.id}
-                    to={`/user/classes/${hw.class_id}/homework/${hw.id}`}
+                    to={`${prefix}/classes/${hw.class_id}/homework/${hw.id}`}
                     className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -220,7 +222,7 @@ export function UserDashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>{t("dashboard.user.myClasses")}</CardTitle>
             <Button variant="link" asChild className="p-0 h-auto">
-              <Link to="/user/classes" className="flex items-center gap-1">
+              <Link to={`${prefix}/classes`} className="flex items-center gap-1">
                 {t("dashboard.user.viewAll")}
                 <FiChevronRight className="h-4 w-4" />
               </Link>
@@ -254,7 +256,7 @@ export function UserDashboardPage() {
                 {classes.slice(0, 5).map((cls) => (
                   <Link
                     key={cls.id}
-                    to={`/user/classes/${cls.id}`}
+                    to={`${prefix}/classes/${cls.id}`}
                     className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">

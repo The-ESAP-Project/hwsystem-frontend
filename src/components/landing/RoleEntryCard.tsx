@@ -33,14 +33,16 @@ export function RoleEntryCard({
           "shadow-[var(--landing-card-shadow)]",
           "hover:shadow-[var(--landing-card-shadow-hover)]",
           "hover:border-[hsl(var(--landing-gradient-from))]",
-          "transition-all duration-200"
+          "transition-all duration-200",
         )}
       >
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(var(--landing-gradient-from)/0.1)] text-[hsl(var(--landing-gradient-from))] mb-4 group-hover:bg-[hsl(var(--landing-gradient-from))] group-hover:text-white transition-colors duration-200">
           <Icon className="h-8 w-8" />
         </div>
         <h3 className="text-xl font-bold text-foreground mb-2">{title}</h3>
-        <p className="text-sm text-muted-foreground text-center">{description}</p>
+        <p className="text-sm text-muted-foreground text-center">
+          {description}
+        </p>
       </Link>
     </motion.div>
   );

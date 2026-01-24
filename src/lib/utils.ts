@@ -56,7 +56,12 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 /**
  * 截止时间状态
  */
-export type DeadlineStatus = "expired" | "urgent" | "warning" | "normal" | "none";
+export type DeadlineStatus =
+  | "expired"
+  | "urgent"
+  | "warning"
+  | "normal"
+  | "none";
 
 /**
  * 计算截止时间状态
@@ -68,8 +73,10 @@ export function getDeadlineStatus(deadline: string | null): {
   if (!deadline) return { status: "none", remainingMs: null };
   const remaining = new Date(deadline).getTime() - Date.now();
   if (remaining <= 0) return { status: "expired", remainingMs: remaining };
-  if (remaining <= 24 * 60 * 60 * 1000) return { status: "urgent", remainingMs: remaining };
-  if (remaining <= 3 * 24 * 60 * 60 * 1000) return { status: "warning", remainingMs: remaining };
+  if (remaining <= 24 * 60 * 60 * 1000)
+    return { status: "urgent", remainingMs: remaining };
+  if (remaining <= 3 * 24 * 60 * 60 * 1000)
+    return { status: "warning", remainingMs: remaining };
   return { status: "normal", remainingMs: remaining };
 }
 

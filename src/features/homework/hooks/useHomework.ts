@@ -1,4 +1,9 @@
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   type CreateHomeworkInput,
   homeworkService,
@@ -18,6 +23,7 @@ export const homeworkKeys = {
       status?: string;
       search?: string;
       created_by?: string;
+      include_stats?: boolean;
     },
   ) => [...homeworkKeys.lists(), classId, params] as const,
   details: () => [...homeworkKeys.all, "detail"] as const,
@@ -36,6 +42,7 @@ export function useHomeworkList(
     status?: string;
     search?: string;
     created_by?: string;
+    include_stats?: boolean;
   },
 ) {
   return useQuery({
@@ -101,11 +108,21 @@ export function useDeleteHomework() {
 }
 
 // 获取多个班级的作业列表（用于用户仪表盘）
-export function useAllClassesHomeworks(classIds: string[]) {
+export function useAllClassesHomeworks(
+  classIds: string[],
+  options?: { include_stats?: boolean },
+) {
   return useQueries({
     queries: classIds.map((classId) => ({
-      queryKey: homeworkKeys.list(classId, { page_size: 100 }),
-      queryFn: () => homeworkService.list(classId, { page_size: 100 }),
+      queryKey: homeworkKeys.list(classId, {
+        page_size: 100,
+        include_stats: options?.include_stats,
+      }),
+      queryFn: () =>
+        homeworkService.list(classId, {
+          page_size: 100,
+          include_stats: options?.include_stats,
+        }),
       enabled: !!classId,
     })),
     combine: (results) => {

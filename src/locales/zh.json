@@ -25,6 +25,7 @@
     "myClasses": "我的班级",
     "mySubmissions": "我的提交",
     "myHomeworks": "我的作业",
+    "assignedHomeworks": "已布置作业",
     "classManagement": "班级管理",
     "studentManagement": "学生管理",
     "userManagement": "用户管理",
@@ -67,7 +68,13 @@
       },
       "recentClasses": "我的班级",
       "emptyClasses": "还没有创建班级",
-      "createClassHint": "创建一个班级开始教学"
+      "createClassHint": "创建一个班级开始教学",
+      "quickActions": {
+        "title": "快捷操作",
+        "createHomework": "创建作业",
+        "gradeHomework": "批改作业",
+        "viewClasses": "查看班级"
+      }
     },
     "admin": {
       "title": "管理面板",
@@ -691,6 +698,7 @@
     "status": {
       "notSubmitted": "未提交",
       "submitted": "已提交",
+      "submittedStats": "已提交 {{submitted}}/{{total}}",
       "graded": "已评分",
       "late": "迟交"
     },
@@ -716,11 +724,104 @@
     "noSubmitted": "暂无待批改的作业",
     "noGraded": "暂无已批改的作业"
   },
+  "teacherHomeworks": {
+    "title": "已布置作业",
+    "description": "查看所有班级的作业布置情况",
+    "tabs": {
+      "active": "进行中",
+      "expired": "已截止",
+      "all": "全部"
+    },
+    "submitted": "已提交",
+    "pendingGrade": "待批改",
+    "noActive": "暂无进行中的作业",
+    "noExpired": "暂无已截止的作业",
+    "noHomeworks": "还没有布置作业",
+    "actions": {
+      "edit": "编辑作业",
+      "stats": "查看统计",
+      "delete": "删除作业"
+    },
+    "deleteConfirm": {
+      "title": "确认删除作业？",
+      "description": "即将删除作业「{{title}}」，此操作不可撤销。"
+    }
+  },
   "nav": {
     "home": "首页",
     "about": "关于我们",
     "contact": "联系我们",
     "privacy": "隐私政策",
     "terms": "服务条款"
+  },
+  "submission": {
+    "list": {
+      "title": "提交列表",
+      "totalStudents": "共 {{count}} 名学生",
+      "tabs": {
+        "all": "全部",
+        "submitted": "已提交",
+        "unsubmitted": "未提交"
+      },
+      "filter": {
+        "all": "全部状态",
+        "pending": "待批改",
+        "graded": "已批改",
+        "late": "迟交"
+      },
+      "filterBy": "筛选",
+      "unsubmittedBadge": "未提交",
+      "noSubmissions": "暂无提交",
+      "allSubmitted": "所有学生都已提交",
+      "noStudents": "暂无学生",
+      "versions": "共 {{count}} 个版本",
+      "latest": "最新",
+      "totalVersions": "共 {{count}} 个提交版本",
+      "selectVersion": "选择版本",
+      "viewGrade": "查看评分",
+      "goGrade": "去批改",
+      "grade": "批改",
+      "score": "评分",
+      "comment": "评语",
+      "content": "提交内容",
+      "noContent": "（无内容）",
+      "attachments": "附件"
+    }
+  },
+  "grade": {
+    "submissionContent": "提交内容",
+    "submittedAt": "提交于",
+    "noContent": "无文字内容",
+    "attachments": "附件",
+    "studentInfo": "学生信息",
+    "grade": "评分",
+    "editGrade": "修改评分",
+    "maxScore": "满分",
+    "points": "分",
+    "score": "分数",
+    "comment": "评语",
+    "optional": "可选",
+    "commentPlaceholder": "给学生的反馈...",
+    "submitting": "提交中...",
+    "updateGrade": "更新评分",
+    "submitGrade": "提交评分",
+    "success": {
+      "created": "评分成功",
+      "updated": "评分已更新"
+    },
+    "error": {
+      "failed": "操作失败",
+      "retry": "请稍后重试"
+    },
+    "navigation": {
+      "prev": "上一个",
+      "next": "下一个",
+      "progress": "批改进度",
+      "pendingCount": "待批改",
+      "backToList": "返回列表",
+      "allCompleted": "所有待批改作业已完成！",
+      "continueHint": "可点击「下一个」继续批改",
+      "shortcutHint": "快速切换"
+    }
   }
 }

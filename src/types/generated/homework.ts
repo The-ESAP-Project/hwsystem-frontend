@@ -19,16 +19,24 @@ export type HomeworkDetail = { attachments: Array<FileInfo>, creator: HomeworkCr
 /**
  * 作业列表项（包含创建者和我的提交状态）
  */
-export type HomeworkListItem = { creator: HomeworkCreator | null, 
+export type HomeworkListItem = { creator: HomeworkCreator | null,
 /**
  * 当前用户的最新提交（仅学生视角有值）
  */
-my_submission: MySubmissionSummary | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
+my_submission: MySubmissionSummary | null,
+/**
+ * 作业统计摘要（仅教师/管理员视角且请求 include_stats=true 时有值）
+ */
+stats_summary: HomeworkStatsSummary | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
 
 /**
  * 作业列表查询参数（HTTP 请求）
  */
-export type HomeworkListParams = { class_id: bigint | null, created_by: bigint | null, search: string | null, page: bigint, size: bigint, };
+export type HomeworkListParams = { class_id: bigint | null, created_by: bigint | null, search: string | null,
+/**
+ * 是否包含统计信息（教师/管理员视角）
+ */
+include_stats: boolean | null, page: bigint, size: bigint, };
 
 export type HomeworkListResponse = { items: Array<HomeworkListItem>, pagination: PaginationInfo, };
 
@@ -48,6 +56,18 @@ export type HomeworkWithCreator = { creator: HomeworkCreator | null, id: bigint,
  * 我的提交摘要（用于作业列表显示提交状态）
  */
 export type MySubmissionSummary = { id: bigint, version: number, status: string, is_late: boolean, score: number | null, };
+
+/**
+ * 作业统计摘要（用于教师视角列表显示）
+ */
+export type HomeworkStatsSummary = {
+  /** 班级学生总数 */
+  total_students: bigint,
+  /** 已提交人数 */
+  submitted_count: bigint,
+  /** 已评分人数 */
+  graded_count: bigint,
+};
 
 /**
  * 分数区间

@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useClassList } from "@/features/class/hooks/useClass";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useAllClassesHomeworks } from "@/features/homework/hooks/useHomework";
 import type { HomeworkListItemStringified } from "@/features/homework/services/homeworkService";
 
@@ -21,6 +22,7 @@ type TabValue = "pending" | "submitted" | "graded";
 
 export function MyHomeworksPage() {
   const { t } = useTranslation();
+  const prefix = useRoutePrefix();
   const [activeTab, setActiveTab] = useState<TabValue>("pending");
 
   const { data: classData, isLoading: classLoading } = useClassList();
@@ -125,7 +127,7 @@ export function MyHomeworksPage() {
     return (
       <Link
         key={hw.id}
-        to={`/user/classes/${hw.class_id}/homework/${hw.id}`}
+        to={`${prefix}/classes/${hw.class_id}/homework/${hw.id}`}
         className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors border-b last:border-b-0"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">

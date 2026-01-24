@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { FiBook, FiCalendar, FiLogIn, FiPlus, FiSearch, FiUsers } from "react-icons/fi";
+import {
+  FiBook,
+  FiCalendar,
+  FiLogIn,
+  FiPlus,
+  FiSearch,
+  FiUsers,
+} from "react-icons/fi";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,12 +30,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
 import { notify } from "@/stores/useNotificationStore";
 import { useClassList, useJoinClass } from "../hooks/useClass";
+import { useRoutePrefix } from "../hooks/useClassBasePath";
 
 export function ClassListPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const prefix = useRoutePrefix();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -114,7 +123,7 @@ export function ClassListPage() {
 
           {canCreateClass && (
             <Button asChild>
-              <Link to="/teacher/classes/create">
+              <Link to={`${prefix}/classes/create`}>
                 <FiPlus className="mr-2 h-4 w-4" />
                 创建班级
               </Link>
@@ -167,7 +176,7 @@ export function ClassListPage() {
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {data?.items.map((cls) => (
-            <Link key={cls.id} to={`/user/classes/${cls.id}`}>
+            <Link key={cls.id} to={`${prefix}/classes/${cls.id}`}>
               <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">

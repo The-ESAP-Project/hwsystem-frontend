@@ -17,7 +17,11 @@ export const classKeys = {
 };
 
 // Queries
-export function useClassList(params?: { page?: number; page_size?: number; search?: string }) {
+export function useClassList(params?: {
+  page?: number;
+  page_size?: number;
+  search?: string;
+}) {
   return useQuery({
     queryKey: classKeys.list(params),
     queryFn: () => classService.list(params),
@@ -42,7 +46,12 @@ export function useClassByCode(code: string) {
 
 export function useClassMembers(
   classId: string,
-  params?: { page?: number; page_size?: number; search?: string; role?: string },
+  params?: {
+    page?: number;
+    page_size?: number;
+    search?: string;
+    role?: string;
+  },
 ) {
   return useQuery({
     queryKey: classKeys.members(classId, params),

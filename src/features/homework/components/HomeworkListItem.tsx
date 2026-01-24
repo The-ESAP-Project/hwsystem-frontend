@@ -21,9 +21,14 @@ const deadlineColorMap: Record<DeadlineStatus, string> = {
 interface HomeworkListItemProps {
   homework: HomeworkListItemStringified;
   basePath: string;
+  isTeacher?: boolean;
 }
 
-export function HomeworkListItem({ homework, basePath }: HomeworkListItemProps) {
+export function HomeworkListItem({
+  homework,
+  basePath,
+  isTeacher,
+}: HomeworkListItemProps) {
   const { t, i18n } = useTranslation();
   const { status: deadlineStatus, remainingMs } = getDeadlineStatus(
     homework.deadline ?? null,
@@ -44,8 +49,21 @@ export function HomeworkListItem({ homework, basePath }: HomeworkListItemProps) 
   };
 
   const renderStatusBadge = () => {
+    if (isTeacher && homework.stats_summary) {
+      const { submitted_count, total_students } = homework.stats_summary;
+      return (
+        <Badge variant="secondary">
+          {t("homework.status.submittedStats", {
+            submitted: submitted_count,
+            total: total_students,
+          })}
+        </Badge>
+      );
+    }
     if (!homework.my_submission) {
-      return <Badge variant="outline">{t("homework.status.notSubmitted")}</Badge>;
+      return (
+        <Badge variant="outline">{t("homework.status.notSubmitted")}</Badge>
+      );
     }
     switch (homework.my_submission.status) {
       case "graded":
@@ -55,9 +73,7 @@ export function HomeworkListItem({ homework, basePath }: HomeworkListItemProps) 
           </Badge>
         );
       case "late":
-        return (
-          <Badge variant="destructive">{t("homework.status.late")}</Badge>
-        );
+        return <Badge variant="destructive">{t("homework.status.late")}</Badge>;
       default:
         return (
           <Badge variant="secondary">{t("homework.status.submitted")}</Badge>
@@ -72,10 +88,7 @@ export function HomeworkListItem({ homework, basePath }: HomeworkListItemProps) 
       : null;
 
   return (
-    <Link
-      to={`${basePath}/homework/${homework.id}`}
-      className="block"
-    >
+    <Link to={`${basePath}/homework/${homework.id}`} className="block">
       <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -84,9 +97,7 @@ export function HomeworkListItem({ homework, basePath }: HomeworkListItemProps) 
             </h3>
           </div>
           <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
-            <span>
-              {t("homework.maxScore", { score: homework.max_score })}
-            </span>
+            <span>{t("homework.maxScore", { score: homework.max_score })}</span>
             {homework.creator && (
               <span>
                 {homework.creator.display_name || homework.creator.username}

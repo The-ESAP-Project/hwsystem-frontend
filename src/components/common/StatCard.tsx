@@ -51,7 +51,7 @@ export function StatCard({
     <Card
       className={cn(
         href && "hover:shadow-md transition-shadow cursor-pointer",
-        className
+        className,
       )}
     >
       <CardContent className="flex items-center gap-4 p-6">

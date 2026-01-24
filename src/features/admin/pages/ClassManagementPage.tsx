@@ -24,10 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  useClassList,
-  useDeleteClass,
-} from "@/features/class/hooks/useClass";
+import { useClassList, useDeleteClass } from "@/features/class/hooks/useClass";
 import type { ClassDetailStringified } from "@/features/class/services/classService";
 
 export default function ClassManagementPage() {
@@ -35,7 +32,8 @@ export default function ClassManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [deleteTarget, setDeleteTarget] = useState<ClassDetailStringified | null>(null);
+  const [deleteTarget, setDeleteTarget] =
+    useState<ClassDetailStringified | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -79,9 +77,7 @@ export default function ClassManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{t("admin.classes.title")}</h1>
-          <p className="text-muted-foreground">
-            {t("admin.classes.subtitle")}
-          </p>
+          <p className="text-muted-foreground">{t("admin.classes.subtitle")}</p>
         </div>
         <Button asChild>
           <Link to="/admin/classes/create">
@@ -131,12 +127,24 @@ export default function ClassManagementPage() {
               {isLoading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-28" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-12" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-16" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-28" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-8 w-16 ml-auto" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : data?.items.length === 0 ? (
@@ -153,7 +161,9 @@ export default function ClassManagementPage() {
                   <TableRow key={cls.id}>
                     <TableCell className="font-medium">{cls.name}</TableCell>
                     <TableCell>
-                      {cls.teacher?.display_name || cls.teacher?.username || "-"}
+                      {cls.teacher?.display_name ||
+                        cls.teacher?.username ||
+                        "-"}
                     </TableCell>
                     <TableCell>{cls.member_count}</TableCell>
                     <TableCell>
