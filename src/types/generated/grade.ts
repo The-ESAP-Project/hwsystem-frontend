@@ -9,7 +9,7 @@ export type CreateGradeRequest = { submission_id: bigint, score: number, comment
 /**
  * 评分实体
  */
-export type Grade = { id: bigint, submission_id: bigint, grader_id: bigint, score: number, comment: string | null, graded_at: string, };
+export type Grade = { id: bigint, submission_id: bigint, grader_id: bigint, score: number, comment: string | null, graded_at: string, updated_at: string, };
 
 /**
  * 评分列表查询参数
@@ -29,7 +29,7 @@ export type GradeResponse = { id: bigint, submission_id: bigint, grader: Grader,
 /**
  * 评分者信息
  */
-export type Grader = { id: bigint, username: string, profile_name: string | null, };
+export type Grader = { id: bigint, username: string, display_name: string | null, };
 
 /**
  * 更新评分请求

@@ -1,21 +1,16 @@
-import { Link } from 'react-router'
-import { useTranslation } from 'react-i18next'
-import {
-  EnvelopeIcon,
-  PhoneIcon,
-  MapPinIcon,
-  ChatBubbleLeftRightIcon,
-} from '@heroicons/react/24/outline'
+import { useTranslation } from "react-i18next";
+import { FiMail, FiMapPin, FiMessageCircle, FiPhone } from "react-icons/fi";
+import { Link } from "react-router";
 
 export function ContactPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const contactInfo = [
-    { key: 'email', icon: EnvelopeIcon },
-    { key: 'phone', icon: PhoneIcon },
-    { key: 'address', icon: MapPinIcon },
-    { key: 'online', icon: ChatBubbleLeftRightIcon },
-  ]
+    { key: "email", icon: FiMail },
+    { key: "phone", icon: FiPhone },
+    { key: "address", icon: FiMapPin },
+    { key: "online", icon: FiMessageCircle },
+  ];
 
   return (
     <div className="py-16">
@@ -23,10 +18,10 @@ export function ContactPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('contact.title')}
+            {t("contact.title")}
           </h1>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            {t('contact.subtitle')}
+            {t("contact.subtitle")}
           </p>
         </div>
 
@@ -45,28 +40,28 @@ export function ContactPage() {
                   <h3 className="font-semibold text-gray-900 dark:text-white">
                     {t(`contact.info.${info.key}.title`)}
                   </h3>
-                  {info.key === 'email' && (
+                  {info.key === "email" && (
                     <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t('contact.info.email.support')}</p>
-                      <p>{t('contact.info.email.admin')}</p>
+                      <p>{t("contact.info.email.support")}</p>
+                      <p>{t("contact.info.email.admin")}</p>
                     </div>
                   )}
-                  {info.key === 'phone' && (
+                  {info.key === "phone" && (
                     <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t('contact.info.phone.number')}</p>
-                      <p>{t('contact.info.phone.hours')}</p>
+                      <p>{t("contact.info.phone.number")}</p>
+                      <p>{t("contact.info.phone.hours")}</p>
                     </div>
                   )}
-                  {info.key === 'address' && (
+                  {info.key === "address" && (
                     <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t('contact.info.address.street')}</p>
-                      <p>{t('contact.info.address.building')}</p>
+                      <p>{t("contact.info.address.street")}</p>
+                      <p>{t("contact.info.address.building")}</p>
                     </div>
                   )}
-                  {info.key === 'online' && (
+                  {info.key === "online" && (
                     <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t('contact.info.online.wechat')}</p>
-                      <p>{t('contact.info.online.qq')}</p>
+                      <p>{t("contact.info.online.wechat")}</p>
+                      <p>{t("contact.info.online.qq")}</p>
                     </div>
                   )}
                 </div>
@@ -81,10 +76,10 @@ export function ContactPage() {
             to="/"
             className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
           >
-            {t('contact.backHome')}
+            {t("contact.backHome")}
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

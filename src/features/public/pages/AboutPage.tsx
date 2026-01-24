@@ -1,25 +1,25 @@
-import { Link } from 'react-router'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 import {
-  UserGroupIcon,
-  DevicePhoneMobileIcon,
-  CodeBracketIcon,
-  MoonIcon,
-  ShieldCheckIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline'
+  FiBarChart2,
+  FiCode,
+  FiMoon,
+  FiShield,
+  FiSmartphone,
+  FiUsers,
+} from "react-icons/fi";
+import { Link } from "react-router";
 
 export function AboutPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const features = [
-    { key: 'multiRole', icon: UserGroupIcon },
-    { key: 'responsive', icon: DevicePhoneMobileIcon },
-    { key: 'modernTech', icon: CodeBracketIcon },
-    { key: 'darkMode', icon: MoonIcon },
-    { key: 'security', icon: ShieldCheckIcon },
-    { key: 'visualization', icon: ChartBarIcon },
-  ]
+    { key: "multiRole", icon: FiUsers },
+    { key: "responsive", icon: FiSmartphone },
+    { key: "modernTech", icon: FiCode },
+    { key: "darkMode", icon: FiMoon },
+    { key: "security", icon: FiShield },
+    { key: "visualization", icon: FiBarChart2 },
+  ];
 
   return (
     <div className="py-16">
@@ -27,20 +27,20 @@ export function AboutPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('about.title')}
+            {t("about.title")}
           </h1>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            {t('about.subtitle')}
+            {t("about.subtitle")}
           </p>
         </div>
 
         {/* Features */}
         <section className="mb-24">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-            {t('about.features.title')}
+            {t("about.features.title")}
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-12">
-            {t('about.features.description')}
+            {t("about.features.description")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature) => (
@@ -65,13 +65,13 @@ export function AboutPage() {
         {/* Performance */}
         <section className="mb-24">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-            {t('about.performance.title')}
+            {t("about.performance.title")}
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-12">
-            {t('about.performance.subtitle')}
+            {t("about.performance.subtitle")}
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {['responseTime', 'concurrency', 'memory', 'startup'].map((key) => (
+            {["responseTime", "concurrency", "memory", "startup"].map((key) => (
               <div
                 key={key}
                 className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 text-center"
@@ -96,10 +96,10 @@ export function AboutPage() {
             to="/"
             className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
           >
-            {t('contact.backHome')}
+            {t("contact.backHome")}
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

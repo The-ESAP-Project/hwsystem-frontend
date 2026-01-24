@@ -1,5 +1,17 @@
 // 重导出所有 ts-rs 生成的类型
-export * from './generated'
+export * from "./generated";
 
 // React 特有的类型扩展
-export type Theme = 'light' | 'dark' | 'system'
+export type Theme = "light" | "dark" | "system";
+
+/**
+ * 类型工具：把生成类型中的 bigint 递归转换为 string
+ * 用于 API 响应类型，因为 JSON 序列化后 ID 字段实际上是 number/string
+ */
+export type Stringify<T> = T extends bigint
+  ? string
+  : T extends Array<infer U>
+    ? Array<Stringify<U>>
+    : T extends object
+      ? { [K in keyof T]: Stringify<T[K]> }
+      : T;
