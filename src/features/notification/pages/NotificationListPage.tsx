@@ -92,7 +92,7 @@ export function NotificationListPage() {
 
   const getNotificationLink = (notification: {
     reference_type: ReferenceType | null;
-    reference_id?: string;
+    reference_id: string | null;
   }) => {
     if (!notification.reference_type || !notification.reference_id) {
       return null;

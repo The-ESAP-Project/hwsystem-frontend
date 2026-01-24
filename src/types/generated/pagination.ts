@@ -2,6 +2,6 @@
 
 export type PaginatedResponse<T> = { items: Array<T>, pagination: PaginationInfo, };
 
-export type PaginationInfo = { page: bigint, size: bigint, total: bigint, pages: bigint, };
+export type PaginationInfo = { page: bigint, page_size: bigint, total: bigint, total_pages: bigint, };
 
 export type PaginationQuery = { page: bigint, size: bigint, };

@@ -3,8 +3,8 @@ import { useNotificationStore } from "@/stores/useNotificationStore";
 import {
   type CreateUserRequest,
   type UpdateUserRequest,
+  type UserDetail,
   type UserListParams,
-  type UserWithStringId,
   userService,
 } from "../services/userService";
 
@@ -90,4 +90,4 @@ export function useDeleteUser() {
   });
 }
 
-export type { UserWithStringId, CreateUserRequest, UpdateUserRequest };
+export type { UserDetail, CreateUserRequest, UpdateUserRequest };

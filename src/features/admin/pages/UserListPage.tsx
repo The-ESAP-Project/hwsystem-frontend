@@ -31,11 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  type UserWithStringId,
-  useDeleteUser,
-  useUserList,
-} from "../hooks/useUsers";
+import { type UserDetail, useDeleteUser, useUserList } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/userService";
 
 const roleLabels: Record<UserRole, string> = {
@@ -70,9 +66,7 @@ export default function UserListPage() {
   const [searchInput, setSearchInput] = useState("");
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "all">("all");
-  const [deleteTarget, setDeleteTarget] = useState<UserWithStringId | null>(
-    null,
-  );
+  const [deleteTarget, setDeleteTarget] = useState<UserDetail | null>(null);
 
   const { data, isLoading, error } = useUserList({
     page,
@@ -296,7 +290,7 @@ export default function UserListPage() {
       </Card>
 
       {/* 分页 */}
-      {data && data.pagination.total_pages > 1 && (
+      {data && Number(data.pagination.total_pages) > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             共 {data.pagination.total} 条记录，第 {page} /{" "}
@@ -315,9 +309,11 @@ export default function UserListPage() {
               variant="outline"
               size="sm"
               onClick={() =>
-                setPage((p) => Math.min(data.pagination.total_pages, p + 1))
+                setPage((p) =>
+                  Math.min(Number(data.pagination.total_pages), p + 1),
+                )
               }
-              disabled={page >= data.pagination.total_pages}
+              disabled={page >= Number(data.pagination.total_pages)}
             >
               下一页
             </Button>

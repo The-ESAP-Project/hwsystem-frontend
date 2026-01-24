@@ -2,6 +2,7 @@ import api from "@/lib/api";
 import type { Stringify } from "@/types";
 import type {
   Homework,
+  HomeworkDetail,
   HomeworkListResponse,
   HomeworkStatsResponse,
   ScoreRange,
@@ -23,7 +24,7 @@ export interface CreateHomeworkInput {
 
 export type UpdateHomeworkInput = Partial<Stringify<UpdateHomeworkRequest>>;
 
-// API 响应中的我的提交摘要
+// API 响应中的我的提交摘要（学生视角）
 export interface HomeworkMySubmission {
   id: string;
   version: number;
@@ -31,20 +32,25 @@ export interface HomeworkMySubmission {
   score?: number;
 }
 
-// 附件信息类型（前端使用）
+// 附件信息类型（前端使用）- 直接使用生成类型
 export type HomeworkAttachment = Stringify<FileInfo>;
 
-// 作业详情响应类型（基于生成类型 + 扩展字段）
-export interface HomeworkWithDetails extends Stringify<Homework> {
-  attachments?: HomeworkAttachment[];
-  attachment_count?: number;
+// 作业详情响应类型 - 使用生成类型 HomeworkDetail 并扩展学生视角字段
+export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
+  // 学生视角：我的提交状态（后端在学生请求时附加）
   my_submission?: HomeworkMySubmission;
+  // 兼容字段名：后端用 allow_late，部分页面用 allow_late_submission
   allow_late_submission?: boolean;
-}
+};
+
+// 作业列表项类型 - 学生视角包含提交状态
+export type HomeworkListItemStringified = Stringify<Homework> & {
+  my_submission?: HomeworkMySubmission;
+};
 
 // 作业列表响应类型
-export interface HomeworkListResponseWithDetails {
-  items: HomeworkWithDetails[];
+export interface HomeworkListResponseStringified {
+  items: HomeworkListItemStringified[];
   pagination?: Stringify<HomeworkListResponse>["pagination"];
 }
 
@@ -60,7 +66,7 @@ export const homeworkService = {
     classId: string,
     params?: { page?: number; page_size?: number; status?: string },
   ) => {
-    const { data } = await api.get<{ data: HomeworkListResponseWithDetails }>(
+    const { data } = await api.get<{ data: HomeworkListResponseStringified }>(
       "/homeworks",
       {
         params: {
@@ -76,7 +82,7 @@ export const homeworkService = {
 
   // 获取作业详情
   get: async (homeworkId: string) => {
-    const { data } = await api.get<{ data: HomeworkWithDetails }>(
+    const { data } = await api.get<{ data: HomeworkDetailStringified }>(
       `/homeworks/${homeworkId}`,
     );
     return data.data;
@@ -84,7 +90,7 @@ export const homeworkService = {
 
   // 创建作业
   create: async (classId: string, req: CreateHomeworkInput) => {
-    const { data } = await api.post<{ data: HomeworkWithDetails }>(
+    const { data } = await api.post<{ data: HomeworkDetailStringified }>(
       "/homeworks",
       { ...req, class_id: Number(classId) },
     );
@@ -93,7 +99,7 @@ export const homeworkService = {
 
   // 更新作业
   update: async (homeworkId: string, req: UpdateHomeworkInput) => {
-    const { data } = await api.put<{ data: HomeworkWithDetails }>(
+    const { data } = await api.put<{ data: HomeworkDetailStringified }>(
       `/homeworks/${homeworkId}`,
       req,
     );

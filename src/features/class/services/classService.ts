@@ -12,19 +12,21 @@ import type {
   UserInfo,
 } from "@/types/generated";
 
-// 使用生成的类型 + Stringify 转换
-export type ClassWithDetails = Stringify<ClassDetail> & {
+// API 响应类型 - 直接使用生成类型的 Stringify 版本
+// ClassDetail 已包含 teacher: TeacherInfo, member_count 等字段
+export type ClassDetailStringified = Stringify<ClassDetail> & {
+  // 当前用户在该班级的角色（后端在认证请求时附加）
   my_role?: ClassUserRole;
 };
 
-export type ClassTeacher = Stringify<TeacherInfo>;
+export type ClassTeacherStringified = Stringify<TeacherInfo>;
 
-export interface ClassListResponseWithDetails {
-  items: ClassWithDetails[];
+export interface ClassListResponseStringified {
+  items: ClassDetailStringified[];
   pagination?: Stringify<ClassListResponse>["pagination"];
 }
 
-// 成员相关类型 - 使用生成的类型
+// 成员相关类型 - 直接使用生成类型的 Stringify 版本
 export type ClassMember = Stringify<ClassUserDetail>;
 export type ClassMemberUser = Stringify<UserInfo>;
 export type ClassMemberListResponse = Stringify<ClassUserDetailListResponse>;
@@ -32,7 +34,7 @@ export type ClassMemberListResponse = Stringify<ClassUserDetailListResponse>;
 export const classService = {
   // 获取班级列表
   list: async (params?: { page?: number; page_size?: number }) => {
-    const { data } = await api.get<{ data: ClassListResponseWithDetails }>(
+    const { data } = await api.get<{ data: ClassListResponseStringified }>(
       "/classes",
       { params },
     );
@@ -41,7 +43,7 @@ export const classService = {
 
   // 通过邀请码查询班级
   getByCode: async (code: string) => {
-    const { data } = await api.get<{ data: ClassWithDetails }>(
+    const { data } = await api.get<{ data: ClassDetailStringified }>(
       `/classes/code/${code}`,
     );
     return data.data;
@@ -49,7 +51,7 @@ export const classService = {
 
   // 获取班级详情
   get: async (classId: string) => {
-    const { data } = await api.get<{ data: ClassWithDetails }>(
+    const { data } = await api.get<{ data: ClassDetailStringified }>(
       `/classes/${classId}`,
     );
     return data.data;
@@ -57,7 +59,7 @@ export const classService = {
 
   // 创建班级
   create: async (req: { name: string; description?: string | null }) => {
-    const { data } = await api.post<{ data: ClassWithDetails }>(
+    const { data } = await api.post<{ data: ClassDetailStringified }>(
       "/classes",
       req,
     );
@@ -66,7 +68,7 @@ export const classService = {
 
   // 更新班级
   update: async (classId: string, req: Stringify<UpdateClassRequest>) => {
-    const { data } = await api.put<{ data: ClassWithDetails }>(
+    const { data } = await api.put<{ data: ClassDetailStringified }>(
       `/classes/${classId}`,
       req,
     );

@@ -13,7 +13,22 @@ export const gradeKeys = {
 export function useGrade(submissionId: string) {
   return useQuery({
     queryKey: gradeKeys.detail(submissionId),
-    queryFn: () => gradeService.get(submissionId),
+    queryFn: async () => {
+      try {
+        return await gradeService.get(submissionId);
+      } catch (error: unknown) {
+        // 404 表示该提交尚未评分，返回 undefined 而不是抛错
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === 404
+        ) {
+          return undefined;
+        }
+        throw error;
+      }
+    },
     enabled: !!submissionId,
   });
 }

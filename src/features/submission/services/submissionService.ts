@@ -1,15 +1,12 @@
-import type {
-  HomeworkAttachment,
-  HomeworkWithDetails,
-} from "@/features/homework/services/homeworkService";
 import api from "@/lib/api";
 import type { Stringify } from "@/types";
 import type {
   CreateSubmissionRequest,
-  Submission,
-  SubmissionCreator,
-  SubmissionGradeInfo,
+  SubmissionListItem,
   SubmissionListResponse,
+  SubmissionResponse,
+  SubmissionSummaryItem,
+  SubmissionSummaryResponse,
 } from "@/types/generated";
 
 // homework_id 从 URL 参数获取，不需要写入请求体
@@ -18,26 +15,37 @@ export type SubmissionCreateInput = Omit<
   "homework_id"
 >;
 
-// 使用 generated types 的 Stringify 版本
-export type SubmissionCreatorStringified = Stringify<SubmissionCreator>;
-export type SubmissionGradeStringified = Stringify<SubmissionGradeInfo>;
+// API 响应类型 - 直接使用生成类型的 Stringify 版本
+export type SubmissionDetail = Stringify<SubmissionResponse>;
+export type SubmissionListItemStringified = Stringify<SubmissionListItem>;
+export type SubmissionSummaryItemStringified = Stringify<SubmissionSummaryItem>;
 
-export interface SubmissionWithDetails
-  extends Omit<Submission, "id" | "homework_id" | "creator_id"> {
-  id: string;
-  homework_id: string;
-  creator_id: string;
-  creator?: SubmissionCreatorStringified;
-  attachments?: HomeworkAttachment[];
-  attachment_count?: number;
-  grade?: SubmissionGradeStringified;
-  // 评分页面额外数据
-  homework?: HomeworkWithDetails;
+// 提交详情扩展字段（后端在详情响应中附加）
+interface SubmissionDetailExtension {
+  version: number;
+  is_late: boolean;
+  // 评分页面需要的作业信息
+  homework?: {
+    id: string;
+    title: string;
+    max_score: number;
+    deadline?: string | null;
+  };
 }
 
-export interface SubmissionListResponseWithDetails {
-  items: SubmissionWithDetails[];
-  pagination?: SubmissionListResponse["pagination"];
+// 扩展类型：用于需要 version/is_late/homework 字段的详情响应
+// SubmissionResponse 本身不含这些字段，但 API 返回的完整提交详情包含
+export type SubmissionDetailWithHistory = SubmissionDetail &
+  SubmissionDetailExtension;
+
+export interface SubmissionListResponseStringified {
+  items: SubmissionListItemStringified[];
+  pagination?: Stringify<SubmissionListResponse>["pagination"];
+}
+
+export interface SubmissionSummaryResponseStringified {
+  items: SubmissionSummaryItemStringified[];
+  pagination?: Stringify<SubmissionSummaryResponse>["pagination"];
 }
 
 export const submissionService = {
@@ -51,7 +59,7 @@ export const submissionService = {
       latest_only?: boolean;
     },
   ) => {
-    const { data } = await api.get<{ data: SubmissionListResponseWithDetails }>(
+    const { data } = await api.get<{ data: SubmissionListResponseStringified }>(
       "/submissions",
       {
         params: {
@@ -68,7 +76,7 @@ export const submissionService = {
 
   // 提交作业
   create: async (homeworkId: string, req: SubmissionCreateInput) => {
-    const { data } = await api.post<{ data: SubmissionWithDetails }>(
+    const { data } = await api.post<{ data: SubmissionDetail }>(
       "/submissions",
       { ...req, homework_id: Number(homeworkId) },
     );
@@ -78,22 +86,22 @@ export const submissionService = {
   // 获取我的提交历史
   getMy: async (homeworkId: string) => {
     const { data } = await api.get<{
-      data: { items: SubmissionWithDetails[] };
+      data: { items: SubmissionDetailWithHistory[] };
     }>(`/homeworks/${homeworkId}/submissions/my`);
     return data.data;
   },
 
-  // 获取我的最新提交
+  // 获取我的最新提交（包含 version 等扩展字段）
   getMyLatest: async (homeworkId: string) => {
-    const { data } = await api.get<{ data: SubmissionWithDetails }>(
+    const { data } = await api.get<{ data: SubmissionDetailWithHistory }>(
       `/homeworks/${homeworkId}/submissions/my/latest`,
     );
     return data.data;
   },
 
-  // 获取提交详情
+  // 获取提交详情（包含作业信息，用于评分页面）
   get: async (submissionId: string) => {
-    const { data } = await api.get<{ data: SubmissionWithDetails }>(
+    const { data } = await api.get<{ data: SubmissionDetailWithHistory }>(
       `/submissions/${submissionId}`,
     );
     return data.data;
@@ -102,5 +110,32 @@ export const submissionService = {
   // 撤回提交
   delete: async (submissionId: string) => {
     await api.delete(`/submissions/${submissionId}`);
+  },
+
+  // 获取提交概览（按学生聚合，教师视图）
+  getSummary: async (
+    homeworkId: string,
+    params?: {
+      page?: number;
+      size?: number;
+    },
+  ) => {
+    const { data } = await api.get<{
+      data: SubmissionSummaryResponseStringified;
+    }>(`/homeworks/${homeworkId}/submissions/summary`, {
+      params: {
+        page: params?.page,
+        size: params?.size,
+      },
+    });
+    return data.data;
+  },
+
+  // 获取某学生某作业的所有提交版本（教师视图）
+  getUserSubmissionsForTeacher: async (homeworkId: string, userId: string) => {
+    const { data } = await api.get<{
+      data: { items: SubmissionDetailWithHistory[] };
+    }>(`/homeworks/${homeworkId}/submissions/user/${userId}`);
+    return data.data;
   },
 };

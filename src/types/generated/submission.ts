@@ -23,6 +23,11 @@ export type SubmissionCreator = { id: bigint, username: string, display_name: st
 export type SubmissionGradeInfo = { score: number, comment: string | null, graded_at: string, };
 
 /**
+ * 提交列表项（包含提交者信息）
+ */
+export type SubmissionListItem = { id: bigint, homework_id: bigint, creator_id: bigint, creator: SubmissionCreator, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, };
+
+/**
  * 提交列表查询参数
  */
 export type SubmissionListParams = { homework_id: bigint | null, creator_id: bigint | null, status: string | null, page: bigint, size: bigint, };
@@ -30,7 +35,7 @@ export type SubmissionListParams = { homework_id: bigint | null, creator_id: big
 /**
  * 提交列表响应
  */
-export type SubmissionListResponse = { items: Array<Submission>, pagination: PaginationInfo, };
+export type SubmissionListResponse = { items: Array<SubmissionListItem>, pagination: PaginationInfo, };
 
 /**
  * 提交响应
@@ -51,3 +56,34 @@ export type UpdateSubmissionRequest = { content: string | null, attachments: Arr
  * 用户提交历史响应（无分页）
  */
 export type UserSubmissionHistoryResponse = { items: Array<Submission>, };
+
+// ============ 提交概览相关（按学生聚合）============
+
+/**
+ * 最新提交信息（概览用）
+ */
+export type LatestSubmissionInfo = {
+  id: bigint,
+  version: number,
+  status: string,
+  is_late: boolean,
+  submitted_at: string,
+};
+
+/**
+ * 提交概览项（按学生聚合）
+ */
+export type SubmissionSummaryItem = {
+  creator: SubmissionCreator,
+  latest_submission: LatestSubmissionInfo,
+  grade: SubmissionGradeInfo | null,
+  total_versions: number,
+};
+
+/**
+ * 提交概览响应
+ */
+export type SubmissionSummaryResponse = {
+  items: Array<SubmissionSummaryItem>,
+  pagination: PaginationInfo,
+};

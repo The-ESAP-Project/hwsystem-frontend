@@ -1,23 +1,18 @@
 import api from "@/lib/api";
+import type { Stringify } from "@/types";
 import type {
   MarkAllReadResponse,
   Notification,
   NotificationListResponse,
 } from "@/types/generated";
 
-// API 响应扩展类型（后端返回时 ID 为 string）
-export interface NotificationWithDetails
-  extends Omit<Notification, "id" | "user_id" | "reference_id"> {
-  id: string;
-  user_id: string;
-  reference_id?: string;
-  // 兼容旧字段名
-  type?: string;
-}
+// API 响应类型 - 直接使用生成类型的 Stringify 版本
+// Notification 包含 notification_type（不是 type）
+export type NotificationDetail = Stringify<Notification>;
 
-export interface NotificationListResponseWithDetails {
-  items: NotificationWithDetails[];
-  pagination: NotificationListResponse["pagination"];
+export interface NotificationListResponseStringified {
+  items: NotificationDetail[];
+  pagination: Stringify<NotificationListResponse>["pagination"];
 }
 
 export const notificationService = {
@@ -29,7 +24,7 @@ export const notificationService = {
     type?: string;
   }) => {
     const { data } = await api.get<{
-      data: NotificationListResponseWithDetails;
+      data: NotificationListResponseStringified;
     }>("/notifications", { params });
     return data.data;
   },
@@ -50,7 +45,7 @@ export const notificationService = {
 
   // 标记所有为已读
   markAllAsRead: async () => {
-    const { data } = await api.put<{ data: MarkAllReadResponse }>(
+    const { data } = await api.put<{ data: Stringify<MarkAllReadResponse> }>(
       "/notifications/read-all",
     );
     return data.data;

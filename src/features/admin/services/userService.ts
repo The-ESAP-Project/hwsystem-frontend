@@ -1,14 +1,16 @@
 import api from "@/lib/api";
+import type { Stringify } from "@/types";
 import type {
   CreateUserRequest,
   UpdateUserRequest,
   User,
   UserListResponse,
+  UserResponse,
   UserRole,
   UserStatus,
 } from "@/types/generated";
 
-// 前端 API 参数格式（与 generated UserListQuery 的 size 字段不同，前端用 page_size）
+// 前端 API 参数格式
 export interface UserListParams {
   page?: number;
   page_size?: number;
@@ -17,69 +19,47 @@ export interface UserListParams {
   search?: string;
 }
 
-// 扩展 User 类型，将 bigint id 转为 string
-export interface UserWithStringId extends Omit<User, "id"> {
-  id: string;
-}
-
-export interface UserListResponseWithStringIds {
-  items: UserWithStringId[];
-  pagination: {
-    page: number;
-    page_size: number;
-    total: number;
-    total_pages: number;
-  };
-}
-
-// 转换函数：将 bigint id 转为 string
-function transformUser(user: User): UserWithStringId {
-  return {
-    ...user,
-    id: String(user.id),
-  };
-}
-
-function transformUserListResponse(
-  response: UserListResponse,
-): UserListResponseWithStringIds {
-  return {
-    items: response.items.map(transformUser),
-    pagination: {
-      page: Number(response.pagination.page),
-      page_size: Number(response.pagination.size),
-      total: Number(response.pagination.total),
-      total_pages: Number(response.pagination.pages),
-    },
-  };
-}
+// API 响应类型 - 直接使用生成类型的 Stringify 版本
+export type UserDetail = Stringify<User>;
+export type UserListResponseStringified = Stringify<UserListResponse>;
 
 export const userService = {
   list: async (
     params: UserListParams = {},
-  ): Promise<UserListResponseWithStringIds> => {
-    const { data } = await api.get<{ data: UserListResponse }>("/users", {
-      params,
-    });
-    return transformUserListResponse(data.data);
+  ): Promise<UserListResponseStringified> => {
+    const { data } = await api.get<{ data: Stringify<UserListResponse> }>(
+      "/users",
+      {
+        params,
+      },
+    );
+    return data.data;
   },
 
-  get: async (id: string): Promise<UserWithStringId> => {
-    const { data } = await api.get<{ data: User }>(`/users/${id}`);
-    return transformUser(data.data);
+  get: async (id: string): Promise<UserDetail> => {
+    const { data } = await api.get<{ data: Stringify<UserResponse> }>(
+      `/users/${id}`,
+    );
+    return data.data.user;
   },
 
-  create: async (data: CreateUserRequest): Promise<UserWithStringId> => {
-    const response = await api.post<{ data: User }>("/users", data);
-    return transformUser(response.data.data);
+  create: async (createData: CreateUserRequest): Promise<UserDetail> => {
+    const response = await api.post<{ data: Stringify<UserResponse> }>(
+      "/users",
+      createData,
+    );
+    return response.data.data.user;
   },
 
   update: async (
     id: string,
     updateData: UpdateUserRequest,
-  ): Promise<UserWithStringId> => {
-    const response = await api.put<{ data: User }>(`/users/${id}`, updateData);
-    return transformUser(response.data.data);
+  ): Promise<UserDetail> => {
+    const response = await api.put<{ data: Stringify<UserResponse> }>(
+      `/users/${id}`,
+      updateData,
+    );
+    return response.data.data.user;
   },
 
   delete: async (id: string): Promise<void> => {

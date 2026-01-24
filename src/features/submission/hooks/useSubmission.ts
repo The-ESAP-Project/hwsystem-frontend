@@ -24,6 +24,12 @@ export const submissionKeys = {
     [...submissionKeys.all, "my", homeworkId] as const,
   myLatest: (homeworkId: string) =>
     [...submissionKeys.all, "my", homeworkId, "latest"] as const,
+  // 新增：提交概览
+  summary: (homeworkId: string, params?: { page?: number; size?: number }) =>
+    [...submissionKeys.all, "summary", homeworkId, params] as const,
+  // 新增：某学生的提交历史（教师视角）
+  userSubmissions: (homeworkId: string, userId: string) =>
+    [...submissionKeys.all, "user", homeworkId, userId] as const,
 };
 
 // Queries
@@ -79,6 +85,32 @@ export function useMyLatestSubmission(homeworkId: string) {
       }
     },
     enabled: !!homeworkId,
+  });
+}
+
+// 新增：获取提交概览（按学生聚合，教师视图）
+export function useSubmissionSummary(
+  homeworkId: string,
+  params?: { page?: number; size?: number },
+) {
+  return useQuery({
+    queryKey: submissionKeys.summary(homeworkId, params),
+    queryFn: () => submissionService.getSummary(homeworkId, params),
+    enabled: !!homeworkId,
+  });
+}
+
+// 新增：获取某学生的提交历史（教师视图）
+export function useUserSubmissionsForTeacher(
+  homeworkId: string,
+  userId: string,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: submissionKeys.userSubmissions(homeworkId, userId),
+    queryFn: () =>
+      submissionService.getUserSubmissionsForTeacher(homeworkId, userId),
+    enabled: !!homeworkId && !!userId && enabled,
   });
 }
 
