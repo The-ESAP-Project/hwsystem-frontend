@@ -32,6 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { fileService } from "@/features/file/services/fileService";
 import { useHomework } from "@/features/homework/hooks/useHomework";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { notify } from "@/stores/useNotificationStore";
 import {
   useCreateSubmission,
@@ -56,6 +57,7 @@ export function SubmitHomeworkPage() {
     homeworkId: string;
   }>();
   const navigate = useNavigate();
+  const prefix = useRoutePrefix();
   const { data: homework, isLoading: homeworkLoading } = useHomework(
     homeworkId!,
   );
@@ -121,7 +123,7 @@ export function SubmitHomeworkPage() {
             : null,
       });
       notify.success("作业提交成功");
-      navigate(`/user/classes/${classId}/homework/${homeworkId}`);
+      navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`);
     } catch {
       notify.error("提交失败", "请稍后重试");
     }
@@ -140,7 +142,7 @@ export function SubmitHomeworkPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
         <Button variant="ghost" asChild className="mb-4">
-          <Link to={`/user/classes/${classId}/homework/${homeworkId}`}>
+          <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
             <FiArrowLeft className="mr-2 h-4 w-4" />
             返回作业详情
           </Link>

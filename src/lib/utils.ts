@@ -52,3 +52,42 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
     return fallback;
   }
 }
+
+/**
+ * 截止时间状态
+ */
+export type DeadlineStatus = "expired" | "urgent" | "warning" | "normal" | "none";
+
+/**
+ * 计算截止时间状态
+ */
+export function getDeadlineStatus(deadline: string | null): {
+  status: DeadlineStatus;
+  remainingMs: number | null;
+} {
+  if (!deadline) return { status: "none", remainingMs: null };
+  const remaining = new Date(deadline).getTime() - Date.now();
+  if (remaining <= 0) return { status: "expired", remainingMs: remaining };
+  if (remaining <= 24 * 60 * 60 * 1000) return { status: "urgent", remainingMs: remaining };
+  if (remaining <= 3 * 24 * 60 * 60 * 1000) return { status: "warning", remainingMs: remaining };
+  return { status: "normal", remainingMs: remaining };
+}
+
+/**
+ * 格式化剩余时间为可读字符串
+ */
+export function formatRemainingTime(ms: number, locale = "zh"): string {
+  const abs = Math.abs(ms);
+  const minutes = Math.floor(abs / (60 * 1000));
+  const hours = Math.floor(abs / (60 * 60 * 1000));
+  const days = Math.floor(abs / (24 * 60 * 60 * 1000));
+
+  if (locale === "zh") {
+    if (days > 0) return `${days}天`;
+    if (hours > 0) return `${hours}小时`;
+    return `${minutes}分钟`;
+  }
+  if (days > 0) return `${days}d`;
+  if (hours > 0) return `${hours}h`;
+  return `${minutes}m`;
+}

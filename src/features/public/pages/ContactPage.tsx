@@ -1,85 +1,95 @@
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { FiMail, FiMapPin, FiMessageCircle, FiPhone } from "react-icons/fi";
 import { Link } from "react-router";
+import { Section } from "@/components/landing/Section";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
+
+const contactInfo = [
+  { key: "email", icon: FiMail, color: "blue" },
+  { key: "phone", icon: FiPhone, color: "green" },
+  { key: "address", icon: FiMapPin, color: "purple" },
+  { key: "online", icon: FiMessageCircle, color: "orange" },
+] as const;
+
+const contactDetails: Record<string, string[]> = {
+  email: ["support", "admin"],
+  phone: ["number", "hours"],
+  address: ["street", "building"],
+  online: ["wechat", "qq"],
+};
 
 export function ContactPage() {
   const { t } = useTranslation();
 
-  const contactInfo = [
-    { key: "email", icon: FiMail },
-    { key: "phone", icon: FiPhone },
-    { key: "address", icon: FiMapPin },
-    { key: "online", icon: FiMessageCircle },
-  ];
-
   return (
-    <div className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t("contact.title")}
-          </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-            {t("contact.subtitle")}
-          </p>
-        </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <Section
+        variant="gradient"
+        className="py-24"
+        titleKey="contact.title"
+        descriptionKey="contact.subtitle"
+      >
+        <div />
+      </Section>
 
-        {/* Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-          {contactInfo.map((info) => (
-            <div
-              key={info.key}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <info.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {t(`contact.info.${info.key}.title`)}
-                  </h3>
-                  {info.key === "email" && (
-                    <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t("contact.info.email.support")}</p>
-                      <p>{t("contact.info.email.admin")}</p>
-                    </div>
-                  )}
-                  {info.key === "phone" && (
-                    <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t("contact.info.phone.number")}</p>
-                      <p>{t("contact.info.phone.hours")}</p>
-                    </div>
-                  )}
-                  {info.key === "address" && (
-                    <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t("contact.info.address.street")}</p>
-                      <p>{t("contact.info.address.building")}</p>
-                    </div>
-                  )}
-                  {info.key === "online" && (
-                    <div className="mt-1 text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                      <p>{t("contact.info.online.wechat")}</p>
-                      <p>{t("contact.info.online.qq")}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Contact Info */}
+      <Section variant="muted" withDecoration>
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {contactInfo.map((info) => {
+            const Icon = info.icon;
+            const details = contactDetails[info.key];
 
-        {/* Back Home */}
+            return (
+              <motion.div key={info.key} variants={fadeInUp}>
+                <Card className="h-full shadow-[var(--landing-card-shadow)] hover:shadow-[var(--landing-card-shadow-hover)] transition-shadow duration-300">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start gap-4">
+                      <motion.div
+                        className={`h-12 w-12 rounded-xl bg-gradient-to-br from-${info.color}-500 to-${info.color}-600 flex items-center justify-center shadow-md`}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                      >
+                        <Icon className="h-6 w-6 text-white" />
+                      </motion.div>
+                      <CardTitle className="pt-2">
+                        {t(`contact.info.${info.key}.title`)}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0 pl-20">
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      {details.map((detail) => (
+                        <p key={detail}>
+                          {t(`contact.info.${info.key}.${detail}`)}
+                        </p>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </Section>
+
+      {/* CTA */}
+      <Section variant="default" className="py-16">
         <div className="text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
-          >
-            {t("contact.backHome")}
-          </Link>
+          <Button asChild size="lg" className="px-8">
+            <Link to="/">{t("contact.backHome")}</Link>
+          </Button>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }

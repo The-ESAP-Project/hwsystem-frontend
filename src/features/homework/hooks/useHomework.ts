@@ -1,8 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   type CreateHomeworkInput,
   homeworkService,
   type UpdateHomeworkInput,
+  type HomeworkListItemStringified,
 } from "../services/homeworkService";
 
 // Query Keys
@@ -11,7 +12,13 @@ export const homeworkKeys = {
   lists: () => [...homeworkKeys.all, "list"] as const,
   list: (
     classId: string,
-    params?: { page?: number; page_size?: number; status?: string },
+    params?: {
+      page?: number;
+      page_size?: number;
+      status?: string;
+      search?: string;
+      created_by?: string;
+    },
   ) => [...homeworkKeys.lists(), classId, params] as const,
   details: () => [...homeworkKeys.all, "detail"] as const,
   detail: (homeworkId: string) =>
@@ -23,7 +30,13 @@ export const homeworkKeys = {
 // Queries
 export function useHomeworkList(
   classId: string,
-  params?: { page?: number; page_size?: number; status?: string },
+  params?: {
+    page?: number;
+    page_size?: number;
+    status?: string;
+    search?: string;
+    created_by?: string;
+  },
 ) {
   return useQuery({
     queryKey: homeworkKeys.list(classId, params),
@@ -83,6 +96,33 @@ export function useDeleteHomework() {
     mutationFn: (homeworkId: string) => homeworkService.delete(homeworkId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: homeworkKeys.lists() });
+    },
+  });
+}
+
+// 获取多个班级的作业列表（用于用户仪表盘）
+export function useAllClassesHomeworks(classIds: string[]) {
+  return useQueries({
+    queries: classIds.map((classId) => ({
+      queryKey: homeworkKeys.list(classId, { page_size: 100 }),
+      queryFn: () => homeworkService.list(classId, { page_size: 100 }),
+      enabled: !!classId,
+    })),
+    combine: (results) => {
+      const allHomeworks: HomeworkListItemStringified[] = [];
+      let isLoading = false;
+
+      for (const result of results) {
+        if (result.isLoading) isLoading = true;
+        if (result.data?.items) {
+          allHomeworks.push(...result.data.items);
+        }
+      }
+
+      return {
+        data: allHomeworks,
+        isLoading,
+      };
     },
   });
 }

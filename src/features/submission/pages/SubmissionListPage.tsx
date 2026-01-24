@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useHomework } from "@/features/homework/hooks/useHomework";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import {
   useSubmissionSummary,
   useUserSubmissionsForTeacher,
@@ -46,6 +47,7 @@ export function SubmissionListPage() {
     homeworkId: string;
   }>();
   const { data: homework } = useHomework(homeworkId!);
+  const prefix = useRoutePrefix();
   const [selectedStudent, setSelectedStudent] =
     useState<SubmissionSummaryItemStringified | null>(null);
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
@@ -111,7 +113,7 @@ export function SubmissionListPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}/homework/${homeworkId}`}>
+        <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回作业详情
         </Link>
@@ -220,7 +222,7 @@ export function SubmissionListPage() {
                         )}
                         <Button variant="outline" size="sm" asChild>
                           <Link
-                            to={`/teacher/submissions/${item.latest_submission.id}/grade`}
+                            to={`${prefix}/submissions/${item.latest_submission.id}/grade`}
                             onClick={(e) => e.stopPropagation()}
                           >
                             <FiEdit3 className="mr-2 h-4 w-4" />
@@ -298,7 +300,7 @@ export function SubmissionListPage() {
                   </div>
                   <Button variant="outline" size="sm" asChild>
                     <Link
-                      to={`/teacher/submissions/${selectedSubmission.id}/grade`}
+                      to={`${prefix}/submissions/${selectedSubmission.id}/grade`}
                     >
                       <FiEdit3 className="mr-2 h-4 w-4" />
                       {selectedStudent?.grade ? "查看评分" : "去批改"}

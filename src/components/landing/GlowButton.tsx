@@ -1,39 +1,73 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface GlowButtonProps {
-  to: string;
+  to?: string;
   children: React.ReactNode;
-  variant?: "primary" | "outline";
+  variant?: "primary" | "outline" | "white";
+  onClick?: () => void;
+  className?: string;
+  delay?: number;
+  size?: "default" | "lg";
 }
 
 export function GlowButton({
   to,
   children,
   variant = "primary",
+  onClick,
+  className,
+  delay = 0.2,
+  size = "lg",
 }: GlowButtonProps) {
-  const baseClasses =
-    "relative inline-flex items-center px-7 py-3.5 rounded-xl font-semibold text-sm transition-all duration-300";
-
-  const variantClasses = {
-    primary:
-      "bg-white text-blue-600 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105",
-    outline:
-      "border-2 border-white/30 text-white hover:border-white/60 hover:bg-white/10 hover:scale-105",
+  const cleverStyles = {
+    primary: cn(
+      buttonVariants({ variant: "default", size }),
+      "bg-[hsl(var(--landing-gradient-from))] text-white",
+      "hover:bg-[hsl(var(--landing-gradient-via))]",
+      "rounded-full px-8 py-3 h-auto font-semibold",
+      "shadow-md hover:shadow-lg",
+      "transition-all duration-200"
+    ),
+    outline: cn(
+      buttonVariants({ variant: "outline", size }),
+      "border-2 border-[hsl(var(--landing-gradient-from))] text-[hsl(var(--landing-gradient-from))]",
+      "bg-transparent hover:bg-[hsl(var(--landing-gradient-from)/0.05)]",
+      "rounded-full px-8 py-3 h-auto font-semibold",
+      "transition-all duration-200"
+    ),
+    white: cn(
+      buttonVariants({ variant: "default", size }),
+      "bg-white text-[hsl(var(--landing-gradient-from))]",
+      "hover:bg-gray-50",
+      "rounded-full px-8 py-3 h-auto font-semibold",
+      "shadow-md hover:shadow-lg",
+      "transition-all duration-200"
+    ),
   };
 
-  return (
+  const content = (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.9 }}
+      transition={{ duration: 0.3, delay }}
     >
-      <Link to={to} className={`${baseClasses} ${variantClasses[variant]}`}>
-        {variant === "primary" && (
-          <span className="absolute inset-0 rounded-xl bg-white/20 blur-md -z-10 opacity-0 hover:opacity-100 transition-opacity" />
-        )}
-        {children}
-      </Link>
+      {to ? (
+        <Link to={to} className={cn(cleverStyles[variant], className)}>
+          {children}
+        </Link>
+      ) : (
+        <Button
+          onClick={onClick}
+          className={cn(cleverStyles[variant], className)}
+        >
+          {children}
+        </Button>
+      )}
     </motion.div>
   );
+
+  return content;
 }

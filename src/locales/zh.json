@@ -3,7 +3,84 @@
     "name": "作业管理系统"
   },
   "common": {
-    "user": "用户"
+    "user": "用户",
+    "notifications": "通知",
+    "settings": "设置",
+    "back": "返回",
+    "enter": "进入",
+    "create": "创建",
+    "edit": "编辑",
+    "delete": "删除",
+    "cancel": "取消",
+    "confirm": "确认",
+    "save": "保存",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "viewAll": "查看全部",
+    "manage": "管理"
+  },
+  "sidebar": {
+    "navigation": "导航",
+    "dashboard": "仪表盘",
+    "myClasses": "我的班级",
+    "mySubmissions": "我的提交",
+    "myHomeworks": "我的作业",
+    "classManagement": "班级管理",
+    "studentManagement": "学生管理",
+    "userManagement": "用户管理",
+    "systemSettings": "系统设置",
+    "settings": "设置",
+    "user": "学生",
+    "teacher": "教师",
+    "admin": "管理员"
+  },
+  "dashboard": {
+    "user": {
+      "title": "学生面板",
+      "welcome": "欢迎回来，{{name}}",
+      "stats": {
+        "joinedClasses": "已加入班级",
+        "unreadNotifications": "未读通知",
+        "viewHomework": "查看作业",
+        "pendingHomeworks": "待完成",
+        "submittedHomeworks": "已提交",
+        "gradedHomeworks": "已评分"
+      },
+      "myClasses": "我的班级",
+      "pendingHomeworks": "待完成作业",
+      "viewAll": "查看全部",
+      "emptyClasses": "还没有加入任何班级",
+      "joinClassHint": "通过邀请码加入班级开始学习",
+      "emptyHomeworks": "暂无待完成作业",
+      "allDone": "太棒了！所有作业都已完成",
+      "deadline": "截止",
+      "noDeadline": "无截止日期"
+    },
+    "teacher": {
+      "title": "教师面板",
+      "welcome": "欢迎回来，{{name}}",
+      "stats": {
+        "managedClasses": "管理班级",
+        "totalStudents": "学生总数",
+        "pendingSubmissions": "待批改",
+        "quickActions": "快速操作"
+      },
+      "recentClasses": "我的班级",
+      "emptyClasses": "还没有创建班级",
+      "createClassHint": "创建一个班级开始教学"
+    },
+    "admin": {
+      "title": "管理面板",
+      "welcome": "欢迎回来，{{name}}",
+      "stats": {
+        "totalUsers": "用户总数",
+        "totalClasses": "班级数量",
+        "userManagement": "用户管理",
+        "classManagement": "班级管理"
+      },
+      "recentUsers": "最近注册用户",
+      "emptyUsers": "暂无用户数据"
+    }
   },
   "header": {
     "login": "登录",
@@ -115,15 +192,18 @@
       "badge": "现代化的教学管理平台",
       "learnMore": "了解更多",
       "title": "作业管理系统",
-      "subtitle": "为学生、老师和课代表提供完整的作业管理解决方案",
+      "subtitle": "为学生、教师和课代表提供高效的作业管理解决方案",
       "dashboard": "前往控制台",
       "login": "立即登录",
-      "learnRoles": "了解角色功能"
+      "learnRoles": "了解角色功能",
+      "studentDesc": "查看作业、提交答案",
+      "monitorDesc": "监督进度、发送提醒",
+      "teacherDesc": "布置作业、批改评分"
     },
     "features": {
-      "title": "现代化功能",
-      "subtitle": "全面的教学管理解决方案",
-      "description": "基于现代技术栈构建，提供直观易用的界面和强大的功能",
+      "title": "为什么选择我们？",
+      "subtitle": "核心价值",
+      "description": "简洁、高效、易用的作业管理体验",
       "items": {
         "responsive": {
           "name": "响应式设计",
@@ -194,11 +274,13 @@
       }
     },
     "cta": {
-      "title": "开始您的学习之旅",
-      "subtitle": "加入我们的平台，体验现代化的教学管理",
+      "title": "准备好开始了吗？",
+      "subtitle": "选择您的身份，开始使用作业管理系统",
       "dashboard": "前往控制台",
       "start": "立即体验",
-      "source": "查看源码"
+      "source": "查看源码",
+      "studentLogin": "学生登录",
+      "teacherLogin": "教师登录"
     }
   },
   "about": {
@@ -563,6 +645,76 @@
       "goHome": "回到首页",
       "suggestions": "您可能想要访问以下页面："
     }
+  },
+  "admin": {
+    "classes": {
+      "title": "班级管理",
+      "subtitle": "管理系统中的所有班级",
+      "create": "创建班级",
+      "filter": "筛选条件",
+      "searchPlaceholder": "搜索班级名称...",
+      "empty": "暂无班级数据",
+      "loadError": "加载失败",
+      "columns": {
+        "name": "班级名称",
+        "teacher": "教师",
+        "members": "成员数",
+        "inviteCode": "邀请码",
+        "createdAt": "创建时间",
+        "actions": "操作"
+      },
+      "pagination": "共 {{total}} 条记录，第 {{page}} / {{totalPages}} 页",
+      "prevPage": "上一页",
+      "nextPage": "下一页",
+      "deleteConfirmTitle": "确认删除班级？",
+      "deleteConfirmDesc": "即将删除班级「{{name}}」，此操作不可撤销。删除后所有作业和成绩数据都将被永久删除。",
+      "deleting": "删除中..."
+    }
+  },
+  "homework": {
+    "list": {
+      "title": "作业列表",
+      "count": "共 {{count}} 个作业",
+      "createHomework": "布置作业",
+      "searchPlaceholder": "搜索作业...",
+      "empty": "暂无作业"
+    },
+    "filter": {
+      "onlyMine": "我发起的"
+    },
+    "tabs": {
+      "all": "全部",
+      "pending": "待完成",
+      "submitted": "已提交",
+      "graded": "已评分"
+    },
+    "status": {
+      "notSubmitted": "未提交",
+      "submitted": "已提交",
+      "graded": "已评分",
+      "late": "迟交"
+    },
+    "deadline": {
+      "expired": "已截止",
+      "dueIn": "{{time}}后截止"
+    },
+    "sort": {
+      "deadline": "按截止时间",
+      "created": "按创建时间"
+    },
+    "maxScore": "满分 {{score}} 分",
+    "deadlineDate": "截止 {{date}}",
+    "createdAt": "布置于 {{date}}"
+  },
+  "myHomeworks": {
+    "title": "我的作业",
+    "description": "查看所有班级的作业完成情况",
+    "daysAgo": "天前",
+    "today": "今天",
+    "tomorrow": "明天",
+    "daysLater": "天后",
+    "noSubmitted": "暂无待批改的作业",
+    "noGraded": "暂无已批改的作业"
   },
   "nav": {
     "home": "首页",

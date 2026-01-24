@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -146,11 +147,9 @@ export function LoginPage() {
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 space-y-0">
                       <FormControl>
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={field.value}
-                          onChange={field.onChange}
-                          className="h-4 w-4 rounded border-input"
+                          onCheckedChange={field.onChange}
                         />
                       </FormControl>
                       <Label className="text-sm font-normal text-muted-foreground">

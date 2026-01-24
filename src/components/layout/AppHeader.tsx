@@ -143,43 +143,53 @@ export function AppHeader() {
 
             {/* Auth */}
             {isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-9 w-9 rounded-full p-0"
-                  >
-                    <Avatar className={avatarColor}>
-                      <AvatarFallback className="text-white font-medium">
-                        {avatar}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>
-                    <p className="font-medium">
-                      {currentUser?.display_name || currentUser?.username}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{roleText}</p>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to={dashboardPath} className="cursor-pointer">
-                      <FiGrid className="mr-2 h-4 w-4" />
-                      {t("header.dashboard")}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-destructive focus:text-destructive cursor-pointer"
-                  >
-                    <FiLogOut className="mr-2 h-4 w-4" />
-                    {t("header.logout")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <>
+                {/* 前往控制台按钮 */}
+                <Button asChild variant="outline" className="hidden sm:inline-flex">
+                  <Link to={dashboardPath}>
+                    <FiGrid className="mr-2 h-4 w-4" />
+                    {t("header.dashboard")}
+                  </Link>
+                </Button>
+
+                {/* 用户菜单 */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="relative h-9 w-9 rounded-full p-0"
+                    >
+                      <Avatar className={avatarColor}>
+                        <AvatarFallback className="text-white font-medium">
+                          {avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel>
+                      <p className="font-medium">
+                        {currentUser?.display_name || currentUser?.username}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{roleText}</p>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="sm:hidden">
+                      <Link to={dashboardPath} className="cursor-pointer">
+                        <FiGrid className="mr-2 h-4 w-4" />
+                        {t("header.dashboard")}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleLogout}
+                      className="text-destructive focus:text-destructive cursor-pointer"
+                    >
+                      <FiLogOut className="mr-2 h-4 w-4" />
+                      {t("header.logout")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <Button asChild>
                 <Link to="/auth/login">

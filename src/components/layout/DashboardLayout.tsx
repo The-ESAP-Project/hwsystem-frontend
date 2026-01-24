@@ -5,11 +5,11 @@ import {
   FiClipboard,
   FiHome,
   FiLogOut,
-  FiMenu,
   FiSettings,
   FiUsers,
 } from "react-icons/fi";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +31,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuthEventListener } from "@/hooks/useAuthEventListener";
 import {
@@ -44,16 +43,16 @@ import {
 
 interface NavItem {
   to: string;
-  label: string;
+  labelKey: string;
   icon: React.ComponentType<{ className?: string }>;
 }
 
 interface DashboardLayoutProps {
   navItems: NavItem[];
-  title: string;
+  titleKey: string;
 }
 
-export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
+export function DashboardLayout({ navItems, titleKey }: DashboardLayoutProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -80,7 +79,7 @@ export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">HW</span>
               </div>
-              <span className="font-semibold">{title}</span>
+              <span className="font-semibold">{t(titleKey)}</span>
             </Link>
           </SidebarHeader>
 
@@ -97,7 +96,7 @@ export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
                       >
                         <Link to={item.to}>
                           <item.icon className="h-4 w-4" />
-                          <span>{item.label}</span>
+                          <span>{t(item.labelKey)}</span>
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -133,7 +132,7 @@ export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
                 <DropdownMenuItem asChild>
                   <Link to="/notifications" className="cursor-pointer">
                     <FiBell className="mr-2 h-4 w-4" />
-                    {t("sidebar.notifications")}
+                    {t("common.notifications")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -156,11 +155,7 @@ export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
         </Sidebar>
 
         <main className="flex-1 overflow-auto">
-          <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
-            <SidebarTrigger>
-              <FiMenu className="h-5 w-5" />
-            </SidebarTrigger>
-          </header>
+          <DashboardHeader />
           <div className="p-4 lg:p-6">
             <Outlet />
           </div>
@@ -172,20 +167,20 @@ export function DashboardLayout({ navItems, title }: DashboardLayoutProps) {
 
 // 预定义的导航配置
 export const userNavItems: NavItem[] = [
-  { to: "/user/dashboard", label: "仪表盘", icon: FiHome },
-  { to: "/user/classes", label: "我的班级", icon: FiBook },
-  { to: "/user/submissions", label: "我的提交", icon: FiClipboard },
+  { to: "/user/dashboard", labelKey: "sidebar.dashboard", icon: FiHome },
+  { to: "/user/classes", labelKey: "sidebar.myClasses", icon: FiBook },
+  { to: "/user/homeworks", labelKey: "sidebar.myHomeworks", icon: FiClipboard },
 ];
 
 export const teacherNavItems: NavItem[] = [
-  { to: "/teacher/dashboard", label: "仪表盘", icon: FiHome },
-  { to: "/teacher/classes", label: "班级管理", icon: FiBook },
-  { to: "/teacher/students", label: "学生管理", icon: FiUsers },
+  { to: "/teacher/dashboard", labelKey: "sidebar.dashboard", icon: FiHome },
+  { to: "/teacher/classes", labelKey: "sidebar.classManagement", icon: FiBook },
+  { to: "/teacher/students", labelKey: "sidebar.studentManagement", icon: FiUsers },
 ];
 
 export const adminNavItems: NavItem[] = [
-  { to: "/admin/dashboard", label: "仪表盘", icon: FiHome },
-  { to: "/admin/users", label: "用户管理", icon: FiUsers },
-  { to: "/admin/classes", label: "班级管理", icon: FiBook },
-  { to: "/admin/settings", label: "系统设置", icon: FiSettings },
+  { to: "/admin/dashboard", labelKey: "sidebar.dashboard", icon: FiHome },
+  { to: "/admin/users", labelKey: "sidebar.userManagement", icon: FiUsers },
+  { to: "/admin/classes", labelKey: "sidebar.classManagement", icon: FiBook },
+  { to: "/admin/settings", labelKey: "sidebar.systemSettings", icon: FiSettings },
 ];

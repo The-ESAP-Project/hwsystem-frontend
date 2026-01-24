@@ -3,7 +3,84 @@
     "name": "Homework Management System"
   },
   "common": {
-    "user": "User"
+    "user": "User",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "back": "Back",
+    "enter": "Enter",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "loading": "Loading...",
+    "noData": "No data",
+    "viewAll": "View All",
+    "manage": "Manage"
+  },
+  "sidebar": {
+    "navigation": "Navigation",
+    "dashboard": "Dashboard",
+    "myClasses": "My Classes",
+    "mySubmissions": "My Submissions",
+    "myHomeworks": "My Homework",
+    "classManagement": "Class Management",
+    "studentManagement": "Student Management",
+    "userManagement": "User Management",
+    "systemSettings": "System Settings",
+    "settings": "Settings",
+    "user": "Student",
+    "teacher": "Teacher",
+    "admin": "Admin"
+  },
+  "dashboard": {
+    "user": {
+      "title": "Student Dashboard",
+      "welcome": "Welcome back, {{name}}",
+      "stats": {
+        "joinedClasses": "Joined Classes",
+        "unreadNotifications": "Unread Notifications",
+        "viewHomework": "View Homework",
+        "pendingHomeworks": "Pending",
+        "submittedHomeworks": "Submitted",
+        "gradedHomeworks": "Graded"
+      },
+      "myClasses": "My Classes",
+      "pendingHomeworks": "Pending Homework",
+      "viewAll": "View All",
+      "emptyClasses": "You haven't joined any classes yet",
+      "joinClassHint": "Join a class with invite code to start learning",
+      "emptyHomeworks": "No pending homework",
+      "allDone": "Great! All homework completed",
+      "deadline": "Due",
+      "noDeadline": "No deadline"
+    },
+    "teacher": {
+      "title": "Teacher Dashboard",
+      "welcome": "Welcome back, {{name}}",
+      "stats": {
+        "managedClasses": "Managed Classes",
+        "totalStudents": "Total Students",
+        "pendingSubmissions": "Pending Review",
+        "quickActions": "Quick Actions"
+      },
+      "recentClasses": "My Classes",
+      "emptyClasses": "You haven't created any classes yet",
+      "createClassHint": "Create a class to start teaching"
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "welcome": "Welcome back, {{name}}",
+      "stats": {
+        "totalUsers": "Total Users",
+        "totalClasses": "Total Classes",
+        "userManagement": "User Management",
+        "classManagement": "Class Management"
+      },
+      "recentUsers": "Recent Users",
+      "emptyUsers": "No user data available"
+    }
   },
   "header": {
     "login": "Login",
@@ -109,15 +186,18 @@
       "badge": "Modern Educational Management Platform",
       "learnMore": "Learn more",
       "title": "Homework Management System",
-      "subtitle": "Complete homework management solution for students, teachers and class representatives",
+      "subtitle": "Efficient homework management for students, teachers and class representatives",
       "dashboard": "Go to Dashboard",
       "login": "Login Now",
-      "learnRoles": "Learn Role Features"
+      "learnRoles": "Learn Role Features",
+      "studentDesc": "View and submit homework",
+      "monitorDesc": "Monitor progress, send reminders",
+      "teacherDesc": "Assign homework, grade submissions"
     },
     "features": {
-      "title": "Modern Features",
-      "subtitle": "Comprehensive Educational Management Solution",
-      "description": "Built with modern tech stack, providing intuitive interface and powerful functionality",
+      "title": "Why Choose Us?",
+      "subtitle": "Core Values",
+      "description": "Simple, efficient, and easy-to-use homework management",
       "items": {
         "responsive": {
           "name": "Responsive Design",
@@ -188,11 +268,13 @@
       }
     },
     "cta": {
-      "title": "Start Your Learning Journey",
-      "subtitle": "Join our platform and experience modern educational management",
+      "title": "Ready to Get Started?",
+      "subtitle": "Choose your role and start using the homework management system",
       "dashboard": "Go to Dashboard",
       "start": "Try Now",
-      "source": "View Source"
+      "source": "View Source",
+      "studentLogin": "Student Login",
+      "teacherLogin": "Teacher Login"
     }
   },
   "about": {
@@ -557,6 +639,76 @@
       "goHome": "Go Home",
       "suggestions": "You might want to visit these pages:"
     }
+  },
+  "admin": {
+    "classes": {
+      "title": "Class Management",
+      "subtitle": "Manage all classes in the system",
+      "create": "Create Class",
+      "filter": "Filters",
+      "searchPlaceholder": "Search class name...",
+      "empty": "No class data",
+      "loadError": "Load failed",
+      "columns": {
+        "name": "Class Name",
+        "teacher": "Teacher",
+        "members": "Members",
+        "inviteCode": "Invite Code",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "pagination": "Total {{total}} records, page {{page}} / {{totalPages}}",
+      "prevPage": "Previous",
+      "nextPage": "Next",
+      "deleteConfirmTitle": "Delete this class?",
+      "deleteConfirmDesc": "Class \"{{name}}\" will be permanently deleted. All homework and grade data will be lost.",
+      "deleting": "Deleting..."
+    }
+  },
+  "homework": {
+    "list": {
+      "title": "Homework",
+      "count": "{{count}} assignments",
+      "createHomework": "Create",
+      "searchPlaceholder": "Search homework...",
+      "empty": "No homework yet"
+    },
+    "filter": {
+      "onlyMine": "Created by me"
+    },
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "submitted": "Submitted",
+      "graded": "Graded"
+    },
+    "status": {
+      "notSubmitted": "Not submitted",
+      "submitted": "Submitted",
+      "graded": "Graded",
+      "late": "Late"
+    },
+    "deadline": {
+      "expired": "Expired",
+      "dueIn": "Due in {{time}}"
+    },
+    "sort": {
+      "deadline": "By deadline",
+      "created": "By created"
+    },
+    "maxScore": "Max {{score}} pts",
+    "deadlineDate": "Due {{date}}",
+    "createdAt": "Created {{date}}"
+  },
+  "myHomeworks": {
+    "title": "My Homework",
+    "description": "View homework across all your classes",
+    "daysAgo": "days ago",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "daysLater": "days",
+    "noSubmitted": "No homework awaiting review",
+    "noGraded": "No graded homework yet"
   },
   "nav": {
     "home": "Home",

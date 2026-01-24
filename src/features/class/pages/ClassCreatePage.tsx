@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useCreateClass } from "../hooks/useClass";
+import { useRoutePrefix } from "../hooks/useClassBasePath";
 
 const formSchema = z.object({
   name: z
@@ -38,6 +39,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function ClassCreatePage() {
   const navigate = useNavigate();
+  const prefix = useRoutePrefix();
   const createClass = useCreateClass();
   const currentUser = useCurrentUser();
 
@@ -61,7 +63,7 @@ export function ClassCreatePage() {
         description: values.description || null,
       });
       notify.success("班级创建成功", `邀请码: ${newClass.invite_code}`);
-      navigate(`/user/classes/${newClass.id}`);
+      navigate(`${prefix}/classes/${newClass.id}`);
     } catch {
       notify.error("创建失败", "请稍后重试");
     }
@@ -70,7 +72,7 @@ export function ClassCreatePage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to="/user/classes">
+        <Link to={`${prefix}/classes`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回班级列表
         </Link>
@@ -128,7 +130,7 @@ export function ClassCreatePage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/user/classes")}
+                  onClick={() => navigate(`${prefix}/classes`)}
                 >
                   取消
                 </Button>

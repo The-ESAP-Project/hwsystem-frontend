@@ -33,7 +33,7 @@ export type ClassMemberListResponse = Stringify<ClassUserDetailListResponse>;
 
 export const classService = {
   // 获取班级列表
-  list: async (params?: { page?: number; page_size?: number }) => {
+  list: async (params?: { page?: number; page_size?: number; search?: string }) => {
     const { data } = await api.get<{ data: ClassListResponseStringified }>(
       "/classes",
       { params },
@@ -95,7 +95,7 @@ export const classService = {
   // 获取班级成员列表
   getMembers: async (
     classId: string,
-    params?: { page?: number; page_size?: number },
+    params?: { page?: number; page_size?: number; search?: string; role?: string },
   ) => {
     const { data } = await api.get<{
       data: ClassMemberListResponse;

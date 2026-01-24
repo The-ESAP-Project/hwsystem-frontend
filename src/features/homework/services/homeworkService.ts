@@ -2,6 +2,7 @@ import api from "@/lib/api";
 import type { Stringify } from "@/types";
 import type {
   Homework,
+  HomeworkCreator,
   HomeworkDetail,
   HomeworkListResponse,
   HomeworkStatsResponse,
@@ -29,11 +30,15 @@ export interface HomeworkMySubmission {
   id: string;
   version: number;
   status: "pending" | "graded" | "late";
-  score?: number;
+  is_late: boolean;
+  score?: number | null;
 }
 
 // 附件信息类型（前端使用）- 直接使用生成类型
 export type HomeworkAttachment = Stringify<FileInfo>;
+
+// 创建者信息类型
+export type HomeworkCreatorStringified = Stringify<HomeworkCreator>;
 
 // 作业详情响应类型 - 使用生成类型 HomeworkDetail 并扩展学生视角字段
 export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
@@ -43,9 +48,10 @@ export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
   allow_late_submission?: boolean;
 };
 
-// 作业列表项类型 - 学生视角包含提交状态
+// 作业列表项类型 - 学生视角包含提交状态和创建者
 export type HomeworkListItemStringified = Stringify<Homework> & {
   my_submission?: HomeworkMySubmission;
+  creator?: HomeworkCreatorStringified;
 };
 
 // 作业列表响应类型
@@ -64,7 +70,13 @@ export const homeworkService = {
   // 获取班级作业列表
   list: async (
     classId: string,
-    params?: { page?: number; page_size?: number; status?: string },
+    params?: {
+      page?: number;
+      page_size?: number;
+      status?: string;
+      search?: string;
+      created_by?: string;
+    },
   ) => {
     const { data } = await api.get<{ data: HomeworkListResponseStringified }>(
       "/homeworks",
@@ -74,6 +86,8 @@ export const homeworkService = {
           page: params?.page,
           page_size: params?.page_size,
           status: params?.status,
+          search: params?.search,
+          created_by: params?.created_by,
         },
       },
     );

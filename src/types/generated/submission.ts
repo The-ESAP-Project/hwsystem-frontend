@@ -8,6 +8,11 @@ import type { PaginationInfo } from "./pagination";
 export type CreateSubmissionRequest = { homework_id: bigint, content: string, attachments: Array<string> | null, };
 
 /**
+ * 最新提交信息（概览用）
+ */
+export type LatestSubmissionInfo = { id: bigint, version: number, status: string, is_late: boolean, submitted_at: string, };
+
+/**
  * 提交实体
  */
 export type Submission = { id: bigint, homework_id: bigint, creator_id: bigint, version: number, content: string | null, status: SubmissionStatus, is_late: boolean, submitted_at: string, };
@@ -48,42 +53,26 @@ export type SubmissionResponse = { id: bigint, homework_id: bigint, creator: Sub
 export type SubmissionStatus = "pending" | "graded" | "late";
 
 /**
+ * 提交概览项（按学生聚合）
+ */
+export type SubmissionSummaryItem = { creator: SubmissionCreator, latest_submission: LatestSubmissionInfo, grade: SubmissionGradeInfo | null, total_versions: number, };
+
+/**
+ * 提交概览响应
+ */
+export type SubmissionSummaryResponse = { items: Array<SubmissionSummaryItem>, pagination: PaginationInfo, };
+
+/**
  * 更新提交请求
  */
 export type UpdateSubmissionRequest = { content: string | null, attachments: Array<string> | null, };
 
 /**
+ * 用户提交历史项（包含评分信息）
+ */
+export type UserSubmissionHistoryItem = { id: bigint, homework_id: bigint, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, attachments: Array<FileInfo>, grade: SubmissionGradeInfo | null, };
+
+/**
  * 用户提交历史响应（无分页）
  */
-export type UserSubmissionHistoryResponse = { items: Array<Submission>, };
-
-// ============ 提交概览相关（按学生聚合）============
-
-/**
- * 最新提交信息（概览用）
- */
-export type LatestSubmissionInfo = {
-  id: bigint,
-  version: number,
-  status: string,
-  is_late: boolean,
-  submitted_at: string,
-};
-
-/**
- * 提交概览项（按学生聚合）
- */
-export type SubmissionSummaryItem = {
-  creator: SubmissionCreator,
-  latest_submission: LatestSubmissionInfo,
-  grade: SubmissionGradeInfo | null,
-  total_versions: number,
-};
-
-/**
- * 提交概览响应
- */
-export type SubmissionSummaryResponse = {
-  items: Array<SubmissionSummaryItem>,
-  pagination: PaginationInfo,
-};
+export type UserSubmissionHistoryResponse = { items: Array<UserSubmissionHistoryItem>, };

@@ -32,6 +32,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
 import { useClass } from "@/features/class/hooks/useClass";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useMyLatestSubmission } from "@/features/submission/hooks/useSubmission";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
@@ -44,6 +45,7 @@ export function HomeworkDetailPage() {
   }>();
   const navigate = useNavigate();
   const user = useCurrentUser();
+  const prefix = useRoutePrefix();
   const { canDeleteHomework } = usePermission();
 
   const { data: classData } = useClass(classId!);
@@ -61,7 +63,7 @@ export function HomeworkDetailPage() {
     try {
       await deleteHomework.mutateAsync(homeworkId!);
       notify.success("作业已删除");
-      navigate(`/user/classes/${classId}`);
+      navigate(`${prefix}/classes/${classId}`);
     } catch {
       notify.error("删除失败");
     }
@@ -101,7 +103,7 @@ export function HomeworkDetailPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}`}>
+        <Link to={`${prefix}/classes/${classId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回班级
         </Link>
@@ -125,7 +127,7 @@ export function HomeworkDetailPage() {
                     <>
                       <Button variant="outline" size="sm" asChild>
                         <Link
-                          to={`/teacher/classes/${classId}/homework/${homeworkId}/edit`}
+                          to={`${prefix}/classes/${classId}/homework/${homeworkId}/edit`}
                         >
                           <FiEdit2 className="mr-2 h-4 w-4" />
                           编辑
@@ -235,7 +237,7 @@ export function HomeworkDetailPage() {
                       {canSubmit && (
                         <Button asChild>
                           <Link
-                            to={`/user/classes/${classId}/homework/${homeworkId}/submit`}
+                            to={`${prefix}/classes/${classId}/homework/${homeworkId}/submit`}
                           >
                             <FiUpload className="mr-2 h-4 w-4" />
                             重新提交
@@ -277,6 +279,14 @@ export function HomeworkDetailPage() {
               <CardTitle>作业信息</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {homework?.creator && (
+                <div>
+                  <p className="text-sm text-muted-foreground">创建者</p>
+                  <p className="font-medium">
+                    {homework.creator.display_name || homework.creator.username}
+                  </p>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <FiClock className="h-4 w-4 text-muted-foreground" />
                 <div>
@@ -311,7 +321,7 @@ export function HomeworkDetailPage() {
               <CardContent className="space-y-3">
                 <Button variant="outline" className="w-full" asChild>
                   <Link
-                    to={`/teacher/classes/${classId}/homework/${homeworkId}/submissions`}
+                    to={`${prefix}/classes/${classId}/homework/${homeworkId}/submissions`}
                   >
                     <FiBarChart2 className="mr-2 h-4 w-4" />
                     查看提交
@@ -319,7 +329,7 @@ export function HomeworkDetailPage() {
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link
-                    to={`/teacher/classes/${classId}/homework/${homeworkId}/stats`}
+                    to={`${prefix}/classes/${classId}/homework/${homeworkId}/stats`}
                   >
                     <FiBarChart2 className="mr-2 h-4 w-4" />
                     作业统计

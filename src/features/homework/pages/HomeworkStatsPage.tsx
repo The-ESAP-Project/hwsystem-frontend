@@ -8,6 +8,7 @@ import {
 import { Link, useParams } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ export function HomeworkStatsPage() {
     classId: string;
     homeworkId: string;
   }>();
+  const prefix = useRoutePrefix();
   const { data: homework } = useHomework(homeworkId!);
   const { data: stats, isLoading, error } = useHomeworkStats(homeworkId!);
 
@@ -53,7 +55,7 @@ export function HomeworkStatsPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}/homework/${homeworkId}`}>
+        <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回作业详情
         </Link>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit2, FiEye, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router";
 import {
@@ -63,31 +63,28 @@ const statusColors: Record<UserStatus, string> = {
 export default function UserListPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "all">("all");
   const [deleteTarget, setDeleteTarget] = useState<UserDetail | null>(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading, error } = useUserList({
     page,
     page_size: 20,
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     role: roleFilter === "all" ? undefined : roleFilter,
     status: statusFilter === "all" ? undefined : statusFilter,
   });
 
   const deleteUser = useDeleteUser();
-
-  const handleSearch = () => {
-    setSearch(searchInput);
-    setPage(1);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -130,17 +127,14 @@ export default function UserListPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
-            <div className="flex flex-1 gap-2">
+            <div className="relative flex-1 max-w-sm">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="搜索用户名或邮箱..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="max-w-sm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
               />
-              <Button variant="outline" onClick={handleSearch}>
-                <FiSearch className="h-4 w-4" />
-              </Button>
             </div>
 
             <Select

@@ -36,6 +36,14 @@
   --sidebar-accent-foreground: 240 5.9% 10%;
   --sidebar-border: 220 13% 91%;
   --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Landing page design tokens - Clever Blue Style */
+  --landing-gradient-from: 199 89% 48%;  /* #0693e3 Clever brand blue */
+  --landing-gradient-via: 199 85% 42%;
+  --landing-gradient-to: 199 80% 36%;
+  --landing-section-py: 5rem;
+  --landing-section-py-sm: 3rem;
+  --landing-card-shadow: 0 4px 24px -4px hsl(199 50% 20% / 0.08);
+  --landing-card-shadow-hover: 0 12px 32px -4px hsl(199 50% 20% / 0.16);
 }
 
 .dark {
@@ -71,6 +79,12 @@
   --sidebar-accent-foreground: 240 4.8% 95.9%;
   --sidebar-border: 240 3.7% 15.9%;
   --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Landing page design tokens (dark mode) */
+  --landing-gradient-from: 199 89% 38%;
+  --landing-gradient-via: 199 85% 32%;
+  --landing-gradient-to: 199 80% 26%;
+  --landing-card-shadow: 0 4px 24px -4px hsl(0 0% 0% / 0.3);
+  --landing-card-shadow-hover: 0 12px 32px -4px hsl(0 0% 0% / 0.5);
 }
 
 @theme inline {
@@ -110,6 +124,10 @@
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
+  /* Landing page colors */
+  --color-landing-gradient-from: hsl(var(--landing-gradient-from));
+  --color-landing-gradient-via: hsl(var(--landing-gradient-via));
+  --color-landing-gradient-to: hsl(var(--landing-gradient-to));
 }
 
 @layer base {

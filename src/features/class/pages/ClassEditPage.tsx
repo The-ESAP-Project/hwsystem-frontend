@@ -26,6 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { notify } from "@/stores/useNotificationStore";
 import { useClass, useUpdateClass } from "../hooks/useClass";
+import { useRoutePrefix } from "../hooks/useClassBasePath";
 
 const formSchema = z.object({
   name: z
@@ -40,6 +41,7 @@ type FormValues = z.infer<typeof formSchema>;
 export function ClassEditPage() {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const prefix = useRoutePrefix();
   const { data: classData, isLoading, error } = useClass(classId!);
   const updateClass = useUpdateClass(classId!);
 
@@ -67,7 +69,7 @@ export function ClassEditPage() {
         description: values.description || null,
       });
       notify.success("班级信息已更新");
-      navigate(`/user/classes/${classId}`);
+      navigate(`${prefix}/classes/${classId}`);
     } catch {
       notify.error("更新失败", "请稍后重试");
     }
@@ -102,7 +104,7 @@ export function ClassEditPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}`}>
+        <Link to={`${prefix}/classes/${classId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回班级详情
         </Link>
@@ -158,7 +160,7 @@ export function ClassEditPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate(`/user/classes/${classId}`)}
+                  onClick={() => navigate(`${prefix}/classes/${classId}`)}
                 >
                   取消
                 </Button>

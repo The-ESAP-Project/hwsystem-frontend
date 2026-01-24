@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import {
   FiBarChart2,
@@ -8,98 +9,105 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { Link } from "react-router";
+import { Section } from "@/components/landing/Section";
+import { LandingCard } from "@/components/landing/LandingCard";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { staggerContainer, fadeInUp } from "@/lib/motion";
+
+const features = [
+  { key: "multiRole", icon: FiUsers },
+  { key: "responsive", icon: FiSmartphone },
+  { key: "modernTech", icon: FiCode },
+  { key: "darkMode", icon: FiMoon },
+  { key: "security", icon: FiShield },
+  { key: "visualization", icon: FiBarChart2 },
+];
+
+const performanceMetrics = ["responseTime", "concurrency", "memory", "startup"];
 
 export function AboutPage() {
   const { t } = useTranslation();
 
-  const features = [
-    { key: "multiRole", icon: FiUsers },
-    { key: "responsive", icon: FiSmartphone },
-    { key: "modernTech", icon: FiCode },
-    { key: "darkMode", icon: FiMoon },
-    { key: "security", icon: FiShield },
-    { key: "visualization", icon: FiBarChart2 },
-  ];
-
   return (
-    <div className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t("about.title")}
-          </h1>
-          <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            {t("about.subtitle")}
-          </p>
-        </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <Section
+        variant="gradient"
+        className="py-24"
+        titleKey="about.title"
+        descriptionKey="about.subtitle"
+      >
+        <div />
+      </Section>
 
-        {/* Features */}
-        <section className="mb-24">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-            {t("about.features.title")}
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-12">
-            {t("about.features.description")}
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature) => (
-              <div
-                key={feature.key}
-                className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
-              >
-                <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
-                  <feature.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {t(`about.features.items.${feature.key}.title`)}
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  {t(`about.features.items.${feature.key}.description`)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+      {/* Features Section */}
+      <Section
+        variant="muted"
+        titleKey="about.features.title"
+        descriptionKey="about.features.description"
+        withDecoration
+      >
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {features.map((feature, index) => (
+            <LandingCard
+              key={feature.key}
+              icon={feature.icon}
+              title={t(`about.features.items.${feature.key}.title`)}
+              description={t(`about.features.items.${feature.key}.description`)}
+              index={index}
+            />
+          ))}
+        </motion.div>
+      </Section>
 
-        {/* Performance */}
-        <section className="mb-24">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-            {t("about.performance.title")}
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-12">
-            {t("about.performance.subtitle")}
-          </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {["responseTime", "concurrency", "memory", "startup"].map((key) => (
-              <div
-                key={key}
-                className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 text-center"
-              >
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {t(`about.performance.${key}.value`)}
-                </p>
-                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                  {t(`about.performance.${key}.title`)}
-                </p>
-                <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">
-                  {t(`about.performance.${key}.description`)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+      {/* Performance Section */}
+      <Section
+        variant="default"
+        titleKey="about.performance.title"
+        descriptionKey="about.performance.subtitle"
+      >
+        <motion.div
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {performanceMetrics.map((key) => (
+            <motion.div key={key} variants={fadeInUp}>
+              <Card className="bg-gradient-to-br from-[hsl(var(--landing-gradient-from)/0.05)] to-[hsl(var(--landing-gradient-to)/0.05)] border-0 text-center">
+                <CardContent className="pt-6">
+                  <p className="text-3xl font-bold text-[hsl(var(--landing-gradient-from))]">
+                    {t(`about.performance.${key}.value`)}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {t(`about.performance.${key}.title`)}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t(`about.performance.${key}.description`)}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </Section>
 
-        {/* Back Home */}
+      {/* CTA */}
+      <Section variant="muted" className="py-16">
         <div className="text-center">
-          <Link
-            to="/"
-            className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
-          >
-            {t("contact.backHome")}
-          </Link>
+          <Button asChild size="lg" className="px-8">
+            <Link to="/">{t("contact.backHome")}</Link>
+          </Button>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }

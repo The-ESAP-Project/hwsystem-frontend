@@ -1,9 +1,7 @@
 import {
   FiArrowLeft,
-  FiBook,
   FiCopy,
   FiEdit2,
-  FiPlus,
   FiTrash2,
   FiUsers,
 } from "react-icons/fi";
@@ -19,7 +17,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,25 +27,24 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
-import { useHomeworkList } from "@/features/homework/hooks/useHomework";
+import { HomeworkListCard } from "@/features/homework/components";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useClass, useDeleteClass } from "../hooks/useClass";
+import { useRoutePrefix } from "../hooks/useClassBasePath";
 
 export function ClassDetailPage() {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
   const user = useCurrentUser();
   const { canManageClass } = usePermission();
+  const prefix = useRoutePrefix();
 
   const {
     data: classData,
     isLoading: classLoading,
     error: classError,
   } = useClass(classId!);
-  const { data: homeworkData, isLoading: homeworkLoading } = useHomeworkList(
-    classId!,
-  );
   const deleteClass = useDeleteClass();
 
   const isTeacher = classData?.teacher?.id === user?.id || canManageClass;
@@ -64,7 +60,7 @@ export function ClassDetailPage() {
     try {
       await deleteClass.mutateAsync(classId!);
       notify.success("班级已删除");
-      navigate("/user/classes");
+      navigate(`${prefix}/classes`);
     } catch {
       notify.error("删除失败");
     }
@@ -97,7 +93,7 @@ export function ClassDetailPage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* 返回按钮 */}
       <Button variant="ghost" asChild className="mb-4">
-        <Link to="/user/classes">
+        <Link to={`${prefix}/classes`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回班级列表
         </Link>
@@ -114,13 +110,13 @@ export function ClassDetailPage() {
         {isTeacher && (
           <div className="flex gap-3">
             <Button variant="outline" asChild>
-              <Link to={`/teacher/classes/${classId}/students`}>
+              <Link to={`${prefix}/classes/${classId}/students`}>
                 <FiUsers className="mr-2 h-4 w-4" />
                 学生管理
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link to={`/teacher/classes/${classId}/edit`}>
+              <Link to={`${prefix}/classes/${classId}/edit`}>
                 <FiEdit2 className="mr-2 h-4 w-4" />
                 编辑
               </Link>
@@ -157,78 +153,11 @@ export function ClassDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* 作业列表 */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>作业列表</CardTitle>
-                <CardDescription>
-                  共 {homeworkData?.items.length || 0} 个作业
-                </CardDescription>
-              </div>
-              {isTeacher && (
-                <Button asChild size="sm">
-                  <Link to={`/teacher/classes/${classId}/homework/create`}>
-                    <FiPlus className="mr-2 h-4 w-4" />
-                    布置作业
-                  </Link>
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent>
-              {homeworkLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-20" />
-                  ))}
-                </div>
-              ) : homeworkData?.items.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  <FiBook className="mx-auto h-12 w-12 mb-4" />
-                  <p>暂无作业</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {homeworkData?.items.map((hw) => (
-                    <Link
-                      key={hw.id}
-                      to={`/user/classes/${classId}/homework/${hw.id}`}
-                      className="block"
-                    >
-                      <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
-                        <div>
-                          <h3 className="font-medium text-foreground">
-                            {hw.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            满分 {hw.max_score} 分
-                            {hw.deadline &&
-                              ` · 截止 ${new Date(hw.deadline).toLocaleDateString()}`}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {hw.my_submission ? (
-                            <Badge
-                              variant={
-                                hw.my_submission.status === "graded"
-                                  ? "default"
-                                  : "secondary"
-                              }
-                            >
-                              {hw.my_submission.status === "graded"
-                                ? `${hw.my_submission.score} 分`
-                                : "已提交"}
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline">未提交</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <HomeworkListCard
+            classId={classId!}
+            isTeacher={isTeacher}
+            basePath={`${prefix}/classes/${classId}`}
+          />
         </div>
 
         {/* 班级信息 */}

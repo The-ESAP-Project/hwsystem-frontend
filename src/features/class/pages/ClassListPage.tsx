@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FiBook, FiCalendar, FiLogIn, FiPlus, FiUsers } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiBook, FiCalendar, FiLogIn, FiPlus, FiSearch, FiUsers } from "react-icons/fi";
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,11 +25,23 @@ import { notify } from "@/stores/useNotificationStore";
 import { useClassList, useJoinClass } from "../hooks/useClass";
 
 export function ClassListPage() {
-  const { data, isLoading, error } = useClassList();
-  const { canCreateClass } = usePermission();
-  const joinClass = useJoinClass();
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const { data, isLoading, error } = useClassList({
+    search: debouncedSearch || undefined,
+  });
+  const { canCreateClass } = usePermission();
+  const joinClass = useJoinClass();
 
   const handleJoinClass = async () => {
     if (!inviteCode.trim()) {
@@ -57,7 +69,7 @@ export function ClassListPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       {/* 头部 */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">我的班级</h1>
           <p className="mt-1 text-muted-foreground">管理和查看所有班级</p>
@@ -109,6 +121,17 @@ export function ClassListPage() {
             </Button>
           )}
         </div>
+      </div>
+
+      {/* 搜索栏 */}
+      <div className="relative max-w-sm mb-6">
+        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="搜索班级..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {/* 班级列表 */}

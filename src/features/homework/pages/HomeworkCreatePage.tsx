@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fileService } from "@/features/file/services/fileService";
 import { notify } from "@/stores/useNotificationStore";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useCreateHomework } from "../hooks/useHomework";
 
 const formSchema = z.object({
@@ -47,6 +48,7 @@ interface UploadedFile {
 export function HomeworkCreatePage() {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const prefix = useRoutePrefix();
   const createHomework = useCreateHomework(classId!);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -108,7 +110,7 @@ export function HomeworkCreatePage() {
             : null,
       });
       notify.success("作业创建成功");
-      navigate(`/user/classes/${classId}`);
+      navigate(`${prefix}/classes/${classId}`);
     } catch {
       notify.error("创建失败", "请稍后重试");
     }
@@ -117,7 +119,7 @@ export function HomeworkCreatePage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}`}>
+        <Link to={`${prefix}/classes/${classId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回班级
         </Link>

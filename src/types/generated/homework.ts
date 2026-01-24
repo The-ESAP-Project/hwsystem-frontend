@@ -12,16 +12,25 @@ export type Homework = { id: bigint, class_id: bigint, title: string, descriptio
 export type HomeworkCreator = { id: bigint, username: string, display_name: string | null, };
 
 /**
- * 作业详情（包含附件）
+ * 作业详情（包含附件和创建者）
  */
-export type HomeworkDetail = { attachments: Array<FileInfo>, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
+export type HomeworkDetail = { attachments: Array<FileInfo>, creator: HomeworkCreator | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
+
+/**
+ * 作业列表项（包含创建者和我的提交状态）
+ */
+export type HomeworkListItem = { creator: HomeworkCreator | null, 
+/**
+ * 当前用户的最新提交（仅学生视角有值）
+ */
+my_submission: MySubmissionSummary | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
 
 /**
  * 作业列表查询参数（HTTP 请求）
  */
 export type HomeworkListParams = { class_id: bigint | null, created_by: bigint | null, search: string | null, page: bigint, size: bigint, };
 
-export type HomeworkListResponse = { items: Array<Homework>, pagination: PaginationInfo, };
+export type HomeworkListResponse = { items: Array<HomeworkListItem>, pagination: PaginationInfo, };
 
 export type HomeworkResponse = { id: bigint, title: string, description: string | null, content: string | null, deadline: string | null, max_score: number, allow_late_submission: boolean, attachments: Array<string>, submission_count: number, status: string, created_by: HomeworkCreator, created_at: string, updated_at: string, };
 
@@ -29,6 +38,16 @@ export type HomeworkResponse = { id: bigint, title: string, description: string 
  * 作业统计响应
  */
 export type HomeworkStatsResponse = { homework_id: bigint, total_students: bigint, submitted_count: bigint, graded_count: bigint, late_count: bigint, submission_rate: number, score_stats: ScoreStats | null, score_distribution: Array<ScoreRange>, unsubmitted_students: Array<UnsubmittedStudent>, };
+
+/**
+ * 带创建者信息的作业（用于列表，旧版兼容）
+ */
+export type HomeworkWithCreator = { creator: HomeworkCreator | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
+
+/**
+ * 我的提交摘要（用于作业列表显示提交状态）
+ */
+export type MySubmissionSummary = { id: bigint, version: number, status: string, is_late: boolean, score: number | null, };
 
 /**
  * 分数区间

@@ -7,16 +7,17 @@ import { classService } from "../services/classService";
 export const classKeys = {
   all: ["classes"] as const,
   lists: () => [...classKeys.all, "list"] as const,
-  list: (params?: { page?: number; page_size?: number }) =>
+  list: (params?: { page?: number; page_size?: number; search?: string }) =>
     [...classKeys.lists(), params] as const,
   details: () => [...classKeys.all, "detail"] as const,
   detail: (id: string) => [...classKeys.details(), id] as const,
   byCode: (code: string) => [...classKeys.all, "code", code] as const,
-  members: (classId: string) => [...classKeys.all, classId, "members"] as const,
+  members: (classId: string, params?: Record<string, unknown>) =>
+    [...classKeys.all, classId, "members", params] as const,
 };
 
 // Queries
-export function useClassList(params?: { page?: number; page_size?: number }) {
+export function useClassList(params?: { page?: number; page_size?: number; search?: string }) {
   return useQuery({
     queryKey: classKeys.list(params),
     queryFn: () => classService.list(params),
@@ -41,10 +42,10 @@ export function useClassByCode(code: string) {
 
 export function useClassMembers(
   classId: string,
-  params?: { page?: number; page_size?: number },
+  params?: { page?: number; page_size?: number; search?: string; role?: string },
 ) {
   return useQuery({
-    queryKey: classKeys.members(classId),
+    queryKey: classKeys.members(classId, params),
     queryFn: () => classService.getMembers(classId, params),
     enabled: !!classId,
   });
@@ -110,7 +111,9 @@ export function useUpdateMemberRole(classId: string) {
       role: "student" | "class_representative";
     }) => classService.updateMemberRole(classId, userId, role),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: classKeys.members(classId) });
+      queryClient.invalidateQueries({
+        queryKey: [...classKeys.all, classId, "members"],
+      });
     },
   });
 }
@@ -121,7 +124,9 @@ export function useRemoveMember(classId: string) {
   return useMutation({
     mutationFn: (userId: string) => classService.removeMember(classId, userId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: classKeys.members(classId) });
+      queryClient.invalidateQueries({
+        queryKey: [...classKeys.all, classId, "members"],
+      });
     },
   });
 }

@@ -2,9 +2,16 @@ import { createBrowserRouter, redirect } from "react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 // 布局组件
+import {
+  adminNavItems,
+  DashboardLayout,
+  teacherNavItems,
+  userNavItems,
+} from "@/components/layout/DashboardLayout";
 import { DefaultLayout } from "@/components/layout/DefaultLayout";
 // 管理员页面
 import { AdminDashboardPage } from "@/features/admin/pages/AdminDashboardPage";
+import ClassManagementPage from "@/features/admin/pages/ClassManagementPage";
 import UserCreatePage from "@/features/admin/pages/UserCreatePage";
 import UserDetailPage from "@/features/admin/pages/UserDetailPage";
 import UserEditPage from "@/features/admin/pages/UserEditPage";
@@ -26,6 +33,7 @@ import { HomeworkCreatePage } from "@/features/homework/pages/HomeworkCreatePage
 import { HomeworkDetailPage } from "@/features/homework/pages/HomeworkDetailPage";
 import { HomeworkEditPage } from "@/features/homework/pages/HomeworkEditPage";
 import { HomeworkStatsPage } from "@/features/homework/pages/HomeworkStatsPage";
+import { MyHomeworksPage } from "@/features/homework/pages/MyHomeworksPage";
 // 通知页面
 import { NotificationListPage } from "@/features/notification/pages/NotificationListPage";
 import { AboutPage } from "@/features/public/pages/AboutPage";
@@ -131,7 +139,12 @@ export const router = createBrowserRouter([
   // 学生页面 (所有角色可访问)
   {
     path: "/user",
-    element: <DefaultLayout />,
+    element: (
+      <DashboardLayout
+        navItems={userNavItems}
+        titleKey="dashboard.user.title"
+      />
+    ),
     loader: requireRole(["user", "teacher", "admin"]),
     children: [
       { index: true, element: <UserIndexPage /> },
@@ -155,13 +168,20 @@ export const router = createBrowserRouter([
         path: "homework/:homeworkId/submissions",
         element: <MySubmissionsPage />,
       },
+      // 我的所有提交
+      { path: "homeworks", element: <MyHomeworksPage /> },
     ],
   },
 
   // 通知页面 (所有登录用户可访问)
   {
     path: "/notifications",
-    element: <DefaultLayout />,
+    element: (
+      <DashboardLayout
+        navItems={userNavItems}
+        titleKey="common.notifications"
+      />
+    ),
     loader: requireRole(["user", "teacher", "admin"]),
     children: [{ index: true, element: <NotificationListPage /> }],
   },
@@ -169,7 +189,12 @@ export const router = createBrowserRouter([
   // 教师页面 (teacher 和 admin 可访问)
   {
     path: "/teacher",
-    element: <DefaultLayout />,
+    element: (
+      <DashboardLayout
+        navItems={teacherNavItems}
+        titleKey="dashboard.teacher.title"
+      />
+    ),
     loader: requireRole(["teacher", "admin"]),
     children: [
       { index: true, element: <TeacherIndexPage /> },
@@ -209,7 +234,12 @@ export const router = createBrowserRouter([
   // 管理员页面 (仅 admin)
   {
     path: "/admin",
-    element: <DefaultLayout />,
+    element: (
+      <DashboardLayout
+        navItems={adminNavItems}
+        titleKey="dashboard.admin.title"
+      />
+    ),
     loader: requireRole(["admin"]),
     children: [
       { path: "dashboard", element: <AdminDashboardPage /> },
@@ -218,8 +248,37 @@ export const router = createBrowserRouter([
       { path: "users/create", element: <UserCreatePage /> },
       { path: "users/:userId", element: <UserDetailPage /> },
       { path: "users/:userId/edit", element: <UserEditPage /> },
-      // 所有班级
-      { path: "classes", element: <ClassListPage /> },
+      // 班级管理
+      { path: "classes", element: <ClassManagementPage /> },
+      { path: "classes/create", element: <ClassCreatePage /> },
+      { path: "classes/:classId", element: <ClassDetailPage /> },
+      { path: "classes/:classId/edit", element: <ClassEditPage /> },
+      { path: "classes/:classId/students", element: <ClassStudentsPage /> },
+      {
+        path: "classes/:classId/homework/create",
+        element: <HomeworkCreatePage />,
+      },
+      {
+        path: "classes/:classId/homework/:homeworkId",
+        element: <HomeworkDetailPage />,
+      },
+      {
+        path: "classes/:classId/homework/:homeworkId/edit",
+        element: <HomeworkEditPage />,
+      },
+      {
+        path: "classes/:classId/homework/:homeworkId/stats",
+        element: <HomeworkStatsPage />,
+      },
+      {
+        path: "classes/:classId/homework/:homeworkId/submissions",
+        element: <SubmissionListPage />,
+      },
+      {
+        path: "classes/:classId/homework/:homeworkId/submit",
+        element: <SubmitHomeworkPage />,
+      },
+      { path: "submissions/:submissionId/grade", element: <GradePage /> },
     ],
   },
 

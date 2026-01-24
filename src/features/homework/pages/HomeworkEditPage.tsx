@@ -27,6 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { fileService } from "@/features/file/services/fileService";
 import { notify } from "@/stores/useNotificationStore";
+import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useHomework, useUpdateHomework } from "../hooks/useHomework";
 
 const formSchema = z.object({
@@ -51,6 +52,7 @@ export function HomeworkEditPage() {
     homeworkId: string;
   }>();
   const navigate = useNavigate();
+  const prefix = useRoutePrefix();
   const { data: homework, isLoading, error } = useHomework(homeworkId!);
   const updateHomework = useUpdateHomework(homeworkId!);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -141,7 +143,7 @@ export function HomeworkEditPage() {
             : null,
       });
       notify.success("作业已更新");
-      navigate(`/user/classes/${classId}/homework/${homeworkId}`);
+      navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`);
     } catch {
       notify.error("更新失败", "请稍后重试");
     }
@@ -175,7 +177,7 @@ export function HomeworkEditPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8">
       <Button variant="ghost" asChild className="mb-4">
-        <Link to={`/user/classes/${classId}/homework/${homeworkId}`}>
+        <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           返回作业详情
         </Link>
