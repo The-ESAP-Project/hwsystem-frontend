@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
@@ -8,6 +8,7 @@ import {
   FiChevronRight,
   FiClock,
   FiList,
+  FiCheck,
 } from "react-icons/fi";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { z } from "zod";
@@ -32,6 +33,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -77,6 +79,7 @@ export function GradePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const prefix = useRoutePrefix();
+  const [isAutoJumping, setIsAutoJumping] = useState(false);
 
   // 获取导航状态
   const navState = location.state as GradeNavigationState | null;
@@ -212,15 +215,25 @@ export function GradePage() {
 
       // 批改完成后的行为
       if (navigationInfo?.next) {
-        // 还有下一个，提示并可以继续
-        notify.info(t("grade.navigation.continueHint"));
+        // 还有下一个，自动跳转
+        setIsAutoJumping(true);
+        notify.success(t("grade.navigation.autoNext"));
+        setTimeout(() => {
+          goToNext();
+          setIsAutoJumping(false);
+        }, 800); // 给用户足够时间看到成功提示
       } else if (navigationInfo && !navigationInfo.next) {
         // 已完成所有
+        setIsAutoJumping(true);
         notify.success(t("grade.navigation.allCompleted"));
-        goBackToList();
+        setTimeout(() => {
+          goBackToList();
+        }, 1200);
       } else {
         // 没有导航状态，直接返回
-        navigate(-1);
+        setTimeout(() => {
+          navigate(-1);
+        }, 500);
       }
     } catch {
       notify.error(t("grade.error.failed"), t("grade.error.retry"));
@@ -246,58 +259,73 @@ export function GradePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-      {/* 导航条 */}
+      {/* 工作流导航条 */}
       {navigationInfo ? (
-        <div className="flex items-center justify-between mb-4 p-3 rounded-lg bg-muted/50 border">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={goToPrev}
-            disabled={!navigationInfo.prev}
-            className="gap-1"
-          >
-            <FiChevronLeft className="h-4 w-4" />
-            {t("grade.navigation.prev")}
-          </Button>
-
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              {t("grade.navigation.progress")}:
-            </span>
-            <Badge variant="secondary">
-              {navigationInfo.current}/{navigationInfo.total}
-            </Badge>
-            <span>{t("grade.navigation.pendingCount")}</span>
+        <div className="mb-6 space-y-3">
+          {/* 进度条和计数 */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium text-foreground flex items-center gap-2">
+                <FiCheck className="h-4 w-4 text-green-600" />
+                {t("grade.navigation.progress")}
+              </span>
+              <Badge variant="secondary" className="text-base px-3 py-1">
+                {navigationInfo.current} / {navigationInfo.total}
+              </Badge>
+            </div>
+            <Progress 
+              value={(navigationInfo.current / navigationInfo.total) * 100} 
+              className="h-2"
+            />
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={goToNext}
-            disabled={!navigationInfo.next}
-            className="gap-1"
-          >
-            {t("grade.navigation.next")}
-            <FiChevronRight className="h-4 w-4" />
-          </Button>
+          {/* 导航按钮 */}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={goToPrev}
+              disabled={!navigationInfo.prev || isAutoJumping}
+              className="flex-1 gap-2"
+            >
+              <FiChevronLeft className="h-4 w-4" />
+              {t("grade.navigation.prev")}
+              {navigationInfo.prev && (
+                <span className="text-xs text-muted-foreground truncate max-w-[100px]">
+                  ({navigationInfo.prev.studentName})
+                </span>
+              )}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBackToList}
+              className="gap-1.5"
+            >
+              <FiList className="h-4 w-4" />
+              {t("grade.navigation.backToList")}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={goToNext}
+              disabled={!navigationInfo.next || isAutoJumping}
+              className="flex-1 gap-2"
+            >
+              {navigationInfo.next && (
+                <span className="text-xs text-muted-foreground truncate max-w-[100px]">
+                  ({navigationInfo.next.studentName})
+                </span>
+              )}
+              {t("grade.navigation.next")}
+              <FiChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       ) : (
         <Button variant="ghost" className="mb-4" onClick={() => navigate(-1)}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
           {t("common.back")}
-        </Button>
-      )}
-
-      {/* 返回列表按钮（当有导航状态时显示） */}
-      {navigationInfo && navState && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-4"
-          onClick={goBackToList}
-        >
-          <FiList className="mr-2 h-4 w-4" />
-          {t("grade.navigation.backToList")}
         </Button>
       )}
 
@@ -507,26 +535,35 @@ export function GradePage() {
                     )}
                   />
 
-                  <div className="flex gap-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => navigate(-1)}
-                    >
-                      {t("common.cancel")}
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="flex-1"
-                      disabled={isPending}
-                    >
-                      {isPending
-                        ? t("grade.submitting")
-                        : isEditing
-                          ? t("grade.updateGrade")
-                          : t("grade.submitGrade")}
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    {/* 主要按钮组 */}
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => navigate(-1)}
+                        disabled={isPending || isAutoJumping}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="flex-1"
+                        disabled={isPending || isAutoJumping}
+                      >
+                        {isPending || isAutoJumping
+                          ? t("grade.submitting")
+                          : navigationInfo?.next
+                            ? t("grade.submitAndNext")
+                            : isEditing
+                              ? t("grade.updateGrade")
+                              : t("grade.submitGrade")}
+                        {navigationInfo?.next && !isPending && !isAutoJumping && (
+                          <FiChevronRight className="ml-1 h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </form>
               </Form>

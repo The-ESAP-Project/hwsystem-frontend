@@ -1264,6 +1264,7 @@
     "submitting": "Submitting...",
     "updateGrade": "Update Grade",
     "submitGrade": "Submit Grade",
+    "submitAndNext": "Submit & Next",
     "selectTemplate": "Select comment template...",
     "quickScore": {
       "excellent": "Excellent",
@@ -1309,6 +1310,7 @@
       "backToList": "Back to List",
       "allCompleted": "All pending reviews completed!",
       "continueHint": "Click \"Next\" to continue grading",
+      "autoNext": "Grading successful, jumping to next...",
       "shortcutHint": "Quick switch"
     }
   },

@@ -1264,6 +1264,7 @@
     "submitting": "提交中...",
     "updateGrade": "更新评分",
     "submitGrade": "提交评分",
+    "submitAndNext": "提交并继续",
     "selectTemplate": "选择常用评语...",
     "quickScore": {
       "excellent": "优秀",
@@ -1309,6 +1310,7 @@
       "backToList": "返回列表",
       "allCompleted": "所有待批改作业已完成！",
       "continueHint": "可点击「下一个」继续批改",
+      "autoNext": "批改成功，即将跳转到下一个...",
       "shortcutHint": "快速切换"
     }
   },
