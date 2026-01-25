@@ -133,8 +133,6 @@ export function SubmissionListPage() {
       classId: classId!,
     };
 
-    console.log("导航到批改页，状态:", navState); // 调试日志
-
     navigate(`${prefix}/submissions/${submissionId}/grade`, {
       state: navState,
     });

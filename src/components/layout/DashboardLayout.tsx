@@ -66,9 +66,7 @@ export function DashboardLayout({ navItems, titleKey }: DashboardLayoutProps) {
   const roleText = useRoleText();
 
   const handleLogout = () => {
-    logout();
-    // 清除所有 React Query 缓存
-    queryClient.clear();
+    logout(queryClient);
     navigate("/");
   };
 

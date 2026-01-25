@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import type { QueryClient } from "@tanstack/react-query";
 import i18n from "@/app/i18n";
 import { authService } from "@/features/auth/services/auth";
 import type { LoginRequest, User } from "@/types/generated";
@@ -16,7 +17,7 @@ interface UserState {
 
   // Actions
   login: (credentials: LoginRequest) => Promise<User>;
-  logout: () => void;
+  logout: (queryClient?: QueryClient) => void;
   initAuth: () => Promise<void>;
   refreshUserInfo: () => Promise<User | null>;
   clearAuthData: () => void;
@@ -59,7 +60,7 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      logout: () => {
+      logout: (queryClient?: QueryClient) => {
         const userName =
           get().currentUser?.display_name ||
           get().currentUser?.username ||
@@ -67,6 +68,11 @@ export const useUserStore = create<UserState>()(
 
         // 清除状态和存储
         get().clearAuthData();
+
+        // 清除所有 React Query 缓存（如果提供了 queryClient）
+        if (queryClient) {
+          queryClient.clear();
+        }
 
         // 显示通知
         useNotificationStore

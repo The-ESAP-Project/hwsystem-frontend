@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { submissionKeys } from "@/features/submission/hooks/useSubmission";
+import { useCurrentUser } from "@/stores/useUserStore";
 import {
   type CreateHomeworkInput,
   type HomeworkListItemStringified,
@@ -47,18 +48,24 @@ export function useHomeworkList(
     include_stats?: boolean;
   },
 ) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: homeworkKeys.list(classId, params),
+    queryKey: [...homeworkKeys.list(classId, params), userId] as const,
     queryFn: () => homeworkService.list(classId, params),
-    enabled: !!classId,
+    enabled: !!classId && !!userId,
   });
 }
 
 export function useHomework(homeworkId: string) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: homeworkKeys.detail(homeworkId),
+    queryKey: [...homeworkKeys.detail(homeworkId), userId] as const,
     queryFn: () => homeworkService.get(homeworkId),
-    enabled: !!homeworkId,
+    enabled: !!homeworkId && !!userId,
   });
 }
 
@@ -119,18 +126,24 @@ export function useAllClassesHomeworks(
   classIds: string[],
   options?: { include_stats?: boolean },
 ) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQueries({
     queries: classIds.map((classId) => ({
-      queryKey: homeworkKeys.list(classId, {
-        page_size: 100,
-        include_stats: options?.include_stats,
-      }),
+      queryKey: [
+        ...homeworkKeys.list(classId, {
+          page_size: 100,
+          include_stats: options?.include_stats,
+        }),
+        userId,
+      ] as const,
       queryFn: () =>
         homeworkService.list(classId, {
           page_size: 100,
           include_stats: options?.include_stats,
         }),
-      enabled: !!classId,
+      enabled: !!classId && !!userId,
     })),
     combine: (results) => {
       const allHomeworks: HomeworkListItemStringified[] = [];

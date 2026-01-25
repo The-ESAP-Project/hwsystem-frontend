@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { homeworkKeys } from "@/features/homework/hooks/useHomework";
 import { submissionKeys } from "@/features/submission/hooks/useSubmission";
+import { useCurrentUser } from "@/stores/useUserStore";
 import type { Stringify } from "@/types";
 import type { UpdateClassRequest } from "@/types/generated";
 import { classService } from "../services/classService";
@@ -25,17 +26,24 @@ export function useClassList(params?: {
   page_size?: number;
   search?: string;
 }) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: classKeys.list(params),
+    queryKey: [...classKeys.list(params), userId] as const,
     queryFn: () => classService.list(params),
+    enabled: !!userId,
   });
 }
 
 export function useClass(classId: string) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: classKeys.detail(classId),
+    queryKey: [...classKeys.detail(classId), userId] as const,
     queryFn: () => classService.get(classId),
-    enabled: !!classId,
+    enabled: !!classId && !!userId,
   });
 }
 
