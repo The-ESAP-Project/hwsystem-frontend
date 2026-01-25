@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { getApiBaseUrl } from "@/lib/config";
 import type { Stringify } from "@/types";
 import type { FileUploadResponse } from "@/types/generated";
 
@@ -39,9 +40,7 @@ export const fileService = {
 
   // 获取下载 URL（仅用于构建 URL，不直接用于下载）
   getDownloadUrl: (token: string) => {
-    const baseUrl =
-      import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1";
-    return `${baseUrl}/files/download/${token}`;
+    return `${getApiBaseUrl()}/files/download/${token}`;
   },
 
   // 下载文件（使用 fetch + blob，携带 JWT 认证）

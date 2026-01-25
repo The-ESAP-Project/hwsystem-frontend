@@ -1,4 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { gradeKeys } from "@/features/grade/hooks/useGrade";
+import { homeworkKeys } from "@/features/homework/hooks/useHomework";
+import { submissionKeys } from "@/features/submission/hooks/useSubmission";
 import type { Stringify } from "@/types";
 import type { UpdateClassRequest } from "@/types/generated";
 import { classService } from "../services/classService";
@@ -93,6 +96,10 @@ export function useDeleteClass() {
     mutationFn: (classId: string) => classService.delete(classId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: classKeys.lists() });
+      // 清理关联的作业、提交和评分缓存
+      queryClient.invalidateQueries({ queryKey: homeworkKeys.all });
+      queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+      queryClient.invalidateQueries({ queryKey: gradeKeys.all });
     },
   });
 }
@@ -123,6 +130,10 @@ export function useUpdateMemberRole(classId: string) {
       queryClient.invalidateQueries({
         queryKey: [...classKeys.all, classId, "members"],
       });
+      // 班级详情可能包含角色统计
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(classId),
+      });
     },
   });
 }
@@ -136,6 +147,14 @@ export function useRemoveMember(classId: string) {
       queryClient.invalidateQueries({
         queryKey: [...classKeys.all, classId, "members"],
       });
+      // 成员数量变化
+      queryClient.invalidateQueries({
+        queryKey: classKeys.detail(classId),
+      });
+      // 该用户的提交记录
+      queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+      // 作业统计可能包含成员数
+      queryClient.invalidateQueries({ queryKey: homeworkKeys.lists() });
     },
   });
 }

@@ -1055,7 +1055,11 @@
     "memberUnit": "",
     "createdAt": "Created",
     "inviteCode": "Invite Code",
-    "inviteCodeDescription": "Share with students to join"
+    "inviteCodeDescription": "Share with students to join",
+    "exportReport": "Export Report",
+    "exporting": "Exporting...",
+    "exportSuccess": "Report exported successfully",
+    "exportFailed": "Export failed"
   },
   "studentsPage": {
     "title": "Student Management",
@@ -1114,6 +1118,8 @@
   "homeworkStats": {
     "title": "Homework Statistics",
     "backToDetail": "Back to Homework",
+    "export": "Export Report",
+    "exporting": "Exporting...",
     "stats": {
       "totalStudents": "Total Students",
       "submitted": "Submitted",

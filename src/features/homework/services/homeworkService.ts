@@ -136,4 +136,12 @@ export const homeworkService = {
     );
     return data.data;
   },
+
+  // 导出作业统计报表
+  exportStats: async (homeworkId: string) => {
+    const response = await api.get(`/homeworks/${homeworkId}/stats/export`, {
+      responseType: "blob",
+    });
+    return response.data as Blob;
+  },
 };

@@ -10,7 +10,7 @@ export const systemService = {
     const { data } = await api.get<{ data: SystemSettingsResponse }>(
       "/system/settings",
     );
-    // bigint 序列化后变成 string
-    return data.data as SystemSettings;
+    // bigint 序列化后变成 string，需要通过 unknown 转换
+    return data.data as unknown as SystemSettings;
   },
 };

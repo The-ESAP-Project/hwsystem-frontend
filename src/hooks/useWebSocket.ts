@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getWsBaseUrl } from "@/lib/config";
 import { useUserStore } from "@/stores/useUserStore";
 
 export type WebSocketStatus =
@@ -69,15 +70,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
   // 构建 WebSocket URL
   const getWsUrl = useCallback(() => {
     if (url) return url;
-
-    const baseUrl =
-      import.meta.env.VITE_WS_URL || import.meta.env.VITE_API_BASE_URL;
-    if (!baseUrl) {
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      return `${protocol}//${window.location.host}/ws`;
-    }
-
-    return `${baseUrl.replace(/^http/, "ws")}/ws`;
+    return `${getWsBaseUrl()}/ws`;
   }, [url]);
 
   // 停止心跳

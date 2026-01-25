@@ -4,6 +4,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { gradeKeys } from "@/features/grade/hooks/useGrade";
+import { submissionKeys } from "@/features/submission/hooks/useSubmission";
 import {
   type CreateHomeworkInput,
   type HomeworkListItemStringified,
@@ -105,6 +107,9 @@ export function useDeleteHomework() {
     mutationFn: (homeworkId: string) => homeworkService.delete(homeworkId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: homeworkKeys.lists() });
+      // 清理关联的提交和评分缓存
+      queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+      queryClient.invalidateQueries({ queryKey: gradeKeys.all });
     },
   });
 }

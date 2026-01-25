@@ -1055,7 +1055,11 @@
     "memberUnit": "人",
     "createdAt": "创建时间",
     "inviteCode": "邀请码",
-    "inviteCodeDescription": "分享给学生加入班级"
+    "inviteCodeDescription": "分享给学生加入班级",
+    "exportReport": "导出报表",
+    "exporting": "导出中...",
+    "exportSuccess": "报表导出成功",
+    "exportFailed": "导出失败"
   },
   "studentsPage": {
     "title": "学生管理",
@@ -1114,6 +1118,8 @@
   "homeworkStats": {
     "title": "作业统计",
     "backToDetail": "返回作业详情",
+    "export": "导出报表",
+    "exporting": "导出中...",
     "stats": {
       "totalStudents": "总学生数",
       "submitted": "已提交",

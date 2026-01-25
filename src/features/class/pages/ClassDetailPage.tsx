@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
   FiCopy,
+  FiDownload,
   FiEdit2,
   FiTrash2,
   FiUsers,
@@ -33,6 +35,7 @@ import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useClass, useDeleteClass } from "../hooks/useClass";
 import { useRoutePrefix } from "../hooks/useClassBasePath";
+import { classService } from "../services/classService";
 
 export function ClassDetailPage() {
   const { t } = useTranslation();
@@ -41,6 +44,7 @@ export function ClassDetailPage() {
   const user = useCurrentUser();
   const { canManageClass } = usePermission();
   const prefix = useRoutePrefix();
+  const [isExporting, setIsExporting] = useState(false);
 
   const {
     data: classData,
@@ -50,6 +54,21 @@ export function ClassDetailPage() {
   const deleteClass = useDeleteClass();
 
   const isTeacher = classData?.teacher?.id === user?.id || canManageClass;
+  // 课代表或教师可以导出报表
+  const canExport = isTeacher || classData?.my_role === "class_representative";
+
+  const handleExportReport = async () => {
+    if (!classId) return;
+    setIsExporting(true);
+    try {
+      await classService.exportClassReport(classId);
+      notify.success(t("classPage.exportSuccess"));
+    } catch {
+      notify.error(t("classPage.exportFailed"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleCopyInviteCode = () => {
     if (classData?.invite_code) {
@@ -111,51 +130,67 @@ export function ClassDetailPage() {
           </h1>
           <p className="mt-1 text-muted-foreground">{classData?.description}</p>
         </div>
-        {isTeacher && (
-          <div className="flex gap-3">
-            <Button variant="outline" asChild>
-              <Link to={`${prefix}/classes/${classId}/students`}>
-                <FiUsers className="mr-2 h-4 w-4" />
-                {t("classPage.studentManagement")}
-              </Link>
+        <div className="flex gap-3">
+          {/* 导出按钮 - 教师和课代表可见 */}
+          {canExport && (
+            <Button
+              variant="outline"
+              onClick={handleExportReport}
+              disabled={isExporting}
+            >
+              <FiDownload className="mr-2 h-4 w-4" />
+              {isExporting
+                ? t("classPage.exporting")
+                : t("classPage.exportReport")}
             </Button>
-            <Button variant="outline" asChild>
-              <Link to={`${prefix}/classes/${classId}/edit`}>
-                <FiEdit2 className="mr-2 h-4 w-4" />
-                {t("classPage.edit")}
-              </Link>
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  <FiTrash2 className="mr-2 h-4 w-4" />
-                  {t("classPage.delete")}
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    {t("classPage.deleteConfirm.title")}
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    {t("classPage.deleteConfirm.description")}
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>
-                    {t("classPage.deleteConfirm.cancel")}
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteClass}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    {t("classPage.deleteConfirm.confirm")}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )}
+          )}
+          {/* 教师专属按钮 */}
+          {isTeacher && (
+            <>
+              <Button variant="outline" asChild>
+                <Link to={`${prefix}/classes/${classId}/students`}>
+                  <FiUsers className="mr-2 h-4 w-4" />
+                  {t("classPage.studentManagement")}
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to={`${prefix}/classes/${classId}/edit`}>
+                  <FiEdit2 className="mr-2 h-4 w-4" />
+                  {t("classPage.edit")}
+                </Link>
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <FiTrash2 className="mr-2 h-4 w-4" />
+                    {t("classPage.delete")}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t("classPage.deleteConfirm.title")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t("classPage.deleteConfirm.description")}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t("classPage.deleteConfirm.cancel")}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteClass}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {t("classPage.deleteConfirm.confirm")}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

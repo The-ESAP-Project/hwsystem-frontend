@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiAlertCircle,
   FiArrowLeft,
   FiCheckCircle,
   FiClock,
+  FiDownload,
   FiUsers,
 } from "react-icons/fi";
 import { Link, useParams } from "react-router";
@@ -32,6 +33,7 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useHomework, useHomeworkStats } from "../hooks/useHomework";
+import { homeworkService } from "../services/homeworkService";
 
 // 分数区间颜色
 const SCORE_COLORS = {
@@ -51,6 +53,28 @@ export function HomeworkStatsPage() {
   const prefix = useRoutePrefix();
   const { data: homework } = useHomework(homeworkId!);
   const { data: stats, isLoading, error } = useHomeworkStats(homeworkId!);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // 导出统计报表
+  const handleExport = async () => {
+    if (!homeworkId) return;
+    setIsExporting(true);
+    try {
+      const blob = await homeworkService.exportStats(homeworkId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `homework_${homeworkId}_stats.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Export failed:", err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // 准备图表数据
   const chartData = useMemo(() => {
@@ -115,11 +139,19 @@ export function HomeworkStatsPage() {
         </Link>
       </Button>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">
-          {t("homeworkStats.title")}
-        </h1>
-        <p className="mt-1 text-muted-foreground">{homework?.title}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t("homeworkStats.title")}
+          </h1>
+          <p className="mt-1 text-muted-foreground">{homework?.title}</p>
+        </div>
+        <Button onClick={handleExport} disabled={isExporting}>
+          <FiDownload className="mr-2 h-4 w-4" />
+          {isExporting
+            ? t("homeworkStats.exporting")
+            : t("homeworkStats.export")}
+        </Button>
       </div>
 
       {/* 概览卡片 */}

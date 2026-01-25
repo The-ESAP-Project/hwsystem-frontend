@@ -129,4 +129,32 @@ export const classService = {
   removeMember: async (classId: string, userId: string) => {
     await api.delete(`/classes/${classId}/students/${userId}`);
   },
+
+  // 导出班级报表
+  exportClassReport: async (classId: string) => {
+    const response = await api.get(`/classes/${classId}/export`, {
+      responseType: "blob",
+    });
+    // 触发下载
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    // 从 Content-Disposition 获取文件名，或使用默认文件名
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = `class_${classId}_report.xlsx`;
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="?([^"]+)"?/);
+      if (match) {
+        filename = match[1];
+      }
+    }
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  },
 };

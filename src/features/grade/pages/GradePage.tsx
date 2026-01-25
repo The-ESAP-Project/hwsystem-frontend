@@ -87,9 +87,14 @@ export function GradePage() {
   const { data: existingGrade, isLoading: gradeLoading } = useGrade(
     submissionId!,
   );
-  const createGrade = useCreateGrade(submissionId!);
+
+  // 优先使用导航状态的 homeworkId，否则从 submission 中获取
+  const homeworkId =
+    navState?.homeworkId || submission?.homework_id?.toString();
+
+  const createGrade = useCreateGrade(submissionId!, homeworkId);
   // useUpdateGrade 需要 gradeId，在有 existingGrade 时才能使用
-  const updateGrade = useUpdateGrade(existingGrade?.id || "");
+  const updateGrade = useUpdateGrade(existingGrade?.id || "", homeworkId);
 
   const isEditing = !!existingGrade;
 

@@ -1,4 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { gradeKeys } from "@/features/grade/hooks/useGrade";
+import { homeworkKeys } from "@/features/homework/hooks/useHomework";
 import {
   type SubmissionCreateInput,
   submissionService,
@@ -129,11 +131,18 @@ export function useCreateSubmission(homeworkId: string) {
         queryKey: submissionKeys.myLatest(homeworkId),
       });
       queryClient.invalidateQueries({ queryKey: submissionKeys.lists() });
+      // 失效提交概览和作业统计
+      queryClient.invalidateQueries({
+        queryKey: [...submissionKeys.all, "summary", homeworkId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: homeworkKeys.stats(homeworkId),
+      });
     },
   });
 }
 
-export function useDeleteSubmission() {
+export function useDeleteSubmission(homeworkId?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -141,6 +150,14 @@ export function useDeleteSubmission() {
       submissionService.delete(submissionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: submissionKeys.all });
+      // 删除提交后对应的评分也应失效
+      queryClient.invalidateQueries({ queryKey: gradeKeys.all });
+      // 失效作业统计
+      if (homeworkId) {
+        queryClient.invalidateQueries({
+          queryKey: homeworkKeys.stats(homeworkId),
+        });
+      }
     },
   });
 }

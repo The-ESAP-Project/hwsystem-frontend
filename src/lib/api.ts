@@ -7,6 +7,7 @@ import i18n from "@/app/i18n";
 import { useUserStore } from "@/stores/useUserStore";
 import type { ApiResponse } from "@/types/generated";
 import { ErrorCode } from "@/types/generated/error_code";
+import { getApiBaseUrl } from "./config";
 import { type ApiError, getErrorMessage } from "./errors";
 
 // Token 刷新 Promise（用于防止并发刷新）
@@ -42,7 +43,7 @@ function getRefreshToken(): Promise<string> {
 }
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1",
+  baseURL: getApiBaseUrl(),
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

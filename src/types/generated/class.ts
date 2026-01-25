@@ -21,7 +21,7 @@ export type ClassListResponse = { pagination: PaginationInfo, items: Array<Class
 
 export type ClassQueryParams = { search: string | null, page: bigint, size: bigint, };
 
-export type CreateClassRequest = { teacher_id: bigint, name: string, description: string | null, };
+export type CreateClassRequest = { teacher_id: bigint | null, name: string, description: string | null, };
 
 /**
  * 教师简要信息
