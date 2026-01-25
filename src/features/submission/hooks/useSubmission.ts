@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { homeworkKeys } from "@/features/homework/hooks/useHomework";
+import { useCurrentUser } from "@/stores/useUserStore";
 import {
   type SubmissionCreateInput,
   submissionService,
@@ -60,16 +61,22 @@ export function useSubmission(submissionId: string) {
 }
 
 export function useMySubmissions(homeworkId: string) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: submissionKeys.my(homeworkId),
+    queryKey: [...submissionKeys.my(homeworkId), userId] as const,
     queryFn: () => submissionService.getMy(homeworkId),
-    enabled: !!homeworkId,
+    enabled: !!homeworkId && !!userId,
   });
 }
 
 export function useMyLatestSubmission(homeworkId: string) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+  
   return useQuery({
-    queryKey: submissionKeys.myLatest(homeworkId),
+    queryKey: [...submissionKeys.myLatest(homeworkId), userId] as const,
     queryFn: async () => {
       try {
         return await submissionService.getMyLatest(homeworkId);
@@ -86,7 +93,7 @@ export function useMyLatestSubmission(homeworkId: string) {
         throw error;
       }
     },
-    enabled: !!homeworkId,
+    enabled: !!homeworkId && !!userId,
   });
 }
 
