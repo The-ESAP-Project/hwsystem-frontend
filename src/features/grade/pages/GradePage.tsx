@@ -123,13 +123,26 @@ export function GradePage() {
 
   // 计算导航信息
   const navigationInfo = useMemo(() => {
-    if (!navState?.pendingList || navState.pendingList.length === 0)
+    if (!navState?.pendingList || navState.pendingList.length === 0) {
+      console.log("无导航状态或待批改列表为空");
       return null;
+    }
+
+    console.log("查找当前提交:", {
+      submissionId,
+      pendingList: navState.pendingList,
+    });
 
     const currentIndex = navState.pendingList.findIndex(
-      (s) => s.id === submissionId,
+      (s) => String(s.id) === String(submissionId),
     );
-    if (currentIndex === -1) return null;
+    
+    if (currentIndex === -1) {
+      console.log("在待批改列表中未找到当前提交");
+      return null;
+    }
+
+    console.log("找到当前位置:", currentIndex + 1, "/", navState.pendingList.length);
 
     return {
       current: currentIndex + 1,

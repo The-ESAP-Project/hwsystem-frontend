@@ -1215,6 +1215,7 @@
   "submission": {
     "list": {
       "title": "提交列表",
+      "startGrading": "开始批改",
       "totalStudents": "共 {{count}} 名学生",
       "tabs": {
         "all": "全部",

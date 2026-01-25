@@ -8,6 +8,7 @@ import {
   FiEdit3,
   FiFileText,
   FiUserX,
+  FiPlayCircle,
 } from "react-icons/fi";
 import { Link, useNavigate, useParams } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -122,15 +123,17 @@ export function SubmissionListPage() {
   const navigateToGrade = (submissionId: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
 
-    // 构建待批改列表
+    // 构建待批改列表 - 只包含未评分的提交
     const navState: GradeNavigationState = {
       pendingList: pending.map((s) => ({
-        id: s.latest_submission.id,
+        id: String(s.latest_submission.id),
         studentName: s.creator.display_name || s.creator.username,
       })),
       homeworkId: homeworkId!,
       classId: classId!,
     };
+
+    console.log("导航到批改页，状态:", navState); // 调试日志
 
     navigate(`${prefix}/submissions/${submissionId}/grade`, {
       state: navState,
@@ -201,14 +204,29 @@ export function SubmissionListPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <CardTitle>{t("submission.list.title")}</CardTitle>
               <CardDescription>{homework?.title}</CardDescription>
             </div>
-            <div className="text-sm text-muted-foreground">
-              {t("submission.list.totalStudents", {
-                count: Number(stats?.total_students ?? 0),
-              }) || `共 ${stats?.total_students ?? 0} 名学生`}
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground">
+                {t("submission.list.totalStudents", {
+                  count: Number(stats?.total_students ?? 0),
+                }) || `共 ${stats?.total_students ?? 0} 名学生`}
+              </div>
+              {/* 开始批改工作流按钮 */}
+              {canGrade && pending.length > 0 && (
+                <Button
+                  onClick={() => navigateToGrade(pending[0].latest_submission.id)}
+                  className="gap-2"
+                >
+                  <FiPlayCircle className="h-4 w-4" />
+                  {t("submission.list.startGrading")}
+                  <Badge variant="secondary" className="ml-1">
+                    {pending.length}
+                  </Badge>
+                </Button>
+              )}
             </div>
           </div>
         </CardHeader>
