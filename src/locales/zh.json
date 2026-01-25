@@ -1113,12 +1113,16 @@
       "namePlaceholder": "例如：数据结构 2026春季班",
       "nameDescription": "为班级起一个简洁明了的名称",
       "descriptionLabel": "班级描述（可选）",
-      "descriptionPlaceholder": "添加班级描述，如课程内容、上课时间等"
+      "descriptionPlaceholder": "添加班级描述，如课程内容、上课时间等",
+      "teacher": "负责教师",
+      "teacherPlaceholder": "请选择负责该班级的教师",
+      "teacherDescription": "指定负责该班级的教师"
     },
     "validation": {
       "nameRequired": "请输入班级名称",
       "nameMaxLength": "班级名称不能超过100个字符",
-      "descriptionMaxLength": "班级描述不能超过500个字符"
+      "descriptionMaxLength": "班级描述不能超过500个字符",
+      "teacherRequired": "请选择负责教师"
     },
     "cancel": "取消",
     "saving": "保存中...",

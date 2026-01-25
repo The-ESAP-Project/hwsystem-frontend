@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link, useNavigate } from "react-router";
 import { z } from "zod";
+import { useUserList } from "@/features/admin/hooks/useUsers";
+import { usePermission } from "@/features/auth/hooks/usePermission";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,13 +25,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useCreateClass } from "../hooks/useClass";
 import { useRoutePrefix } from "../hooks/useClassBasePath";
 
-function useFormSchema() {
+function useFormSchema(isAdmin: boolean) {
   const { t } = useTranslation();
   return useMemo(
     () =>
@@ -42,8 +51,11 @@ function useFormSchema() {
           .string()
           .max(500, t("classEditPage.validation.descriptionMaxLength"))
           .optional(),
+        teacher_id: isAdmin
+          ? z.string().min(1, t("classEditPage.validation.teacherRequired"))
+          : z.string().optional(),
       }),
-    [t],
+    [t, isAdmin],
   );
 }
 
@@ -51,17 +63,26 @@ type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
 
 export function ClassCreatePage() {
   const { t } = useTranslation();
-  const formSchema = useFormSchema();
   const navigate = useNavigate();
   const prefix = useRoutePrefix();
   const createClass = useCreateClass();
   const currentUser = useCurrentUser();
+  const { isAdmin } = usePermission();
+  const formSchema = useFormSchema(isAdmin);
+
+  // 获取教师列表（仅管理员需要）
+  const { data: teachersData } = useUserList({
+    role: "teacher",
+    page_size: 100,
+  });
+  const teachers = teachersData?.items ?? [];
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
+      teacher_id: "",
     },
   });
 
@@ -75,6 +96,8 @@ export function ClassCreatePage() {
       const newClass = await createClass.mutateAsync({
         name: values.name,
         description: values.description || null,
+        teacher_id:
+          isAdmin && values.teacher_id ? Number(values.teacher_id) : null,
       });
       notify.success(
         t("notify.class.createSuccess"),
@@ -144,6 +167,60 @@ export function ClassCreatePage() {
                   </FormItem>
                 )}
               />
+
+              {isAdmin && (
+                <FormField
+                  control={form.control}
+                  name="teacher_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("classEditPage.fields.teacher")}</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t(
+                                "classEditPage.fields.teacherPlaceholder",
+                              )}
+                            >
+                              {field.value &&
+                                (() => {
+                                  const selectedTeacher = teachers.find(
+                                    (t) => String(t.id) === String(field.value),
+                                  );
+                                  return (
+                                    selectedTeacher?.display_name ||
+                                    selectedTeacher?.username ||
+                                    ""
+                                  );
+                                })()}
+                            </SelectValue>
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {teachers.map((teacher) => (
+                            <SelectItem
+                              key={teacher.id}
+                              value={String(teacher.id)}
+                            >
+                              {teacher.display_name ||
+                                teacher.username ||
+                                teacher.id}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        {t("classEditPage.fields.teacherDescription")}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <div className="flex gap-4">
                 <Button

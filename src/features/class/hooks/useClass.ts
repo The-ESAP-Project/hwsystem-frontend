@@ -76,8 +76,11 @@ export function useCreateClass() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { name: string; description?: string | null }) =>
-      classService.create(data),
+    mutationFn: (data: {
+      name: string;
+      description?: string | null;
+      teacher_id?: number | null;
+    }) => classService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: classKeys.lists() });
     },
