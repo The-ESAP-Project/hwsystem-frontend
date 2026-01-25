@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiSave } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
@@ -27,24 +28,40 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useUpdateUser, useUser } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/userService";
 
-const formSchema = z.object({
-  email: z.string().email("请输入有效的邮箱地址").optional().or(z.literal("")),
-  password: z
-    .string()
-    .min(8, "密码至少8个字符")
-    .regex(/[A-Z]/, "密码需包含大写字母")
-    .regex(/[a-z]/, "密码需包含小写字母")
-    .regex(/[0-9]/, "密码需包含数字")
-    .optional()
-    .or(z.literal("")),
-  display_name: z.string().max(64, "显示名最多64个字符").optional(),
-  role: z.enum(["user", "teacher", "admin"] as const),
-  status: z.enum(["active", "suspended", "banned"] as const),
-});
+function useFormSchema() {
+  const { t } = useTranslation();
+  return useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email(t("validation.invalidEmail"))
+          .optional()
+          .or(z.literal("")),
+        password: z
+          .string()
+          .min(8, t("userForm.validation.passwordMin"))
+          .regex(/[A-Z]/, t("userForm.validation.passwordUppercase"))
+          .regex(/[a-z]/, t("userForm.validation.passwordLowercase"))
+          .regex(/[0-9]/, t("userForm.validation.passwordNumber"))
+          .optional()
+          .or(z.literal("")),
+        display_name: z
+          .string()
+          .max(64, t("userForm.validation.displayNameMax"))
+          .optional(),
+        role: z.enum(["user", "teacher", "admin"] as const),
+        status: z.enum(["active", "suspended", "banned"] as const),
+      }),
+    [t],
+  );
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
 
 export default function UserEditPage() {
+  const { t } = useTranslation();
+  const formSchema = useFormSchema();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
@@ -123,10 +140,12 @@ export default function UserEditPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-destructive">
-              {error ? `加载失败: ${error.message}` : "用户不存在"}
+              {error
+                ? t("userForm.loadFailed", { message: error.message })
+                : t("userForm.userNotFound")}
             </p>
             <Button className="mt-4" onClick={() => navigate("/admin/users")}>
-              返回用户列表
+              {t("userForm.backToList")}
             </Button>
           </CardContent>
         </Card>
@@ -142,16 +161,16 @@ export default function UserEditPage() {
           <FiArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">编辑用户</h1>
+          <h1 className="text-2xl font-bold">{t("userForm.editTitle")}</h1>
           <p className="text-muted-foreground">
-            编辑用户 <strong>{user.username}</strong> 的信息
+            {t("userForm.editSubtitle", { username: user.username })}
           </p>
         </div>
       </div>
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>用户信息</CardTitle>
+          <CardTitle>{t("userForm.userInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -162,7 +181,7 @@ export default function UserEditPage() {
                   htmlFor="username-display"
                   className="text-sm font-medium"
                 >
-                  用户名
+                  {t("userForm.username")}
                 </label>
                 <Input
                   id="username-display"
@@ -170,7 +189,9 @@ export default function UserEditPage() {
                   disabled
                   className="bg-muted"
                 />
-                <p className="text-sm text-muted-foreground">用户名不可修改</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("userForm.usernameReadonly")}
+                </p>
               </div>
 
               <FormField
@@ -178,9 +199,13 @@ export default function UserEditPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>邮箱</FormLabel>
+                    <FormLabel>{t("userForm.email")}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="请输入邮箱" {...field} />
+                      <Input
+                        type="email"
+                        placeholder={t("userForm.emailPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -192,16 +217,16 @@ export default function UserEditPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>新密码</FormLabel>
+                    <FormLabel>{t("userForm.newPassword")}</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="留空则不修改密码"
+                        placeholder={t("userForm.passwordPlaceholderOptional")}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      如需修改密码，请输入新密码（至少8个字符，需包含大小写字母和数字）
+                      {t("userForm.passwordDescription")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -213,9 +238,12 @@ export default function UserEditPage() {
                 name="display_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>显示名</FormLabel>
+                    <FormLabel>{t("userForm.displayName")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="请输入显示名（可选）" {...field} />
+                      <Input
+                        placeholder={t("userForm.displayNamePlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -227,17 +255,23 @@ export default function UserEditPage() {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>角色</FormLabel>
+                    <FormLabel>{t("userForm.role")}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="选择用户角色" />
+                          <SelectValue
+                            placeholder={t("userForm.rolePlaceholder")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="user">用户</SelectItem>
-                        <SelectItem value="teacher">教师</SelectItem>
-                        <SelectItem value="admin">管理员</SelectItem>
+                        <SelectItem value="user">
+                          {t("role.student")}
+                        </SelectItem>
+                        <SelectItem value="teacher">
+                          {t("role.teacher")}
+                        </SelectItem>
+                        <SelectItem value="admin">{t("role.admin")}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -250,21 +284,29 @@ export default function UserEditPage() {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>状态</FormLabel>
+                    <FormLabel>{t("userForm.status")}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="选择用户状态" />
+                          <SelectValue
+                            placeholder={t("userForm.statusPlaceholder")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="active">正常</SelectItem>
-                        <SelectItem value="suspended">暂停</SelectItem>
-                        <SelectItem value="banned">封禁</SelectItem>
+                        <SelectItem value="active">
+                          {t("status.active")}
+                        </SelectItem>
+                        <SelectItem value="suspended">
+                          {t("status.suspended")}
+                        </SelectItem>
+                        <SelectItem value="banned">
+                          {t("status.banned")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      暂停或封禁状态的用户将无法登录系统
+                      {t("userForm.statusDescription")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -274,14 +316,14 @@ export default function UserEditPage() {
               <div className="flex gap-4">
                 <Button type="submit" disabled={updateUser.isPending}>
                   <FiSave className="mr-2 h-4 w-4" />
-                  {updateUser.isPending ? "保存中..." : "保存修改"}
+                  {updateUser.isPending ? t("common.saving") : t("common.save")}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => navigate(`/admin/users/${userId}`)}
                 >
-                  取消
+                  {t("common.cancel")}
                 </Button>
               </div>
             </form>

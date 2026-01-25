@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft, FiFile, FiUpload, FiX } from "react-icons/fi";
@@ -30,15 +30,31 @@ import { fileService } from "@/features/file/services/fileService";
 import { notify } from "@/stores/useNotificationStore";
 import { useCreateHomework } from "../hooks/useHomework";
 
-const formSchema = z.object({
-  title: z.string().min(1, "请输入作业标题").max(200, "标题不能超过200个字符"),
-  description: z.string().max(5000, "内容不能超过5000个字符").optional(),
-  max_score: z.number().min(1, "满分必须大于0").max(1000, "满分不能超过1000"),
-  deadline: z.string().optional(),
-  allow_late: z.boolean(),
-});
+function useFormSchema() {
+  const { t } = useTranslation();
+  return useMemo(
+    () =>
+      z.object({
+        title: z
+          .string()
+          .min(1, t("homeworkForm.validation.titleRequired"))
+          .max(200, t("homeworkForm.validation.titleMaxLength")),
+        description: z
+          .string()
+          .max(5000, t("homeworkForm.validation.descriptionMaxLength"))
+          .optional(),
+        max_score: z
+          .number()
+          .min(1, t("homeworkForm.validation.maxScoreMin"))
+          .max(1000, t("homeworkForm.validation.maxScoreMax")),
+        deadline: z.string().optional(),
+        allow_late: z.boolean(),
+      }),
+    [t],
+  );
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
 
 interface UploadedFile {
   download_token: string;
@@ -48,6 +64,7 @@ interface UploadedFile {
 
 export function HomeworkCreatePage() {
   const { t } = useTranslation();
+  const formSchema = useFormSchema();
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
   const prefix = useRoutePrefix();
@@ -126,14 +143,16 @@ export function HomeworkCreatePage() {
       <Button variant="ghost" asChild className="mb-4">
         <Link to={`${prefix}/classes/${classId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
-          返回班级
+          {t("homeworkPage.backToClass")}
         </Link>
       </Button>
 
       <Card>
         <CardHeader>
-          <CardTitle>布置作业</CardTitle>
-          <CardDescription>创建新的作业任务</CardDescription>
+          <CardTitle>{t("homeworkForm.createTitle")}</CardTitle>
+          <CardDescription>
+            {t("homeworkForm.createDescription")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -143,9 +162,12 @@ export function HomeworkCreatePage() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>作业标题</FormLabel>
+                    <FormLabel>{t("homeworkForm.titleLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="例如：链表实现" {...field} />
+                      <Input
+                        placeholder={t("homeworkForm.titlePlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -157,10 +179,10 @@ export function HomeworkCreatePage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>作业描述（可选）</FormLabel>
+                    <FormLabel>{t("homeworkForm.descriptionLabel")}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="详细描述作业要求..."
+                        placeholder={t("homeworkForm.descriptionPlaceholder")}
                         rows={6}
                         {...field}
                       />
@@ -176,7 +198,7 @@ export function HomeworkCreatePage() {
                   name="max_score"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>满分</FormLabel>
+                      <FormLabel>{t("homeworkForm.maxScoreLabel")}</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -198,7 +220,7 @@ export function HomeworkCreatePage() {
                   name="deadline"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>截止时间（可选）</FormLabel>
+                      <FormLabel>{t("homeworkForm.deadlineLabel")}</FormLabel>
                       <FormControl>
                         <Input type="datetime-local" {...field} />
                       </FormControl>
@@ -214,8 +236,10 @@ export function HomeworkCreatePage() {
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel>允许迟交</FormLabel>
-                      <FormDescription>截止后学生仍可提交作业</FormDescription>
+                      <FormLabel>{t("homeworkForm.allowLateLabel")}</FormLabel>
+                      <FormDescription>
+                        {t("homeworkForm.allowLateDescription")}
+                      </FormDescription>
                     </div>
                     <FormControl>
                       <Switch
@@ -229,7 +253,7 @@ export function HomeworkCreatePage() {
 
               {/* 附件上传 */}
               <div className="space-y-3">
-                <FormLabel>附件（可选）</FormLabel>
+                <FormLabel>{t("homeworkForm.attachmentLabel")}</FormLabel>
                 <div className="flex items-center gap-3">
                   <Button
                     type="button"
@@ -240,7 +264,9 @@ export function HomeworkCreatePage() {
                     }
                   >
                     <FiUpload className="mr-2 h-4 w-4" />
-                    {uploading ? "上传中..." : "上传文件"}
+                    {uploading
+                      ? t("homeworkForm.uploading")
+                      : t("homeworkForm.uploadFile")}
                   </Button>
                   <input
                     id="file-upload"
@@ -285,10 +311,12 @@ export function HomeworkCreatePage() {
                   variant="outline"
                   onClick={() => navigate(`${prefix}/classes/${classId}`)}
                 >
-                  取消
+                  {t("common.cancel")}
                 </Button>
                 <Button type="submit" disabled={createHomework.isPending}>
-                  {createHomework.isPending ? "创建中..." : "创建作业"}
+                  {createHomework.isPending
+                    ? t("common.creating")
+                    : t("homeworkForm.createHomework")}
                 </Button>
               </div>
             </form>

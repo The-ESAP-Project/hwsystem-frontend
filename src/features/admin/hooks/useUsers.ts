@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useApiError } from "@/hooks/useApiError";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import {
@@ -39,6 +40,7 @@ export function useUser(id: string | undefined) {
 
 // 创建用户
 export function useCreateUser() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const success = useNotificationStore((s) => s.success);
   const { handleError } = useApiError();
@@ -47,16 +49,20 @@ export function useCreateUser() {
     mutationFn: (data: CreateUserRequest) => userService.create(data),
     onSuccess: (user) => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
-      success("创建成功", `用户 ${user.username} 已创建`);
+      success(
+        t("notify.user.createSuccess"),
+        t("notify.user.created", { username: user.username }),
+      );
     },
     onError: (err) => {
-      handleError(err, { title: "创建失败" });
+      handleError(err, { title: t("notify.user.createFailed") });
     },
   });
 }
 
 // 更新用户
 export function useUpdateUser() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const success = useNotificationStore((s) => s.success);
   const { handleError } = useApiError();
@@ -67,16 +73,20 @@ export function useUpdateUser() {
     onSuccess: (user) => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail(user.id) });
-      success("更新成功", `用户 ${user.username} 已更新`);
+      success(
+        t("notify.user.updateSuccess"),
+        t("notify.user.updated", { username: user.username }),
+      );
     },
     onError: (err) => {
-      handleError(err, { title: "更新失败" });
+      handleError(err, { title: t("notify.user.updateFailed") });
     },
   });
 }
 
 // 删除用户
 export function useDeleteUser() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const success = useNotificationStore((s) => s.success);
   const { handleError } = useApiError();
@@ -85,16 +95,17 @@ export function useDeleteUser() {
     mutationFn: (id: string) => userService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
-      success("删除成功", "用户已删除");
+      success(t("notify.user.deleteSuccess"), t("notify.user.deleted"));
     },
     onError: (err) => {
-      handleError(err, { title: "删除失败" });
+      handleError(err, { title: t("notify.user.deleteFailed") });
     },
   });
 }
 
 // 导入用户
 export function useImportUsers() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { handleError } = useApiError();
 
@@ -104,13 +115,14 @@ export function useImportUsers() {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
     onError: (err) => {
-      handleError(err, { title: "导入失败" });
+      handleError(err, { title: t("notify.user.importFailed") });
     },
   });
 }
 
 // 导出用户
 export function useExportUsers() {
+  const { t } = useTranslation();
   const { handleError } = useApiError();
   const success = useNotificationStore((s) => s.success);
 
@@ -125,16 +137,17 @@ export function useExportUsers() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      success("导出成功", "用户数据已下载");
+      success(t("notify.user.exportSuccess"), t("notify.user.exported"));
     },
     onError: (err) => {
-      handleError(err, { title: "导出失败" });
+      handleError(err, { title: t("notify.user.exportFailed") });
     },
   });
 }
 
 // 下载导入模板
 export function useDownloadImportTemplate() {
+  const { t } = useTranslation();
   const { handleError } = useApiError();
 
   return useMutation({
@@ -151,7 +164,7 @@ export function useDownloadImportTemplate() {
       URL.revokeObjectURL(url);
     },
     onError: (err) => {
-      handleError(err, { title: "下载模板失败" });
+      handleError(err, { title: t("notify.user.templateDownloadFailed") });
     },
   });
 }

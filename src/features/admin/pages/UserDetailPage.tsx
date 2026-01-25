@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
   FiClock,
@@ -26,22 +27,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDeleteUser, useUser } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/userService";
 
-const roleLabels: Record<UserRole, string> = {
-  admin: "管理员",
-  teacher: "教师",
-  user: "用户",
-};
-
 const roleColors: Record<UserRole, string> = {
   admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   teacher: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   user: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-};
-
-const statusLabels: Record<UserStatus, string> = {
-  active: "正常",
-  suspended: "暂停",
-  banned: "封禁",
 };
 
 const statusColors: Record<UserStatus, string> = {
@@ -53,12 +42,25 @@ const statusColors: Record<UserStatus, string> = {
 };
 
 export default function UserDetailPage() {
+  const { t } = useTranslation();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const { data: user, isLoading, error } = useUser(userId);
   const deleteUser = useDeleteUser();
+
+  const roleLabels: Record<UserRole, string> = {
+    admin: t("role.admin"),
+    teacher: t("role.teacher"),
+    user: t("role.student"),
+  };
+
+  const statusLabels: Record<UserStatus, string> = {
+    active: t("status.active"),
+    suspended: t("status.suspended"),
+    banned: t("status.banned"),
+  };
 
   const handleDelete = async () => {
     if (!userId) return;
@@ -93,10 +95,12 @@ export default function UserDetailPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-destructive">
-              {error ? `加载失败: ${error.message}` : "用户不存在"}
+              {error
+                ? t("userForm.loadFailed", { message: error.message })
+                : t("userForm.userNotFound")}
             </p>
             <Button className="mt-4" onClick={() => navigate("/admin/users")}>
-              返回用户列表
+              {t("userForm.backToList")}
             </Button>
           </CardContent>
         </Card>
@@ -131,7 +135,7 @@ export default function UserDetailPage() {
           <Button variant="outline" asChild>
             <Link to={`/admin/users/${userId}/edit`}>
               <FiEdit2 className="mr-2 h-4 w-4" />
-              编辑
+              {t("common.edit")}
             </Link>
           </Button>
           <Button
@@ -139,7 +143,7 @@ export default function UserDetailPage() {
             onClick={() => setShowDeleteDialog(true)}
           >
             <FiTrash2 className="mr-2 h-4 w-4" />
-            删除
+            {t("common.delete")}
           </Button>
         </div>
       </div>
@@ -150,20 +154,26 @@ export default function UserDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FiUser className="h-5 w-5" />
-              基本信息
+              {t("userDetail.basicInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">用户 ID</span>
+              <span className="text-muted-foreground">
+                {t("userDetail.userId")}
+              </span>
               <span className="font-mono text-sm">{user.id}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">用户名</span>
+              <span className="text-muted-foreground">
+                {t("userForm.username")}
+              </span>
               <span>{user.username}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">显示名</span>
+              <span className="text-muted-foreground">
+                {t("userForm.displayName")}
+              </span>
               <span>{user.display_name || "-"}</span>
             </div>
           </CardContent>
@@ -174,12 +184,14 @@ export default function UserDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FiMail className="h-5 w-5" />
-              联系方式
+              {t("userDetail.contactInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">邮箱</span>
+              <span className="text-muted-foreground">
+                {t("userForm.email")}
+              </span>
               <span>{user.email}</span>
             </div>
           </CardContent>
@@ -190,18 +202,22 @@ export default function UserDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FiShield className="h-5 w-5" />
-              权限信息
+              {t("userDetail.permissionInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">角色</span>
+              <span className="text-muted-foreground">
+                {t("userForm.role")}
+              </span>
               <Badge variant="outline" className={roleColors[user.role]}>
                 {roleLabels[user.role]}
               </Badge>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">状态</span>
+              <span className="text-muted-foreground">
+                {t("userForm.status")}
+              </span>
               <Badge variant="outline" className={statusColors[user.status]}>
                 {statusLabels[user.status]}
               </Badge>
@@ -214,24 +230,30 @@ export default function UserDetailPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FiClock className="h-5 w-5" />
-              时间信息
+              {t("userDetail.timeInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">创建时间</span>
+              <span className="text-muted-foreground">
+                {t("userDetail.createdAt")}
+              </span>
               <span>{new Date(user.created_at).toLocaleString("zh-CN")}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">更新时间</span>
+              <span className="text-muted-foreground">
+                {t("userDetail.updatedAt")}
+              </span>
               <span>{new Date(user.updated_at).toLocaleString("zh-CN")}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-muted-foreground">最后登录</span>
+              <span className="text-muted-foreground">
+                {t("userDetail.lastLogin")}
+              </span>
               <span>
                 {user.last_login
                   ? new Date(user.last_login).toLocaleString("zh-CN")
-                  : "从未登录"}
+                  : t("userDetail.neverLoggedIn")}
               </span>
             </div>
           </CardContent>
@@ -242,19 +264,20 @@ export default function UserDetailPage() {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除用户？</AlertDialogTitle>
+            <AlertDialogTitle>{t("userDetail.deleteConfirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              即将删除用户 <strong>{user.username}</strong>，此操作不可撤销。
-              删除后该用户将无法登录系统。
+              {t("userDetail.deleteWarning", { username: user.username })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {deleteUser.isPending ? "删除中..." : "确认删除"}
+              {deleteUser.isPending
+                ? t("common.deleting")
+                : t("common.confirmDelete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

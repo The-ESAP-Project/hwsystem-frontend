@@ -66,27 +66,29 @@ export function UserExportDialog({
   };
 
   const roleLabels: Record<UserRole, string> = {
-    admin: "管理员",
-    teacher: "教师",
-    user: "用户",
+    admin: t("role.admin"),
+    teacher: t("role.teacher"),
+    user: t("role.student"),
   };
 
   const statusLabels: Record<UserStatus, string> = {
-    active: "正常",
-    suspended: "暂停",
-    banned: "封禁",
+    active: t("status.active"),
+    suspended: t("status.suspended"),
+    banned: t("status.banned"),
   };
 
   const getFilterSummary = () => {
     const parts: string[] = [];
     if (currentFilters.role && currentFilters.role !== "all") {
-      parts.push(`角色: ${roleLabels[currentFilters.role]}`);
+      parts.push(`${t("userForm.role")}: ${roleLabels[currentFilters.role]}`);
     }
     if (currentFilters.status && currentFilters.status !== "all") {
-      parts.push(`状态: ${statusLabels[currentFilters.status]}`);
+      parts.push(
+        `${t("userForm.status")}: ${statusLabels[currentFilters.status]}`,
+      );
     }
     if (currentFilters.search?.trim()) {
-      parts.push(`搜索: "${currentFilters.search.trim()}"`);
+      parts.push(`${t("common.search")}: "${currentFilters.search.trim()}"`);
     }
     return parts.length > 0 ? parts.join(", ") : null;
   };

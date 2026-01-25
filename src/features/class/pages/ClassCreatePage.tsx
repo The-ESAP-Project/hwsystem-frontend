@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { FiArrowLeft } from "react-icons/fi";
@@ -28,18 +29,29 @@ import { useCurrentUser } from "@/stores/useUserStore";
 import { useCreateClass } from "../hooks/useClass";
 import { useRoutePrefix } from "../hooks/useClassBasePath";
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, "请输入班级名称")
-    .max(100, "班级名称不能超过100个字符"),
-  description: z.string().max(500, "班级描述不能超过500个字符").optional(),
-});
+function useFormSchema() {
+  const { t } = useTranslation();
+  return useMemo(
+    () =>
+      z.object({
+        name: z
+          .string()
+          .min(1, t("classEditPage.validation.nameRequired"))
+          .max(100, t("classEditPage.validation.nameMaxLength")),
+        description: z
+          .string()
+          .max(500, t("classEditPage.validation.descriptionMaxLength"))
+          .optional(),
+      }),
+    [t],
+  );
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
 
 export function ClassCreatePage() {
   const { t } = useTranslation();
+  const formSchema = useFormSchema();
   const navigate = useNavigate();
   const prefix = useRoutePrefix();
   const createClass = useCreateClass();
@@ -79,16 +91,14 @@ export function ClassCreatePage() {
       <Button variant="ghost" asChild className="mb-4">
         <Link to={`${prefix}/classes`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
-          返回班级列表
+          {t("classPage.backToList")}
         </Link>
       </Button>
 
       <Card>
         <CardHeader>
-          <CardTitle>创建班级</CardTitle>
-          <CardDescription>
-            创建一个新的班级，学生可以通过邀请码加入
-          </CardDescription>
+          <CardTitle>{t("classCreatePage.title")}</CardTitle>
+          <CardDescription>{t("classCreatePage.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -98,15 +108,15 @@ export function ClassCreatePage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>班级名称</FormLabel>
+                    <FormLabel>{t("classEditPage.fields.name")}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="例如：数据结构 2026春季班"
+                        placeholder={t("classEditPage.fields.namePlaceholder")}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      为班级起一个简洁明了的名称
+                      {t("classEditPage.fields.nameDescription")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -118,10 +128,14 @@ export function ClassCreatePage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>班级描述（可选）</FormLabel>
+                    <FormLabel>
+                      {t("classEditPage.fields.descriptionLabel")}
+                    </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="添加班级描述，如课程内容、上课时间等"
+                        placeholder={t(
+                          "classEditPage.fields.descriptionPlaceholder",
+                        )}
                         rows={4}
                         {...field}
                       />
@@ -137,10 +151,12 @@ export function ClassCreatePage() {
                   variant="outline"
                   onClick={() => navigate(`${prefix}/classes`)}
                 >
-                  取消
+                  {t("common.cancel")}
                 </Button>
                 <Button type="submit" disabled={createClass.isPending}>
-                  {createClass.isPending ? "创建中..." : "创建班级"}
+                  {createClass.isPending
+                    ? t("common.creating")
+                    : t("classCreatePage.createClass")}
                 </Button>
               </div>
             </form>

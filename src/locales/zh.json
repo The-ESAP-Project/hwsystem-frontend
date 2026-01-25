@@ -25,7 +25,15 @@
     "retry": "重试",
     "refresh": "刷新",
     "copySuccess": "已复制到剪贴板",
-    "copyFailed": "复制失败"
+    "copyFailed": "复制失败",
+    "saving": "保存中...",
+    "creating": "创建中...",
+    "deleting": "删除中...",
+    "confirmDelete": "确认删除",
+    "download": "下载",
+    "selectAll": "全选",
+    "actions": "操作",
+    "search": "搜索"
   },
   "notify": {
     "file": {
@@ -77,7 +85,20 @@
     "user": {
       "batchDeleteSuccess": "成功删除 {{count}} 个用户",
       "batchDeleteFailed": "批量删除失败",
-      "exportSuccess": "已导出 {{count}} 个用户"
+      "exportSuccess": "已导出 {{count}} 个用户",
+      "createSuccess": "创建成功",
+      "created": "用户 {{username}} 已创建",
+      "createFailed": "创建失败",
+      "updateSuccess": "更新成功",
+      "updated": "用户 {{username}} 已更新",
+      "updateFailed": "更新失败",
+      "deleteSuccess": "删除成功",
+      "deleted": "用户已删除",
+      "deleteFailed": "删除失败",
+      "importFailed": "导入失败",
+      "exported": "用户数据已下载",
+      "exportFailed": "导出失败",
+      "templateDownloadFailed": "下载模板失败"
     },
     "auth": {
       "loginRequired": "请先登录"
@@ -805,6 +826,7 @@
   },
   "status": {
     "active": "正常",
+    "inactive": "未激活",
     "suspended": "暂停",
     "banned": "封禁"
   },
@@ -873,6 +895,22 @@
         "xlsx": "导出 XLSX"
       }
     }
+  },
+  "systemSettings": {
+    "title": "系统设置",
+    "subtitle": "查看系统基础配置信息",
+    "basicInfo": {
+      "title": "基础信息",
+      "systemName": "系统名称",
+      "environment": "运行环境",
+      "logLevel": "日志级别"
+    },
+    "fileUpload": {
+      "title": "文件上传配置",
+      "maxFileSize": "单文件大小限制",
+      "allowedTypes": "允许的文件类型"
+    },
+    "note": "系统设置由服务端配置文件定义，如需修改请联系系统管理员。"
   },
   "homework": {
     "list": {
@@ -1258,5 +1296,151 @@
       "continueHint": "可点击「下一个」继续批改",
       "shortcutHint": "快速切换"
     }
+  },
+  "userForm": {
+    "validation": {
+      "usernameMin": "用户名至少5个字符",
+      "usernameMax": "用户名最多16个字符",
+      "usernameFormat": "用户名只能包含字母、数字、下划线和连字符",
+      "passwordMin": "密码至少8个字符",
+      "passwordUppercase": "密码需包含大写字母",
+      "passwordLowercase": "密码需包含小写字母",
+      "passwordNumber": "密码需包含数字",
+      "displayNameMax": "显示名最多64个字符"
+    },
+    "loadFailed": "加载失败: {{message}}",
+    "userNotFound": "用户不存在",
+    "backToList": "返回用户列表",
+    "editTitle": "编辑用户",
+    "editSubtitle": "编辑用户 {{username}} 的信息",
+    "userInfo": "用户信息",
+    "username": "用户名",
+    "usernameReadonly": "用户名不可修改",
+    "email": "邮箱",
+    "emailPlaceholder": "请输入邮箱",
+    "newPassword": "新密码",
+    "passwordPlaceholderOptional": "留空则不修改密码",
+    "passwordDescription": "如需修改密码，请输入新密码（至少8个字符，需包含大小写字母和数字）",
+    "displayName": "显示名",
+    "displayNamePlaceholder": "请输入显示名（可选）",
+    "role": "角色",
+    "rolePlaceholder": "选择用户角色",
+    "status": "状态",
+    "statusPlaceholder": "选择用户状态",
+    "statusDescription": "暂停或封禁状态的用户将无法登录系统",
+    "createTitle": "创建用户",
+    "createSubtitle": "添加一个新的系统用户",
+    "usernameRequired": "用户名 *",
+    "usernamePlaceholder": "请输入用户名",
+    "usernameDescription": "5-16个字符，只能包含字母、数字、下划线和连字符",
+    "emailRequired": "邮箱 *",
+    "passwordRequired": "密码 *",
+    "passwordPlaceholder": "请输入密码",
+    "passwordRequirements": "至少8个字符，需包含大小写字母和数字",
+    "displayNameDescription": "用户在系统中显示的名称",
+    "roleRequired": "角色 *",
+    "roleDescription": "不同角色拥有不同的系统权限",
+    "createUser": "创建用户"
+  },
+  "userList": {
+    "title": "用户管理",
+    "description": "管理系统中的所有用户",
+    "export": "导出",
+    "import": "导入",
+    "filters": "筛选条件",
+    "searchPlaceholder": "搜索用户名或邮箱...",
+    "allRoles": "全部角色",
+    "allStatuses": "全部状态",
+    "batchDelete": "批量删除",
+    "noData": "暂无用户数据"
+  },
+  "userDetail": {
+    "basicInfo": "基本信息",
+    "userId": "用户 ID",
+    "contactInfo": "联系方式",
+    "permissionInfo": "权限信息",
+    "timeInfo": "时间信息",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "lastLogin": "最后登录",
+    "neverLoggedIn": "从未登录",
+    "deleteConfirm": "确认删除用户？",
+    "deleteWarning": "即将删除用户 {{username}}，此操作不可撤销。删除后该用户将无法登录系统。"
+  },
+  "notification": {
+    "center": "通知中心",
+    "unreadCount": "{{count}} 条未读通知",
+    "noUnread": "暂无未读通知",
+    "filter": "筛选",
+    "filterAll": "全部",
+    "filterUnread": "未读",
+    "filterRead": "已读",
+    "markAllRead": "全部已读",
+    "markAsRead": "标为已读",
+    "empty": "暂无通知",
+    "type": {
+      "homeworkCreated": "新作业",
+      "homeworkUpdated": "作业更新",
+      "homeworkDeadline": "作业截止",
+      "submissionReceived": "新提交",
+      "gradeReceived": "成绩发布",
+      "gradeUpdated": "成绩更新",
+      "classJoined": "加入班级",
+      "classRoleChanged": "角色变更"
+    }
+  },
+  "submitHomework": {
+    "backToDetail": "返回作业详情",
+    "cannotSubmit": "无法提交",
+    "deadlinePassedNoLate": "作业已截止，且不允许迟交。",
+    "lateWarningTitle": "迟交提醒",
+    "lateWarningDesc": "作业已截止，此次提交将被标记为迟交。",
+    "title": "提交作业",
+    "versionNumber": "第 {{version}} 次提交",
+    "contentLabel": "作业内容",
+    "contentPlaceholder": "在这里填写你的作业内容...",
+    "contentDesc": "支持纯文本，可以配合附件一起提交",
+    "attachmentLabel": "附件（可选）",
+    "uploading": "上传中...",
+    "uploadFile": "上传文件",
+    "submitting": "提交中...",
+    "submit": "提交作业"
+  },
+  "homeworkForm": {
+    "validation": {
+      "titleRequired": "请输入作业标题",
+      "titleMaxLength": "标题不能超过200个字符",
+      "descriptionMaxLength": "内容不能超过5000个字符",
+      "maxScoreMin": "满分必须大于0",
+      "maxScoreMax": "满分不能超过1000"
+    },
+    "backToDetail": "返回作业详情",
+    "editTitle": "编辑作业",
+    "editDescription": "修改作业信息",
+    "createTitle": "布置作业",
+    "createDescription": "创建新的作业任务",
+    "titleLabel": "作业标题",
+    "titlePlaceholder": "例如：链表实现",
+    "descriptionLabel": "作业描述（可选）",
+    "descriptionPlaceholder": "详细描述作业要求...",
+    "maxScoreLabel": "满分",
+    "deadlineLabel": "截止时间（可选）",
+    "allowLateLabel": "允许迟交",
+    "allowLateDescription": "截止后学生仍可提交作业",
+    "attachmentLabel": "附件（可选）",
+    "uploading": "上传中...",
+    "uploadFile": "上传文件",
+    "createHomework": "创建作业"
+  },
+  "classCreatePage": {
+    "title": "创建班级",
+    "description": "创建一个新的班级，学生可以通过邀请码加入",
+    "createClass": "创建班级"
+  },
+  "filePreview": {
+    "loadFailed": "加载预览失败",
+    "videoNotSupported": "您的浏览器不支持视频播放",
+    "unsupportedType": "该文件类型不支持预览",
+    "downloadToView": "请下载后查看"
   }
 }

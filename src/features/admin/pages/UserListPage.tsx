@@ -50,22 +50,10 @@ import { UserImportDialog } from "../components/UserImportDialog";
 import { type UserDetail, useDeleteUser, useUserList } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/userService";
 
-const roleLabels: Record<UserRole, string> = {
-  admin: "管理员",
-  teacher: "教师",
-  user: "用户",
-};
-
 const roleColors: Record<UserRole, string> = {
   admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   teacher: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   user: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-};
-
-const statusLabels: Record<UserStatus, string> = {
-  active: "正常",
-  suspended: "暂停",
-  banned: "封禁",
 };
 
 const statusColors: Record<UserStatus, string> = {
@@ -78,6 +66,19 @@ const statusColors: Record<UserStatus, string> = {
 
 export default function UserListPage() {
   const { t } = useTranslation();
+
+  const roleLabels: Record<UserRole, string> = {
+    admin: t("role.admin"),
+    teacher: t("role.teacher"),
+    user: t("role.student"),
+  };
+
+  const statusLabels: Record<UserStatus, string> = {
+    active: t("status.active"),
+    suspended: t("status.suspended"),
+    banned: t("status.banned"),
+  };
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
@@ -176,7 +177,9 @@ export default function UserListPage() {
       <div className="p-6">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-destructive">加载失败: {error.message}</p>
+            <p className="text-destructive">
+              {t("common.loadError")}: {error.message}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -188,22 +191,22 @@ export default function UserListPage() {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">用户管理</h1>
-          <p className="text-muted-foreground">管理系统中的所有用户</p>
+          <h1 className="text-2xl font-bold">{t("userList.title")}</h1>
+          <p className="text-muted-foreground">{t("userList.description")}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setExportDialogOpen(true)}>
             <FiDownload className="mr-2 h-4 w-4" />
-            导出
+            {t("userList.export")}
           </Button>
           <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
             <FiUpload className="mr-2 h-4 w-4" />
-            导入
+            {t("userList.import")}
           </Button>
           <Button asChild>
             <Link to="/admin/users/create">
               <FiPlus className="mr-2 h-4 w-4" />
-              创建用户
+              {t("userForm.createUser")}
             </Link>
           </Button>
         </div>
@@ -212,14 +215,14 @@ export default function UserListPage() {
       {/* 筛选栏 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">筛选条件</CardTitle>
+          <CardTitle className="text-base">{t("userList.filters")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
             <div className="relative flex-1 max-w-sm">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="搜索用户名或邮箱..."
+                placeholder={t("userList.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -234,13 +237,13 @@ export default function UserListPage() {
               }}
             >
               <SelectTrigger className="w-32">
-                <SelectValue placeholder="角色" />
+                <SelectValue placeholder={t("userForm.role")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">全部角色</SelectItem>
-                <SelectItem value="admin">管理员</SelectItem>
-                <SelectItem value="teacher">教师</SelectItem>
-                <SelectItem value="user">用户</SelectItem>
+                <SelectItem value="all">{t("userList.allRoles")}</SelectItem>
+                <SelectItem value="admin">{t("role.admin")}</SelectItem>
+                <SelectItem value="teacher">{t("role.teacher")}</SelectItem>
+                <SelectItem value="user">{t("role.student")}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -252,13 +255,15 @@ export default function UserListPage() {
               }}
             >
               <SelectTrigger className="w-32">
-                <SelectValue placeholder="状态" />
+                <SelectValue placeholder={t("userForm.status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">全部状态</SelectItem>
-                <SelectItem value="active">正常</SelectItem>
-                <SelectItem value="suspended">暂停</SelectItem>
-                <SelectItem value="banned">封禁</SelectItem>
+                <SelectItem value="all">{t("userList.allStatuses")}</SelectItem>
+                <SelectItem value="active">{t("status.active")}</SelectItem>
+                <SelectItem value="suspended">
+                  {t("status.suspended")}
+                </SelectItem>
+                <SelectItem value="banned">{t("status.banned")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -274,7 +279,7 @@ export default function UserListPage() {
         isAllSelected={isAllSelected}
         actions={[
           {
-            label: "批量删除",
+            label: t("userList.batchDelete"),
             icon: <FiUserMinus className="h-4 w-4" />,
             onClick: handleBatchDelete,
             variant: "destructive",
@@ -298,16 +303,18 @@ export default function UserListPage() {
                         clearSelection();
                       }
                     }}
-                    aria-label="全选"
+                    aria-label={t("common.selectAll")}
                   />
                 </TableHead>
-                <TableHead>用户名</TableHead>
-                <TableHead>邮箱</TableHead>
-                <TableHead>显示名</TableHead>
-                <TableHead>角色</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead>创建时间</TableHead>
-                <TableHead className="text-right">操作</TableHead>
+                <TableHead>{t("userForm.username")}</TableHead>
+                <TableHead>{t("userForm.email")}</TableHead>
+                <TableHead>{t("userForm.displayName")}</TableHead>
+                <TableHead>{t("userForm.role")}</TableHead>
+                <TableHead>{t("userForm.status")}</TableHead>
+                <TableHead>{t("userDetail.createdAt")}</TableHead>
+                <TableHead className="text-right">
+                  {t("common.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -346,7 +353,7 @@ export default function UserListPage() {
                     colSpan={8}
                     className="text-center py-8 text-muted-foreground"
                   >
-                    暂无用户数据
+                    {t("userList.noData")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -435,19 +442,22 @@ export default function UserListPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除用户？</AlertDialogTitle>
+            <AlertDialogTitle>{t("userDetail.deleteConfirm")}</AlertDialogTitle>
             <AlertDialogDescription>
-              即将删除用户 <strong>{deleteTarget?.username}</strong>
-              ，此操作不可撤销。 删除后该用户将无法登录系统。
+              {t("userDetail.deleteWarning", {
+                username: deleteTarget?.username,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {deleteUser.isPending ? "删除中..." : "确认删除"}
+              {deleteUser.isPending
+                ? t("common.deleting")
+                : t("common.confirmDelete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

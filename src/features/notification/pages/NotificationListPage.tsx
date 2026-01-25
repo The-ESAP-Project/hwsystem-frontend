@@ -42,17 +42,6 @@ const notificationTypeIcons: Record<string, React.ElementType> = {
   default: FiBell,
 };
 
-const notificationTypeLabels: Record<NotificationType, string> = {
-  homework_created: "新作业",
-  homework_updated: "作业更新",
-  homework_deadline: "作业截止",
-  submission_received: "新提交",
-  grade_received: "成绩发布",
-  grade_updated: "成绩更新",
-  class_joined: "加入班级",
-  class_role_changed: "角色变更",
-};
-
 export function NotificationListPage() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
@@ -63,6 +52,17 @@ export function NotificationListPage() {
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
   const deleteNotification = useDeleteNotification();
+
+  const notificationTypeLabels: Record<NotificationType, string> = {
+    homework_created: t("notification.type.homeworkCreated"),
+    homework_updated: t("notification.type.homeworkUpdated"),
+    homework_deadline: t("notification.type.homeworkDeadline"),
+    submission_received: t("notification.type.submissionReceived"),
+    grade_received: t("notification.type.gradeReceived"),
+    grade_updated: t("notification.type.gradeUpdated"),
+    class_joined: t("notification.type.classJoined"),
+    class_role_changed: t("notification.type.classRoleChanged"),
+  };
 
   // 根据用户角色确定路由前缀
   const rolePrefix =
@@ -130,7 +130,9 @@ export function NotificationListPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center text-destructive">加载失败，请刷新重试</div>
+        <div className="text-center text-destructive">
+          {t("common.loadError")}
+        </div>
       </div>
     );
   }
@@ -141,20 +143,28 @@ export function NotificationListPage() {
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">通知中心</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t("notification.center")}
+          </h1>
           <p className="mt-1 text-muted-foreground">
-            {unreadCount > 0 ? `${unreadCount} 条未读通知` : "暂无未读通知"}
+            {unreadCount > 0
+              ? t("notification.unreadCount", { count: unreadCount })
+              : t("notification.noUnread")}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="筛选" />
+              <SelectValue placeholder={t("notification.filter")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">全部</SelectItem>
-              <SelectItem value="unread">未读</SelectItem>
-              <SelectItem value="read">已读</SelectItem>
+              <SelectItem value="all">{t("notification.filterAll")}</SelectItem>
+              <SelectItem value="unread">
+                {t("notification.filterUnread")}
+              </SelectItem>
+              <SelectItem value="read">
+                {t("notification.filterRead")}
+              </SelectItem>
             </SelectContent>
           </Select>
           {unreadCount > 0 && (
@@ -164,7 +174,7 @@ export function NotificationListPage() {
               disabled={markAllAsRead.isPending}
             >
               <FiCheck className="mr-2 h-4 w-4" />
-              全部已读
+              {t("notification.markAllRead")}
             </Button>
           )}
         </div>
@@ -189,7 +199,9 @@ export function NotificationListPage() {
           ) : data?.items.length === 0 ? (
             <div className="py-12 text-center">
               <FiBell className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 text-muted-foreground">暂无通知</p>
+              <p className="mt-4 text-muted-foreground">
+                {t("notification.empty")}
+              </p>
             </div>
           ) : (
             <div className="divide-y">
@@ -254,7 +266,7 @@ export function NotificationListPage() {
                                 }
                               >
                                 <FiCheck className="mr-1 h-4 w-4" />
-                                标为已读
+                                {t("notification.markAsRead")}
                               </Button>
                             )}
                             <Button

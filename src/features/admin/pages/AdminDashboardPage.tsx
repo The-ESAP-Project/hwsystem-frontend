@@ -184,22 +184,24 @@ function RoleBadge({ role }: { role: string }) {
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+
   const statusConfig: Record<
     string,
     {
-      label: string;
+      labelKey: string;
       variant: "default" | "secondary" | "destructive" | "outline";
     }
   > = {
-    active: { label: "活跃", variant: "default" },
-    inactive: { label: "未激活", variant: "secondary" },
-    banned: { label: "封禁", variant: "destructive" },
+    active: { labelKey: "status.active", variant: "default" },
+    inactive: { labelKey: "status.inactive", variant: "secondary" },
+    banned: { labelKey: "status.banned", variant: "destructive" },
   };
 
   const config = statusConfig[status] || {
-    label: status,
+    labelKey: status,
     variant: "outline" as const,
   };
 
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return <Badge variant={config.variant}>{t(config.labelKey)}</Badge>;
 }

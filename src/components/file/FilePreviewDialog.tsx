@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiDownload, FiFile } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,7 @@ function formatFileSize(size: string | number): string {
 }
 
 export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +88,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
             ? e.message
             : e instanceof Error
               ? e.message
-              : "加载预览失败";
+              : t("filePreview.loadFailed");
           setError(msg);
         }
       } finally {
@@ -101,7 +103,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
     return () => {
       cancelled = true;
     };
-  }, [open, file.download_token, previewType]);
+  }, [open, file.download_token, previewType, t]);
 
   // 组件卸载时清理
   useEffect(() => {
@@ -156,7 +158,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
         <div className="flex flex-col items-center justify-center min-h-[200px] text-destructive">
           <p>{error}</p>
           <Button variant="outline" className="mt-4" onClick={handleRetry}>
-            重试
+            {t("common.retry")}
           </Button>
         </div>
       );
@@ -189,7 +191,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
             className="max-w-full max-h-[60vh] mx-auto"
           >
             <track kind="captions" />
-            您的浏览器不支持视频播放
+            {t("filePreview.videoNotSupported")}
           </video>
         ) : null;
 
@@ -204,8 +206,8 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
         return (
           <div className="flex flex-col items-center justify-center min-h-[200px] text-muted-foreground">
             <FiFile className="h-16 w-16 mb-4" />
-            <p>该文件类型不支持预览</p>
-            <p className="text-sm mt-1">请下载后查看</p>
+            <p>{t("filePreview.unsupportedType")}</p>
+            <p className="text-sm mt-1">{t("filePreview.downloadToView")}</p>
           </div>
         );
     }
@@ -238,7 +240,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
         <DialogFooter>
           <Button variant="outline" onClick={handleDownload}>
             <FiDownload className="mr-2 h-4 w-4" />
-            下载
+            {t("common.download")}
           </Button>
         </DialogFooter>
       </DialogContent>

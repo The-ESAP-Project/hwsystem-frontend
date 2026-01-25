@@ -25,7 +25,15 @@
     "retry": "Retry",
     "refresh": "Refresh",
     "copySuccess": "Copied to clipboard",
-    "copyFailed": "Copy failed"
+    "copyFailed": "Copy failed",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "deleting": "Deleting...",
+    "confirmDelete": "Confirm Delete",
+    "download": "Download",
+    "selectAll": "Select All",
+    "actions": "Actions",
+    "search": "Search"
   },
   "notify": {
     "file": {
@@ -77,7 +85,20 @@
     "user": {
       "batchDeleteSuccess": "Successfully deleted {{count}} users",
       "batchDeleteFailed": "Batch delete failed",
-      "exportSuccess": "Exported {{count}} users"
+      "exportSuccess": "Exported {{count}} users",
+      "createSuccess": "Created successfully",
+      "created": "User {{username}} has been created",
+      "createFailed": "Failed to create",
+      "updateSuccess": "Updated successfully",
+      "updated": "User {{username}} has been updated",
+      "updateFailed": "Failed to update",
+      "deleteSuccess": "Deleted successfully",
+      "deleted": "User has been deleted",
+      "deleteFailed": "Failed to delete",
+      "importFailed": "Failed to import",
+      "exported": "User data downloaded",
+      "exportFailed": "Failed to export",
+      "templateDownloadFailed": "Failed to download template"
     },
     "auth": {
       "loginRequired": "Please login first"
@@ -805,6 +826,7 @@
   },
   "status": {
     "active": "Active",
+    "inactive": "Inactive",
     "suspended": "Suspended",
     "banned": "Banned"
   },
@@ -873,6 +895,22 @@
         "xlsx": "Export XLSX"
       }
     }
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "subtitle": "View system configuration",
+    "basicInfo": {
+      "title": "Basic Information",
+      "systemName": "System Name",
+      "environment": "Environment",
+      "logLevel": "Log Level"
+    },
+    "fileUpload": {
+      "title": "File Upload Configuration",
+      "maxFileSize": "Max File Size",
+      "allowedTypes": "Allowed File Types"
+    },
+    "note": "System settings are defined in server configuration files. Contact the system administrator to make changes."
   },
   "homework": {
     "list": {
@@ -1258,5 +1296,151 @@
       "continueHint": "Click \"Next\" to continue grading",
       "shortcutHint": "Quick switch"
     }
+  },
+  "userForm": {
+    "validation": {
+      "usernameMin": "Username must be at least 5 characters",
+      "usernameMax": "Username cannot exceed 16 characters",
+      "usernameFormat": "Username can only contain letters, numbers, underscores and hyphens",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordUppercase": "Password must contain an uppercase letter",
+      "passwordLowercase": "Password must contain a lowercase letter",
+      "passwordNumber": "Password must contain a number",
+      "displayNameMax": "Display name cannot exceed 64 characters"
+    },
+    "loadFailed": "Failed to load: {{message}}",
+    "userNotFound": "User not found",
+    "backToList": "Back to Users",
+    "editTitle": "Edit User",
+    "editSubtitle": "Edit user {{username}}'s information",
+    "userInfo": "User Information",
+    "username": "Username",
+    "usernameReadonly": "Username cannot be changed",
+    "email": "Email",
+    "emailPlaceholder": "Enter email",
+    "newPassword": "New Password",
+    "passwordPlaceholderOptional": "Leave blank to keep unchanged",
+    "passwordDescription": "To change password, enter a new one (at least 8 characters, must contain uppercase, lowercase and number)",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Enter display name (optional)",
+    "role": "Role",
+    "rolePlaceholder": "Select role",
+    "status": "Status",
+    "statusPlaceholder": "Select status",
+    "statusDescription": "Suspended or banned users cannot log in",
+    "createTitle": "Create User",
+    "createSubtitle": "Add a new system user",
+    "usernameRequired": "Username *",
+    "usernamePlaceholder": "Enter username",
+    "usernameDescription": "5-16 characters, letters, numbers, underscores and hyphens only",
+    "emailRequired": "Email *",
+    "passwordRequired": "Password *",
+    "passwordPlaceholder": "Enter password",
+    "passwordRequirements": "At least 8 characters, must contain uppercase, lowercase and number",
+    "displayNameDescription": "Name displayed in the system",
+    "roleRequired": "Role *",
+    "roleDescription": "Different roles have different permissions",
+    "createUser": "Create User"
+  },
+  "userList": {
+    "title": "User Management",
+    "description": "Manage all users in the system",
+    "export": "Export",
+    "import": "Import",
+    "filters": "Filters",
+    "searchPlaceholder": "Search username or email...",
+    "allRoles": "All Roles",
+    "allStatuses": "All Statuses",
+    "batchDelete": "Batch Delete",
+    "noData": "No user data"
+  },
+  "userDetail": {
+    "basicInfo": "Basic Information",
+    "userId": "User ID",
+    "contactInfo": "Contact Information",
+    "permissionInfo": "Permission Information",
+    "timeInfo": "Time Information",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "lastLogin": "Last Login",
+    "neverLoggedIn": "Never logged in",
+    "deleteConfirm": "Delete this user?",
+    "deleteWarning": "User {{username}} will be permanently deleted. This action cannot be undone."
+  },
+  "notification": {
+    "center": "Notification Center",
+    "unreadCount": "{{count}} unread notifications",
+    "noUnread": "No unread notifications",
+    "filter": "Filter",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "filterRead": "Read",
+    "markAllRead": "Mark All Read",
+    "markAsRead": "Mark as Read",
+    "empty": "No notifications",
+    "type": {
+      "homeworkCreated": "New Homework",
+      "homeworkUpdated": "Homework Updated",
+      "homeworkDeadline": "Homework Due",
+      "submissionReceived": "New Submission",
+      "gradeReceived": "Grade Released",
+      "gradeUpdated": "Grade Updated",
+      "classJoined": "Joined Class",
+      "classRoleChanged": "Role Changed"
+    }
+  },
+  "submitHomework": {
+    "backToDetail": "Back to Homework",
+    "cannotSubmit": "Cannot Submit",
+    "deadlinePassedNoLate": "Deadline has passed and late submissions are not allowed.",
+    "lateWarningTitle": "Late Submission Warning",
+    "lateWarningDesc": "The deadline has passed. This submission will be marked as late.",
+    "title": "Submit Homework",
+    "versionNumber": "Submission #{{version}}",
+    "contentLabel": "Homework Content",
+    "contentPlaceholder": "Write your homework content here...",
+    "contentDesc": "Plain text supported, can submit with attachments",
+    "attachmentLabel": "Attachments (Optional)",
+    "uploading": "Uploading...",
+    "uploadFile": "Upload File",
+    "submitting": "Submitting...",
+    "submit": "Submit Homework"
+  },
+  "homeworkForm": {
+    "validation": {
+      "titleRequired": "Please enter homework title",
+      "titleMaxLength": "Title cannot exceed 200 characters",
+      "descriptionMaxLength": "Description cannot exceed 5000 characters",
+      "maxScoreMin": "Max score must be greater than 0",
+      "maxScoreMax": "Max score cannot exceed 1000"
+    },
+    "backToDetail": "Back to Homework",
+    "editTitle": "Edit Homework",
+    "editDescription": "Modify homework information",
+    "createTitle": "Create Homework",
+    "createDescription": "Create a new assignment",
+    "titleLabel": "Homework Title",
+    "titlePlaceholder": "e.g. Linked List Implementation",
+    "descriptionLabel": "Description (Optional)",
+    "descriptionPlaceholder": "Describe the requirements...",
+    "maxScoreLabel": "Max Score",
+    "deadlineLabel": "Deadline (Optional)",
+    "allowLateLabel": "Allow Late Submission",
+    "allowLateDescription": "Students can submit after the deadline",
+    "attachmentLabel": "Attachments (Optional)",
+    "uploading": "Uploading...",
+    "uploadFile": "Upload File",
+    "createHomework": "Create Homework"
+  },
+  "classCreatePage": {
+    "title": "Create Class",
+    "description": "Create a new class, students can join with an invite code",
+    "createClass": "Create Class"
+  },
+  "filePreview": {
+    "loadFailed": "Failed to load preview",
+    "videoNotSupported": "Your browser does not support video playback",
+    "unsupportedType": "This file type is not supported for preview",
+    "downloadToView": "Please download to view"
   }
 }

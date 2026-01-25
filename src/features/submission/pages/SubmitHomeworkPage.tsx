@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
@@ -40,11 +40,21 @@ import {
   useMyLatestSubmission,
 } from "../hooks/useSubmission";
 
-const formSchema = z.object({
-  content: z.string().max(10000, "内容不能超过10000个字符").optional(),
-});
+function useFormSchema() {
+  const { t } = useTranslation();
+  return useMemo(
+    () =>
+      z.object({
+        content: z
+          .string()
+          .max(10000, t("validation.maxLength", { max: 10000 }))
+          .optional(),
+      }),
+    [t],
+  );
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
 
 interface UploadedFile {
   download_token: string;
@@ -54,6 +64,7 @@ interface UploadedFile {
 
 export function SubmitHomeworkPage() {
   const { t } = useTranslation();
+  const formSchema = useFormSchema();
   const { classId, homeworkId } = useParams<{
     classId: string;
     homeworkId: string;
@@ -146,13 +157,15 @@ export function SubmitHomeworkPage() {
         <Button variant="ghost" asChild className="mb-4">
           <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
             <FiArrowLeft className="mr-2 h-4 w-4" />
-            返回作业详情
+            {t("submitHomework.backToDetail")}
           </Link>
         </Button>
         <Alert variant="destructive">
           <FiAlertTriangle className="h-4 w-4" />
-          <AlertTitle>无法提交</AlertTitle>
-          <AlertDescription>作业已截止，且不允许迟交。</AlertDescription>
+          <AlertTitle>{t("submitHomework.cannotSubmit")}</AlertTitle>
+          <AlertDescription>
+            {t("submitHomework.deadlinePassedNoLate")}
+          </AlertDescription>
         </Alert>
       </div>
     );
@@ -163,26 +176,27 @@ export function SubmitHomeworkPage() {
       <Button variant="ghost" asChild className="mb-4">
         <Link to={`${prefix}/classes/${classId}/homework/${homeworkId}`}>
           <FiArrowLeft className="mr-2 h-4 w-4" />
-          返回作业详情
+          {t("submitHomework.backToDetail")}
         </Link>
       </Button>
 
       {isLateSubmission && (
         <Alert className="mb-6">
           <FiAlertTriangle className="h-4 w-4" />
-          <AlertTitle>迟交提醒</AlertTitle>
+          <AlertTitle>{t("submitHomework.lateWarningTitle")}</AlertTitle>
           <AlertDescription>
-            作业已截止，此次提交将被标记为迟交。
+            {t("submitHomework.lateWarningDesc")}
           </AlertDescription>
         </Alert>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>提交作业</CardTitle>
+          <CardTitle>{t("submitHomework.title")}</CardTitle>
           <CardDescription>
             {homework?.title}
-            {latestSubmission && ` · 第 ${latestSubmission.version + 1} 次提交`}
+            {latestSubmission &&
+              ` · ${t("submitHomework.versionNumber", { version: latestSubmission.version + 1 })}`}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -193,16 +207,16 @@ export function SubmitHomeworkPage() {
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>作业内容</FormLabel>
+                    <FormLabel>{t("submitHomework.contentLabel")}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="在这里填写你的作业内容..."
+                        placeholder={t("submitHomework.contentPlaceholder")}
                         rows={10}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      支持纯文本，可以配合附件一起提交
+                      {t("submitHomework.contentDesc")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -211,7 +225,7 @@ export function SubmitHomeworkPage() {
 
               {/* 附件上传 */}
               <div className="space-y-3">
-                <FormLabel>附件（可选）</FormLabel>
+                <FormLabel>{t("submitHomework.attachmentLabel")}</FormLabel>
                 <div className="flex items-center gap-3">
                   <Button
                     type="button"
@@ -222,7 +236,9 @@ export function SubmitHomeworkPage() {
                     }
                   >
                     <FiUpload className="mr-2 h-4 w-4" />
-                    {uploading ? "上传中..." : "上传文件"}
+                    {uploading
+                      ? t("submitHomework.uploading")
+                      : t("submitHomework.uploadFile")}
                   </Button>
                   <input
                     id="file-upload"
@@ -271,10 +287,12 @@ export function SubmitHomeworkPage() {
                     )
                   }
                 >
-                  取消
+                  {t("common.cancel")}
                 </Button>
                 <Button type="submit" disabled={createSubmission.isPending}>
-                  {createSubmission.isPending ? "提交中..." : "提交作业"}
+                  {createSubmission.isPending
+                    ? t("submitHomework.submitting")
+                    : t("submitHomework.submit")}
                 </Button>
               </div>
             </form>

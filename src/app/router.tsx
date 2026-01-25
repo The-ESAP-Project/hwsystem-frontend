@@ -13,6 +13,7 @@ import { DefaultLayout } from "@/components/layout/DefaultLayout";
 // 管理员页面
 import { AdminDashboardPage } from "@/features/admin/pages/AdminDashboardPage";
 import ClassManagementPage from "@/features/admin/pages/ClassManagementPage";
+import { SystemSettingsPage } from "@/features/admin/pages/SystemSettingsPage";
 import UserCreatePage from "@/features/admin/pages/UserCreatePage";
 import UserDetailPage from "@/features/admin/pages/UserDetailPage";
 import UserEditPage from "@/features/admin/pages/UserEditPage";
@@ -331,6 +332,8 @@ export const router = createBrowserRouter([
         element: <SubmitHomeworkPage />,
       },
       { path: "submissions/:submissionId/grade", element: <GradePage /> },
+      // 系统设置
+      { path: "settings", element: <SystemSettingsPage /> },
     ],
   },
 
