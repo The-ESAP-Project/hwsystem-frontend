@@ -62,7 +62,11 @@ export const classService = {
   },
 
   // 创建班级
-  create: async (req: { name: string; description?: string | null }) => {
+  create: async (req: {
+    name: string;
+    description?: string | null;
+    teacher_id?: number | null;
+  }) => {
     const { data } = await api.post<{ data: ClassDetailStringified }>(
       "/classes",
       req,

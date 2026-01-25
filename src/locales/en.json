@@ -1113,12 +1113,16 @@
       "namePlaceholder": "e.g. Data Structures Spring 2026",
       "nameDescription": "Give your class a clear name",
       "descriptionLabel": "Description (Optional)",
-      "descriptionPlaceholder": "Add class description, schedule, etc."
+      "descriptionPlaceholder": "Add class description, schedule, etc.",
+      "teacher": "Teacher in Charge",
+      "teacherPlaceholder": "Select the teacher responsible for this class",
+      "teacherDescription": "Assign a teacher to manage this class"
     },
     "validation": {
       "nameRequired": "Please enter class name",
       "nameMaxLength": "Class name cannot exceed 100 characters",
-      "descriptionMaxLength": "Description cannot exceed 500 characters"
+      "descriptionMaxLength": "Description cannot exceed 500 characters",
+      "teacherRequired": "Please select a teacher"
     },
     "cancel": "Cancel",
     "saving": "Saving...",
