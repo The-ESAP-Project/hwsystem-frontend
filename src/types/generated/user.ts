@@ -25,4 +25,37 @@ export type UserResponse = { user: User, };
 
 export type UserRole = "user" | "teacher" | "admin";
 
+/**
+ * 用户统计响应（合并学生和教师视角）
+ */
+export type UserStatsResponse = { 
+/**
+ * 班级数量
+ */
+class_count: bigint, 
+/**
+ * 学生总数（教师视角）
+ */
+total_students: bigint, 
+/**
+ * 待完成作业（学生视角：未提交）
+ */
+homework_pending: bigint, 
+/**
+ * 已提交作业（学生视角：已提交待批改）
+ */
+homework_submitted: bigint, 
+/**
+ * 已批改作业（学生视角：已批改）
+ */
+homework_graded: bigint, 
+/**
+ * 待批改数（教师视角：待批改的提交数）
+ */
+pending_review: bigint, 
+/**
+ * 服务器时间（ISO 8601）
+ */
+server_time: string, };
+
 export type UserStatus = "active" | "suspended" | "banned";

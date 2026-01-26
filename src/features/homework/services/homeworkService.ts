@@ -1,13 +1,16 @@
 import api from "@/lib/api";
 import type { Stringify } from "@/types";
 import type {
+  AllHomeworksResponse,
   CreateHomeworkRequest,
+  DeadlineFilter,
   Homework,
   HomeworkCreator,
   HomeworkDetail,
   HomeworkListResponse,
   HomeworkStatsResponse,
   HomeworkStatsSummary,
+  HomeworkUserStatus,
   MyHomeworkStatsResponse,
   MySubmissionSummary,
   ScoreRange,
@@ -60,7 +63,26 @@ export interface HomeworkListResponseStringified {
 export type HomeworkStats = Stringify<HomeworkStatsResponse>;
 
 // 重导出子类型供页面使用
-export type { ScoreStats, ScoreRange, UnsubmittedStudent };
+export type {
+  ScoreStats,
+  ScoreRange,
+  UnsubmittedStudent,
+  HomeworkUserStatus,
+  DeadlineFilter,
+};
+
+// 跨班级作业列表响应类型
+export type AllHomeworksResponseStringified = Stringify<AllHomeworksResponse>;
+
+// 跨班级作业列表查询参数
+export interface AllHomeworksParams {
+  page?: number;
+  size?: number;
+  status?: HomeworkUserStatus;
+  deadline_filter?: DeadlineFilter;
+  search?: string;
+  include_stats?: boolean;
+}
 
 export const homeworkService = {
   // 获取班级作业列表
@@ -153,5 +175,14 @@ export const homeworkService = {
       "/homeworks/teacher/stats",
     );
     return data.data as unknown as Stringify<TeacherHomeworkStatsResponse>;
+  },
+
+  // 获取所有班级的作业列表（跨班级）
+  listAll: async (params?: AllHomeworksParams) => {
+    const { data } = await api.get<{ data: AllHomeworksResponseStringified }>(
+      "/homeworks/all",
+      { params },
+    );
+    return data.data;
   },
 };

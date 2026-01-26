@@ -17,12 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useClassList } from "@/features/class/hooks/useClass";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
-import {
-  useAllClassesHomeworks,
-  useMyHomeworkStats,
-} from "@/features/homework/hooks/useHomework";
+import { useAllHomeworks } from "@/features/homework/hooks/useHomework";
 import { useUnreadCount } from "@/features/notification/hooks/useNotification";
+import { useUserStats } from "@/features/user/hooks/useUser";
 import { useCurrentUser } from "@/stores/useUserStore";
+import { formatRemainingTime, getDeadlineInfo } from "@/utils/deadline";
 
 export function UserDashboardPage() {
   const { t } = useTranslation();
@@ -30,21 +29,24 @@ export function UserDashboardPage() {
   const user = useCurrentUser();
   const { data: classData, isLoading: classLoading } = useClassList();
   const { data: unreadData } = useUnreadCount();
-  const { data: statsData, isLoading: statsLoading } = useMyHomeworkStats();
+  const { data: statsData, isLoading: statsLoading } = useUserStats();
 
   const classes = classData?.items ?? [];
   const unreadCount = Number(unreadData?.unread_count ?? 0);
 
-  // 获取所有班级的作业（仅用于显示待完成列表）
-  const classIds = useMemo(() => classes.map((c) => String(c.id)), [classes]);
-  const { data: allHomeworks, isLoading: homeworksLoading } =
-    useAllClassesHomeworks(classIds);
+  // 获取待完成作业列表（使用新的跨班级 API）
+  const { data: allHomeworksData, isLoading: homeworksLoading } =
+    useAllHomeworks({
+      status: "pending",
+      deadline_filter: "active",
+      size: 10,
+    });
 
-  // 待完成作业列表（仅用于显示，不用于统计）
+  // 待完成作业列表（已由后端过滤和排序）
   const upcomingHomeworks = useMemo(() => {
-    const pending = allHomeworks.filter((hw) => !hw.my_submission);
+    const items = allHomeworksData?.items ?? [];
     // 按截止日期排序（最近的在前，无截止日期的在最后）
-    return [...pending]
+    return [...items]
       .sort((a, b) => {
         if (!a.deadline && !b.deadline) return 0;
         if (!a.deadline) return 1;
@@ -52,27 +54,32 @@ export function UserDashboardPage() {
         return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
       })
       .slice(0, 5);
-  }, [allHomeworks]);
+  }, [allHomeworksData]);
 
-  // 格式化截止日期
+  // 使用服务器时间进行截止日期判断
+  const serverTime = allHomeworksData?.server_time;
+
+  // 格式化截止日期（使用服务器时间）
   const formatDeadline = (deadline: string | null) => {
     if (!deadline) return t("dashboard.user.noDeadline");
-    const date = new Date(deadline);
-    const now = new Date();
-    const diff = date.getTime() - now.getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const info = getDeadlineInfo(deadline, serverTime);
+    if (!info) return t("dashboard.user.noDeadline");
 
-    if (days < 0) {
-      return `${t("dashboard.user.deadline")}: ${t("date.daysAgo", { days: Math.abs(days) })}`;
-    } else if (days === 0) {
-      return `${t("dashboard.user.deadline")}: ${t("date.today")}`;
-    } else if (days === 1) {
-      return `${t("dashboard.user.deadline")}: ${t("date.tomorrow")}`;
-    } else if (days <= 7) {
-      return `${t("dashboard.user.deadline")}: ${t("date.daysLater", { days })}`;
-    } else {
-      return `${t("dashboard.user.deadline")}: ${date.toLocaleDateString()}`;
+    if (info.isExpired) {
+      return `${t("dashboard.user.deadline")}: ${formatRemainingTime(info.remainingMs!, "zh-CN")}`;
+    } else if (info.remainingMs !== null) {
+      const days = Math.ceil(info.remainingMs / (1000 * 60 * 60 * 24));
+      if (days === 0) {
+        return `${t("dashboard.user.deadline")}: ${t("date.today")}`;
+      } else if (days === 1) {
+        return `${t("dashboard.user.deadline")}: ${t("date.tomorrow")}`;
+      } else if (days <= 7) {
+        return `${t("dashboard.user.deadline")}: ${t("date.daysLater", { days })}`;
+      } else {
+        return `${t("dashboard.user.deadline")}: ${new Date(deadline).toLocaleDateString()}`;
+      }
     }
+    return t("dashboard.user.noDeadline");
   };
 
   // 获取班级名称
@@ -115,25 +122,31 @@ export function UserDashboardPage() {
         <StatCard
           icon={FiBookOpen}
           labelKey="dashboard.user.stats.joinedClasses"
-          value={classes.length}
+          value={
+            statsLoading
+              ? "-"
+              : Number(statsData?.class_count ?? classes.length)
+          }
           variant="blue"
         />
         <StatCard
           icon={FiClock}
           labelKey="dashboard.user.stats.pendingHomeworks"
-          value={statsLoading ? "-" : Number(statsData?.pending ?? 0)}
+          value={statsLoading ? "-" : Number(statsData?.homework_pending ?? 0)}
           variant="orange"
         />
         <StatCard
           icon={FiFileText}
           labelKey="dashboard.user.stats.submittedHomeworks"
-          value={statsLoading ? "-" : Number(statsData?.submitted ?? 0)}
+          value={
+            statsLoading ? "-" : Number(statsData?.homework_submitted ?? 0)
+          }
           variant="purple"
         />
         <StatCard
           icon={FiCheckCircle}
           labelKey="dashboard.user.stats.gradedHomeworks"
-          value={statsLoading ? "-" : Number(statsData?.graded ?? 0)}
+          value={statsLoading ? "-" : Number(statsData?.homework_graded ?? 0)}
           variant="green"
         />
       </div>
@@ -189,8 +202,7 @@ export function UserDashboardPage() {
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${
                           hw.deadline &&
-                          new Date(hw.deadline).getTime() - Date.now() <
-                            24 * 60 * 60 * 1000
+                          getDeadlineInfo(hw.deadline, serverTime)?.isUrgent
                             ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                             : "bg-muted text-muted-foreground"
                         }`}

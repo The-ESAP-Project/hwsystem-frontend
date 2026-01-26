@@ -8,6 +8,7 @@ import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { submissionKeys } from "@/features/submission/hooks/useSubmission";
 import { useCurrentUser } from "@/stores/useUserStore";
 import {
+  type AllHomeworksParams,
   type CreateHomeworkInput,
   type HomeworkListItemStringified,
   homeworkService,
@@ -29,6 +30,8 @@ export const homeworkKeys = {
       include_stats?: boolean;
     },
   ) => [...homeworkKeys.lists(), classId, params] as const,
+  allList: (params?: AllHomeworksParams) =>
+    [...homeworkKeys.all, "all-list", params] as const,
   details: () => [...homeworkKeys.all, "detail"] as const,
   detail: (homeworkId: string) =>
     [...homeworkKeys.details(), homeworkId] as const,
@@ -96,6 +99,19 @@ export function useTeacherHomeworkStats() {
     queryKey: homeworkKeys.teacherStats(),
     queryFn: () => homeworkService.getTeacherStats(),
     staleTime: 60 * 1000, // 1分钟过期
+  });
+}
+
+// 跨班级作业列表（替代 useAllClassesHomeworks）
+export function useAllHomeworks(params?: AllHomeworksParams) {
+  const currentUser = useCurrentUser();
+  const userId = currentUser?.id;
+
+  return useQuery({
+    queryKey: [...homeworkKeys.allList(params), userId] as const,
+    queryFn: () => homeworkService.listAll(params),
+    enabled: !!userId,
+    staleTime: 30 * 1000, // 30秒过期
   });
 }
 
