@@ -37,7 +37,7 @@ const errorCodeToI18nKey: Partial<Record<ErrorCode, string>> = {
   [ErrorCode.FileUploadFailed]: "error.fileUploadFailed",
   [ErrorCode.FileTypeNotAllowed]: "error.fileTypeNotAllowed",
   [ErrorCode.FileSizeExceeded]: "error.fileSizeExceeded",
-  [ErrorCode.MuitifileUploadNotAllowed]: "error.multifileUploadNotAllowed",
+  [ErrorCode.MultifileUploadNotAllowed]: "error.multifileUploadNotAllowed",
   // 用户
   [ErrorCode.UserNotFound]: "error.userNotFound",
   [ErrorCode.UserAlreadyExists]: "error.userAlreadyExists",
@@ -67,6 +67,21 @@ const errorCodeToI18nKey: Partial<Record<ErrorCode, string>> = {
   [ErrorCode.ImportFileMissingColumn]: "error.importFileMissingColumn",
   [ErrorCode.ImportFileDataInvalid]: "error.importFileDataInvalid",
   [ErrorCode.ExportFailed]: "error.exportFailed",
+  // 作业
+  [ErrorCode.HomeworkNotFound]: "error.homeworkNotFound",
+  [ErrorCode.HomeworkCreateFailed]: "error.homeworkCreateFailed",
+  [ErrorCode.HomeworkUpdateFailed]: "error.homeworkUpdateFailed",
+  [ErrorCode.HomeworkDeleteFailed]: "error.homeworkDeleteFailed",
+  // 提交
+  [ErrorCode.SubmissionNotFound]: "error.submissionNotFound",
+  [ErrorCode.SubmissionCreateFailed]: "error.submissionCreateFailed",
+  [ErrorCode.SubmissionDeleteFailed]: "error.submissionDeleteFailed",
+  // 成绩
+  [ErrorCode.GradeNotFound]: "error.gradeNotFound",
+  [ErrorCode.GradeCreateFailed]: "error.gradeCreateFailed",
+  [ErrorCode.GradeUpdateFailed]: "error.gradeUpdateFailed",
+  // 通知
+  [ErrorCode.NotificationNotFound]: "error.notificationNotFound",
 };
 
 /** 获取友好错误消息 */

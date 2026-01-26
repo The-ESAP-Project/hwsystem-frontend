@@ -3,9 +3,44 @@ import type { FileInfo } from "./file";
 import type { PaginationInfo } from "./pagination";
 
 /**
+ * 跨班级作业列表查询参数（HTTP 请求）
+ */
+export type AllHomeworksParams = { 
+/**
+ * 作业状态过滤（学生视角：pending/submitted/graded）
+ */
+status: HomeworkUserStatus | null, 
+/**
+ * 截止日期过滤（active/expired/all）
+ */
+deadline_filter: DeadlineFilter | null, 
+/**
+ * 搜索关键词
+ */
+search: string | null, 
+/**
+ * 是否包含统计信息（教师/管理员视角）
+ */
+include_stats: boolean | null, page: bigint, size: bigint, };
+
+/**
+ * 跨班级作业列表响应
+ */
+export type AllHomeworksResponse = { items: Array<HomeworkListItem>, pagination: PaginationInfo, 
+/**
+ * 服务器时间（ISO 8601），用于前端统一时间判断
+ */
+server_time: string, };
+
+/**
  * 创建作业请求
  */
 export type CreateHomeworkRequest = { class_id: bigint, title: string, description: string | null, max_score: number | null, deadline: string | null, allow_late: boolean | null, attachments: Array<string> | null, };
+
+/**
+ * 截止日期过滤器
+ */
+export type DeadlineFilter = "active" | "expired" | "all";
 
 export type Homework = { id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
 
@@ -63,6 +98,11 @@ submitted_count: bigint,
  * 已评分人数
  */
 graded_count: bigint, };
+
+/**
+ * 作业用户状态（学生视角）
+ */
+export type HomeworkUserStatus = "pending" | "submitted" | "graded";
 
 /**
  * 带创建者信息的作业（用于列表，旧版兼容）

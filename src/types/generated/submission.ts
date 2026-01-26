@@ -63,7 +63,7 @@ export type SubmissionStatus = "pending" | "graded" | "late";
 export type SubmissionSummaryItem = { creator: SubmissionCreator, latest_submission: LatestSubmissionInfo, grade: SubmissionGradeInfo | null, total_versions: number, };
 
 /**
- * 分页查询参数
+ * 提交概览分页查询参数
  */
 export type SubmissionSummaryQuery = { page: bigint | null, size: bigint | null, 
 /**
