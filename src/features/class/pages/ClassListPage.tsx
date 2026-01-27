@@ -9,6 +9,7 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { Link } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,16 +40,21 @@ export function ClassListPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12); // 适配 3 列网格
   const prefix = useRoutePrefix();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
+      setPage(1); // 搜索变化时重置页码
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
 
   const { data, isLoading, error } = useClassList({
+    page,
+    page_size: pageSize,
     search: debouncedSearch || undefined,
   });
   const { canCreateClass } = usePermission();
@@ -243,6 +249,23 @@ export function ClassListPage() {
             </Link>
           ))}
         </div>
+      )}
+
+      {/* 分页 */}
+      {data && (
+        <Pagination
+          current={page}
+          total={Number(data.pagination.total)}
+          pageSize={pageSize}
+          pageSizeOptions={[6, 12, 24]}
+          onChange={(newPage, newPageSize) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+          }}
+          showTotal
+          showSizeChanger
+          className="mt-6"
+        />
       )}
     </div>
   );

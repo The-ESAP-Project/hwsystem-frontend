@@ -35,6 +35,9 @@ export const submissionKeys = {
   // 新增：某学生的提交历史（教师视角）
   userSubmissions: (homeworkId: string, userId: string) =>
     [...submissionKeys.all, "user", homeworkId, userId] as const,
+  // 新增：提交的评分
+  grade: (submissionId: string) =>
+    [...submissionKeys.all, "grade", submissionId] as const,
 };
 
 // Queries
@@ -126,6 +129,30 @@ export function useUserSubmissionsForTeacher(
     enabled: !!homeworkId && !!userId && enabled,
     staleTime: 30 * 1000, // 30秒过期
     refetchOnMount: "always", // 每次挂载都刷新
+  });
+}
+
+// 新增：获取提交的评分（学生查询自己的评分）
+export function useSubmissionGrade(submissionId: string, enabled = true) {
+  return useQuery({
+    queryKey: submissionKeys.grade(submissionId),
+    queryFn: async () => {
+      try {
+        return await submissionService.getGrade(submissionId);
+      } catch (error: unknown) {
+        // 404 表示尚未评分，返回 undefined 而不是抛错
+        if (
+          error &&
+          typeof error === "object" &&
+          "code" in error &&
+          error.code === 404
+        ) {
+          return undefined;
+        }
+        throw error;
+      }
+    },
+    enabled: !!submissionId && enabled,
   });
 }
 

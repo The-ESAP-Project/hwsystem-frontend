@@ -14,7 +14,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader } from "@/components/common";
+import { PageHeader, Pagination } from "@/components/common";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,6 +54,8 @@ export function TeacherHomeworksPage() {
   const [activeTab, setActiveTab] = useState<TabValue>("active");
   const [deleteTarget, setDeleteTarget] =
     useState<HomeworkListItemStringified | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   const deleteHomework = useDeleteHomework();
 
@@ -93,6 +95,13 @@ export function TeacherHomeworksPage() {
       all: [...allHomeworks].sort(sortByCreated),
     };
   }, [allHomeworks]);
+
+  // 获取当前 Tab 的数据并分页
+  const currentTabData = categorizedHomeworks[activeTab];
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return currentTabData.slice(start, start + pageSize);
+  }, [currentTabData, page, pageSize]);
 
   // 获取班级名称
   const getClassName = (classId: string) => {
@@ -294,12 +303,13 @@ export function TeacherHomeworksPage() {
   const renderHomeworkList = (
     homeworks: HomeworkListItemStringified[],
     type: TabValue,
+    total: number,
   ) => {
     if (isLoading) {
       return renderLoadingSkeleton();
     }
 
-    if (homeworks.length === 0) {
+    if (total === 0) {
       return renderEmptyState(type);
     }
 
@@ -315,7 +325,10 @@ export function TeacherHomeworksPage() {
 
       <Tabs
         value={activeTab}
-        onValueChange={(v) => setActiveTab(v as TabValue)}
+        onValueChange={(v) => {
+          setActiveTab(v as TabValue);
+          setPage(1); // Tab 切换时重置页码
+        }}
       >
         <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="active" className="gap-2">
@@ -350,16 +363,45 @@ export function TeacherHomeworksPage() {
         <Card>
           <CardContent className="p-0">
             <TabsContent value="active" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.active, "active")}
+              {renderHomeworkList(
+                paginatedData,
+                "active",
+                categorizedHomeworks.active.length,
+              )}
             </TabsContent>
             <TabsContent value="expired" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.expired, "expired")}
+              {renderHomeworkList(
+                paginatedData,
+                "expired",
+                categorizedHomeworks.expired.length,
+              )}
             </TabsContent>
             <TabsContent value="all" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.all, "all")}
+              {renderHomeworkList(
+                paginatedData,
+                "all",
+                categorizedHomeworks.all.length,
+              )}
             </TabsContent>
           </CardContent>
         </Card>
+
+        {/* 分页 */}
+        {currentTabData.length > 0 && (
+          <Pagination
+            current={page}
+            total={currentTabData.length}
+            pageSize={pageSize}
+            pageSizeOptions={[10, 15, 30]}
+            onChange={(newPage, newPageSize) => {
+              setPage(newPage);
+              setPageSize(newPageSize);
+            }}
+            showTotal
+            showSizeChanger
+            className="mt-4"
+          />
+        )}
       </Tabs>
 
       {/* 删除确认对话框 */}

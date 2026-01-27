@@ -8,7 +8,7 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader } from "@/components/common";
+import { PageHeader, Pagination } from "@/components/common";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,6 +27,8 @@ export function MyHomeworksPage() {
   const { t } = useTranslation();
   const prefix = useRoutePrefix();
   const [activeTab, setActiveTab] = useState<TabValue>("pending");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   const { data: classData, isLoading: classLoading } = useClassList();
   const classes = classData?.items ?? [];
@@ -80,6 +82,13 @@ export function MyHomeworksPage() {
       graded: sortedGraded,
     };
   }, [allHomeworks]);
+
+  // 获取当前 Tab 的数据并分页
+  const currentTabData = categorizedHomeworks[activeTab];
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return currentTabData.slice(start, start + pageSize);
+  }, [currentTabData, page, pageSize]);
 
   // 获取班级名称
   const getClassName = (classId: string) => {
@@ -232,12 +241,13 @@ export function MyHomeworksPage() {
   const renderHomeworkList = (
     homeworks: HomeworkListItemStringified[],
     type: TabValue,
+    total: number,
   ) => {
     if (isLoading) {
       return renderLoadingSkeleton();
     }
 
-    if (homeworks.length === 0) {
+    if (total === 0) {
       return renderEmptyState(type);
     }
 
@@ -257,7 +267,10 @@ export function MyHomeworksPage() {
 
       <Tabs
         value={activeTab}
-        onValueChange={(v) => setActiveTab(v as TabValue)}
+        onValueChange={(v) => {
+          setActiveTab(v as TabValue);
+          setPage(1); // Tab 切换时重置页码
+        }}
       >
         <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="pending" className="gap-2">
@@ -292,16 +305,45 @@ export function MyHomeworksPage() {
         <Card>
           <CardContent className="p-0">
             <TabsContent value="pending" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.pending, "pending")}
+              {renderHomeworkList(
+                paginatedData,
+                "pending",
+                categorizedHomeworks.pending.length,
+              )}
             </TabsContent>
             <TabsContent value="submitted" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.submitted, "submitted")}
+              {renderHomeworkList(
+                paginatedData,
+                "submitted",
+                categorizedHomeworks.submitted.length,
+              )}
             </TabsContent>
             <TabsContent value="graded" className="m-0">
-              {renderHomeworkList(categorizedHomeworks.graded, "graded")}
+              {renderHomeworkList(
+                paginatedData,
+                "graded",
+                categorizedHomeworks.graded.length,
+              )}
             </TabsContent>
           </CardContent>
         </Card>
+
+        {/* 分页 */}
+        {currentTabData.length > 0 && (
+          <Pagination
+            current={page}
+            total={currentTabData.length}
+            pageSize={pageSize}
+            pageSizeOptions={[10, 15, 30]}
+            onChange={(newPage, newPageSize) => {
+              setPage(newPage);
+              setPageSize(newPageSize);
+            }}
+            showTotal
+            showSizeChanger
+            className="mt-4"
+          />
+        )}
       </Tabs>
     </div>
   );

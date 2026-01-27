@@ -11,6 +11,7 @@ import {
   FiUserX,
 } from "react-icons/fi";
 import { Link, useNavigate, useParams } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -76,12 +77,17 @@ export function SubmissionListPage() {
   // Tab 和筛选器状态
   const [activeTab, setActiveTab] = useState<TabValue>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   // 判断是否有评分权限（只有教师才能评分，课代表不能）
   const canGrade = classData?.my_role === "teacher";
 
   // 获取全部提交概览（用于列表展示）
-  const { data, isLoading, error } = useSubmissionSummary(homeworkId!);
+  const { data, isLoading, error } = useSubmissionSummary(homeworkId!, {
+    page,
+    size: pageSize,
+  });
 
   // 获取待批改的提交（使用 graded=false 筛选，避免分页问题）
   const { data: pendingData } = useSubmissionSummary(
@@ -246,7 +252,10 @@ export function SubmissionListPage() {
           {/* Tabs */}
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v as TabValue)}
+            onValueChange={(v) => {
+              setActiveTab(v as TabValue);
+              setPage(1); // Tab 切换时重置页码
+            }}
           >
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="all" className="gap-1">
@@ -267,7 +276,7 @@ export function SubmissionListPage() {
                     variant="secondary"
                     className="ml-1 px-1.5 py-0 text-xs"
                   >
-                    {submitted.length}
+                    {data?.pagination.total ?? 0}
                   </Badge>
                 )}
               </TabsTrigger>
@@ -411,6 +420,23 @@ export function SubmissionListPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 分页（仅在已提交 Tab 显示） */}
+      {data && activeTab === "submitted" && (
+        <Pagination
+          current={page}
+          total={Number(data.pagination.total)}
+          pageSize={pageSize}
+          pageSizeOptions={[10, 20, 50]}
+          onChange={(newPage, newPageSize) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+          }}
+          showTotal
+          showSizeChanger
+          className="mt-4"
+        />
+      )}
 
       {/* 学生提交详情 Sheet */}
       <Sheet open={!!selectedStudent} onOpenChange={handleCloseSheet}>

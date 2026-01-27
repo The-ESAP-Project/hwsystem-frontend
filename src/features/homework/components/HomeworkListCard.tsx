@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiBook, FiPlus, FiSearch } from "react-icons/fi";
 import { Link } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,12 +46,15 @@ export function HomeworkListCard({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sort, setSort] = useState<SortValue>("deadline");
   const [onlyMine, setOnlyMine] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const currentUser = useCurrentUser();
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
+      setPage(1); // 搜索变化时重置页码
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
@@ -100,6 +104,12 @@ export function HomeworkListCard({
 
     return result;
   }, [items, activeTab, sort]);
+
+  // 对筛选后的结果进行分页
+  const paginatedItems = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredItems.slice(start, start + pageSize);
+  }, [filteredItems, page, pageSize]);
 
   const tabCounts = useMemo(() => {
     if (!items) return { all: 0, pending: 0, submitted: 0, graded: 0 };
@@ -181,7 +191,10 @@ export function HomeworkListCard({
         {!isTeacher && (
           <Tabs
             value={activeTab}
-            onValueChange={(v) => setActiveTab(v as TabValue)}
+            onValueChange={(v) => {
+              setActiveTab(v as TabValue);
+              setPage(1); // Tab 切换时重置页码
+            }}
           >
             <TabsList className="w-full sm:w-auto">
               <TabsTrigger value="all">
@@ -214,7 +227,7 @@ export function HomeworkListCard({
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredItems.map((hw) => (
+            {paginatedItems.map((hw) => (
               <HomeworkListItem
                 key={hw.id}
                 homework={hw}
@@ -223,6 +236,22 @@ export function HomeworkListCard({
               />
             ))}
           </div>
+        )}
+
+        {/* 分页 */}
+        {filteredItems.length > 0 && (
+          <Pagination
+            current={page}
+            total={filteredItems.length}
+            pageSize={pageSize}
+            pageSizeOptions={[5, 10, 20]}
+            onChange={(newPage, newPageSize) => {
+              setPage(newPage);
+              setPageSize(newPageSize);
+            }}
+            showTotal
+            showSizeChanger
+          />
         )}
       </CardContent>
     </Card>

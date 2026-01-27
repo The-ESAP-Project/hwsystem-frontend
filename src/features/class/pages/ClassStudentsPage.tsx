@@ -11,6 +11,7 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import { Link, useParams } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,23 +79,32 @@ export function ClassStudentsPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
   // debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
+      setPage(1); // 搜索变化时重置页码
     }, 300);
     return () => clearTimeout(timer);
   }, [search]);
 
   const queryParams = useMemo(() => {
-    const params: { page_size: number; search?: string; role?: string } = {
-      page_size: 200,
+    const params: {
+      page: number;
+      page_size: number;
+      search?: string;
+      role?: string;
+    } = {
+      page,
+      page_size: pageSize,
     };
     if (debouncedSearch) params.search = debouncedSearch;
     if (roleFilter !== "all") params.role = roleFilter;
     return params;
-  }, [debouncedSearch, roleFilter]);
+  }, [page, pageSize, debouncedSearch, roleFilter]);
 
   const {
     data: membersData,
@@ -227,7 +237,13 @@ export function ClassStudentsPage() {
                 className="pl-9"
               />
             </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <Select
+              value={roleFilter}
+              onValueChange={(v) => {
+                setRoleFilter(v);
+                setPage(1); // 筛选变化时重置页码
+              }}
+            >
               <SelectTrigger className="w-full sm:w-36">
                 <SelectValue />
               </SelectTrigger>
@@ -388,6 +404,22 @@ export function ClassStudentsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* 分页 */}
+      {membersData && (
+        <Pagination
+          current={page}
+          total={Number(membersData.pagination.total)}
+          pageSize={pageSize}
+          pageSizeOptions={[10, 20, 50]}
+          onChange={(newPage, newPageSize) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+          }}
+          showTotal
+          showSizeChanger
+        />
+      )}
 
       {/* 移除确认对话框 */}
       <AlertDialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>

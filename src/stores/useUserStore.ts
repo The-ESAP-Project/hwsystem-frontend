@@ -17,7 +17,7 @@ interface UserState {
 
   // Actions
   login: (credentials: LoginRequest) => Promise<Stringify<User>>;
-  logout: () => void;
+  logout: () => Promise<void>;
   initAuth: () => Promise<void>;
   refreshUserInfo: () => Promise<Stringify<User> | null>;
   clearAuthData: () => void;
@@ -60,11 +60,18 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      logout: () => {
+      logout: async () => {
         const userName =
           get().currentUser?.display_name ||
           get().currentUser?.username ||
           i18n.t("role.user");
+
+        // 调用后端登出 API 清除 Refresh Token Cookie
+        try {
+          await authService.logout();
+        } catch {
+          // 即使 API 调用失败也继续清除本地状态
+        }
 
         // 清除状态和存储
         // 缓存清理由 CacheManager 自动处理

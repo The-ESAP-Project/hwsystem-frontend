@@ -2,6 +2,7 @@ import api from "@/lib/api";
 import type { Stringify } from "@/types";
 import type {
   CreateSubmissionRequest,
+  GradeResponse,
   SubmissionListItem,
   SubmissionListResponse,
   SubmissionResponse,
@@ -133,6 +134,14 @@ export const submissionService = {
     const { data } = await api.get<{
       data: { items: SubmissionDetailWithHistory[] };
     }>(`/homeworks/${homeworkId}/submissions/user/${userId}`);
+    return data.data;
+  },
+
+  // 获取提交的评分（学生查询自己的评分）
+  getGrade: async (submissionId: string) => {
+    const { data } = await api.get<{ data: Stringify<GradeResponse> }>(
+      `/submissions/${submissionId}/grade`,
+    );
     return data.data;
   },
 };

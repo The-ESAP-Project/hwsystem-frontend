@@ -9,6 +9,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { Link } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -46,8 +47,12 @@ const notificationTypeIcons: Record<string, React.ElementType> = {
 export function NotificationListPage() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const currentUser = useCurrentUser();
   const { data, isLoading, error } = useNotificationList({
+    page,
+    page_size: pageSize,
     is_read: filter === "unread" ? false : filter === "read" ? true : undefined,
   });
   const { data: unreadData } = useUnreadCount();
@@ -156,7 +161,13 @@ export function NotificationListPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Select value={filter} onValueChange={setFilter}>
+          <Select
+            value={filter}
+            onValueChange={(v) => {
+              setFilter(v);
+              setPage(1); // 筛选变化时重置页码
+            }}
+          >
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder={t("notification.filter")} />
             </SelectTrigger>
@@ -298,6 +309,23 @@ export function NotificationListPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* 分页 */}
+      {data && (
+        <Pagination
+          current={page}
+          total={Number(data.pagination.total)}
+          pageSize={pageSize}
+          pageSizeOptions={[10, 20, 50]}
+          onChange={(newPage, newPageSize) => {
+            setPage(newPage);
+            setPageSize(newPageSize);
+          }}
+          showTotal
+          showSizeChanger
+          className="mt-4"
+        />
+      )}
     </div>
   );
 }
