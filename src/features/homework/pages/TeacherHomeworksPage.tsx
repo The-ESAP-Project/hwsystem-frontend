@@ -14,8 +14,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader } from "@/components/common";
-import { Pagination } from "@/components/common/Pagination";
+import { PageHeader, Pagination } from "@/components/common";
 import {
   AlertDialog,
   AlertDialogAction,
