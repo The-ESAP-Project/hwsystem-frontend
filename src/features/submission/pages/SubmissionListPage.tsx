@@ -276,7 +276,7 @@ export function SubmissionListPage() {
                     variant="secondary"
                     className="ml-1 px-1.5 py-0 text-xs"
                   >
-                    {data?.pagination.total ?? 0}
+                    {data?.pagination?.total ?? 0}
                   </Badge>
                 )}
               </TabsTrigger>
@@ -422,7 +422,7 @@ export function SubmissionListPage() {
       </Card>
 
       {/* 分页（仅在已提交 Tab 显示） */}
-      {data && activeTab === "submitted" && (
+      {data?.pagination && activeTab === "submitted" && (
         <Pagination
           current={page}
           total={Number(data.pagination.total)}

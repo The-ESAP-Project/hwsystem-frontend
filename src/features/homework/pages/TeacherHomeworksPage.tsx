@@ -14,7 +14,8 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader, Pagination } from "@/components/common";
+import { PageHeader } from "@/components/common";
+import { Pagination } from "@/components/common/Pagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -393,7 +394,7 @@ export function TeacherHomeworksPage() {
             total={currentTabData.length}
             pageSize={pageSize}
             pageSizeOptions={[10, 15, 30]}
-            onChange={(newPage, newPageSize) => {
+            onChange={(newPage: number, newPageSize: number) => {
               setPage(newPage);
               setPageSize(newPageSize);
             }}

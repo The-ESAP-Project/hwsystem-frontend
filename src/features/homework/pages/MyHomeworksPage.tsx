@@ -8,7 +8,8 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader, Pagination } from "@/components/common";
+import { PageHeader } from "@/components/common";
+import { Pagination } from "@/components/common/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -87,7 +88,14 @@ export function MyHomeworksPage() {
   const currentTabData = categorizedHomeworks[activeTab];
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return currentTabData.slice(start, start + pageSize);
+    const items = currentTabData.slice(start, start + pageSize);
+    // Convert null values to undefined for type compatibility
+    return items.map((item) => ({
+      ...item,
+      my_submission: item.my_submission ?? undefined,
+      creator: item.creator ?? undefined,
+      stats_summary: item.stats_summary ?? undefined,
+    }));
   }, [currentTabData, page, pageSize]);
 
   // 获取班级名称
@@ -335,7 +343,7 @@ export function MyHomeworksPage() {
             total={currentTabData.length}
             pageSize={pageSize}
             pageSizeOptions={[10, 15, 30]}
-            onChange={(newPage, newPageSize) => {
+            onChange={(newPage: number, newPageSize: number) => {
               setPage(newPage);
               setPageSize(newPageSize);
             }}
