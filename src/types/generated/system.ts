@@ -24,7 +24,7 @@ export type SettingAuditListResponse = { audits: Array<SettingAudit>, pagination
 /**
  * 审计日志查询参数
  */
-export type SettingAuditQuery = { key: string | null, page: bigint | null, size: bigint | null, };
+export type SettingAuditQuery = { key: string | null, page: number | null, size: number | null, };
 
 /**
  * 单个配置响应

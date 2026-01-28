@@ -21,7 +21,7 @@ search: string | null,
 /**
  * 是否包含统计信息（教师/管理员视角）
  */
-include_stats: boolean | null, page: bigint, size: bigint, };
+include_stats: boolean | null, page: number, size: number, };
 
 /**
  * 跨班级作业列表响应
@@ -67,11 +67,11 @@ stats_summary: HomeworkStatsSummary | null, id: bigint, class_id: bigint, title:
 /**
  * 作业列表查询参数（HTTP 请求）
  */
-export type HomeworkListParams = { class_id: bigint | null, created_by: bigint | null, search: string | null, 
+export type HomeworkListParams = { class_id: number | null, created_by: number | null, search: string | null, 
 /**
  * 是否包含统计信息（教师/管理员视角）
  */
-include_stats: boolean | null, page: bigint, size: bigint, };
+include_stats: boolean | null, page: number, size: number, };
 
 export type HomeworkListResponse = { items: Array<HomeworkListItem>, pagination: PaginationInfo, };
 

@@ -14,7 +14,7 @@ export type Grade = { id: bigint, submission_id: bigint, grader_id: bigint, scor
 /**
  * 评分列表查询参数
  */
-export type GradeListParams = { submission_id: bigint | null, grader_id: bigint | null, page: bigint, size: bigint, };
+export type GradeListParams = { submission_id: number | null, grader_id: number | null, page: number, size: number, };
 
 /**
  * 评分列表响应

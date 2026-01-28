@@ -15,11 +15,11 @@ my_role: ClassUserRole | null, id: bigint, name: string, description: string | n
 
 export type ClassDetailListResponse = { pagination: PaginationInfo, items: Array<ClassDetail>, };
 
-export type ClassListQuery = { page: bigint | null, size: bigint | null, teacher_id: bigint | null, search: string | null, };
+export type ClassListQuery = { page: number | null, size: number | null, teacher_id: number | null, search: string | null, };
 
 export type ClassListResponse = { pagination: PaginationInfo, items: Array<Class>, };
 
-export type ClassQueryParams = { search: string | null, page: bigint, size: bigint, };
+export type ClassQueryParams = { search: string | null, page: number, size: number, };
 
 export type CreateClassRequest = { teacher_id: bigint | null, name: string, description: string | null, };
 

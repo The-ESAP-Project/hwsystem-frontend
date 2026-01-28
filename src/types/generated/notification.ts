@@ -18,7 +18,7 @@ export type NotificationListQuery = {
 /**
  * 是否只显示未读
  */
-unread_only: boolean | null, page: bigint, size: bigint, };
+unread_only: boolean | null, page: number, size: number, };
 
 /**
  * 通知列表响应
