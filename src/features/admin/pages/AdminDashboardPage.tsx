@@ -24,7 +24,7 @@ export function AdminDashboardPage() {
   const user = useCurrentUser();
   const { data: userData, isLoading: userLoading } = useUserList({
     page: 1,
-    page_size: 5,
+    size: 5,
   });
   const { data: classData } = useClassList();
 

@@ -61,7 +61,7 @@ export function TeacherHomeworksPage() {
   const deleteHomework = useDeleteHomework();
 
   const { data: classData, isLoading: classLoading } = useClassList({
-    page_size: 100,
+    size: 100,
   });
   const classes = classData?.items ?? [];
 

@@ -45,7 +45,7 @@ export default function ClassManagementPage() {
 
   const { data, isLoading, error } = useClassList({
     page,
-    page_size: 20,
+    size: 20,
     search: debouncedSearch || undefined,
   });
 

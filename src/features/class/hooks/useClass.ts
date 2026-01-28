@@ -11,7 +11,7 @@ import { classService } from "../services/classService";
 export const classKeys = {
   all: ["classes"] as const,
   lists: () => [...classKeys.all, "list"] as const,
-  list: (params?: { page?: number; page_size?: number; search?: string }) =>
+  list: (params?: { page?: number; size?: number; search?: string }) =>
     [...classKeys.lists(), params] as const,
   details: () => [...classKeys.all, "detail"] as const,
   detail: (id: string) => [...classKeys.details(), id] as const,
@@ -23,7 +23,7 @@ export const classKeys = {
 // Queries
 export function useClassList(params?: {
   page?: number;
-  page_size?: number;
+  size?: number;
   search?: string;
 }) {
   const currentUser = useCurrentUser();
@@ -59,7 +59,7 @@ export function useClassMembers(
   classId: string,
   params?: {
     page?: number;
-    page_size?: number;
+    size?: number;
     search?: string;
     role?: string;
   },

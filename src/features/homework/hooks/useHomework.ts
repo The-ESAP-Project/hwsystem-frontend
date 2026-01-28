@@ -23,7 +23,7 @@ export const homeworkKeys = {
     classId: string,
     params?: {
       page?: number;
-      page_size?: number;
+      size?: number;
       status?: string;
       search?: string;
       created_by?: string;
@@ -46,7 +46,7 @@ export function useHomeworkList(
   classId: string,
   params?: {
     page?: number;
-    page_size?: number;
+    size?: number;
     status?: string;
     search?: string;
     created_by?: string;
@@ -169,14 +169,14 @@ export function useAllClassesHomeworks(
     queries: classIds.map((classId) => ({
       queryKey: [
         ...homeworkKeys.list(classId, {
-          page_size: 100,
+          size: 100,
           include_stats: options?.include_stats,
         }),
         userId,
       ] as const,
       queryFn: () =>
         homeworkService.list(classId, {
-          page_size: 100,
+          size: 100,
           include_stats: options?.include_stats,
         }),
       enabled: !!classId && !!userId,

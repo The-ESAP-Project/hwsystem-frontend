@@ -102,7 +102,7 @@ export default function UserListPage() {
 
   const { data, isLoading, error } = useUserList({
     page,
-    page_size: pageSize,
+    size: pageSize,
     search: debouncedSearch || undefined,
     role: roleFilter === "all" ? undefined : roleFilter,
     status: statusFilter === "all" ? undefined : statusFilter,

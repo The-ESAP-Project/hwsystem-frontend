@@ -17,10 +17,10 @@ export type UserDetail = Stringify<User>;
 export type UserListResponseStringified = Stringify<UserListResponse>;
 export type UserImportResponseStringified = Stringify<UserImportResponse>;
 
-// 前端友好的查询参数类型（使用 page_size 而非 size）
+// 前端友好的查询参数类型
 export interface UserListParamsInput {
   page?: number;
-  page_size?: number;
+  size?: number;
   role?: UserRole;
   status?: UserStatus;
   search?: string;
@@ -30,12 +30,10 @@ export const userService = {
   list: async (
     params: UserListParamsInput = {},
   ): Promise<UserListResponseStringified> => {
-    // 转换 page_size 为 size
-    const { page_size, ...rest } = params;
     const { data } = await api.get<{ data: Stringify<UserListResponse> }>(
       "/users",
       {
-        params: { ...rest, size: page_size },
+        params,
       },
     );
     return data.data;

@@ -90,7 +90,7 @@ export const homeworkService = {
     classId: string,
     params?: {
       page?: number;
-      page_size?: number;
+      size?: number;
       status?: string;
       search?: string;
       created_by?: string;
@@ -103,7 +103,7 @@ export const homeworkService = {
         params: {
           class_id: classId,
           page: params?.page,
-          page_size: params?.page_size,
+          size: params?.size,
           status: params?.status,
           search: params?.search,
           created_by: params?.created_by,

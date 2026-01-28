@@ -54,7 +54,7 @@ export function ClassListPage() {
 
   const { data, isLoading, error } = useClassList({
     page,
-    page_size: pageSize,
+    size: pageSize,
     search: debouncedSearch || undefined,
   });
   const { canCreateClass } = usePermission();

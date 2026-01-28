@@ -73,7 +73,7 @@ export function ClassCreatePage() {
   // 获取教师列表（仅管理员需要）
   const { data: teachersData } = useUserList({
     role: "teacher",
-    page_size: 100,
+    size: 100,
   });
   const teachers = teachersData?.items ?? [];
 

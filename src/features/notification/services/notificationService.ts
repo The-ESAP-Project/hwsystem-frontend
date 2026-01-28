@@ -20,7 +20,7 @@ export const notificationService = {
   // 获取通知列表
   list: async (params?: {
     page?: number;
-    page_size?: number;
+    size?: number;
     is_read?: boolean;
     type?: string;
   }) => {

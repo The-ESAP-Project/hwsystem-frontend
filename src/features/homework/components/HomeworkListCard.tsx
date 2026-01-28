@@ -61,7 +61,7 @@ export function HomeworkListCard({
 
   // Fetch data with server-side search
   const { data: homeworkData, isLoading } = useHomeworkList(classId, {
-    page_size: 200,
+    size: 200,
     search: debouncedSearch || undefined,
     created_by:
       isTeacher && onlyMine && currentUser?.id

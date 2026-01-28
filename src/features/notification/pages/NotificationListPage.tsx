@@ -52,7 +52,7 @@ export function NotificationListPage() {
   const currentUser = useCurrentUser();
   const { data, isLoading, error } = useNotificationList({
     page,
-    page_size: pageSize,
+    size: pageSize,
     is_read: filter === "unread" ? false : filter === "read" ? true : undefined,
   });
   const { data: unreadData } = useUnreadCount();

@@ -58,7 +58,7 @@ export const submissionService = {
     homeworkId: string,
     params?: {
       page?: number;
-      page_size?: number;
+      size?: number;
       status?: string;
       latest_only?: boolean;
     },
@@ -69,7 +69,7 @@ export const submissionService = {
         params: {
           homework_id: Number(homeworkId),
           page: params?.page,
-          page_size: params?.page_size,
+          size: params?.size,
           status: params?.status,
           latest_only: params?.latest_only,
         },

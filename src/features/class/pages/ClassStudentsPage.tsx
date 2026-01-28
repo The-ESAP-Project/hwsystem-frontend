@@ -94,12 +94,12 @@ export function ClassStudentsPage() {
   const queryParams = useMemo(() => {
     const params: {
       page: number;
-      page_size: number;
+      size: number;
       search?: string;
       role?: string;
     } = {
       page,
-      page_size: pageSize,
+      size: pageSize,
     };
     if (debouncedSearch) params.search = debouncedSearch;
     if (roleFilter !== "all") params.role = roleFilter;

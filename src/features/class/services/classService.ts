@@ -35,7 +35,7 @@ export const classService = {
   // 获取班级列表
   list: async (params?: {
     page?: number;
-    page_size?: number;
+    size?: number;
     search?: string;
   }) => {
     const { data } = await api.get<{ data: ClassListResponseStringified }>(
@@ -105,7 +105,7 @@ export const classService = {
     classId: string,
     params?: {
       page?: number;
-      page_size?: number;
+      size?: number;
       search?: string;
       role?: string;
     },
