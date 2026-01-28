@@ -255,7 +255,7 @@ export function ClassListPage() {
       {data?.pagination && (
         <Pagination
           current={page}
-          total={Number(data.pagination.total)}
+          total={data.pagination.total}
           pageSize={pageSize}
           pageSizeOptions={[6, 12, 24]}
           onChange={(newPage, newPageSize) => {
