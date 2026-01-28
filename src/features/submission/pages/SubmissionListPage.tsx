@@ -425,7 +425,7 @@ export function SubmissionListPage() {
       {data?.pagination && activeTab === "submitted" && (
         <Pagination
           current={page}
-          total={Number(data.pagination.total)}
+          total={data.pagination.total}
           pageSize={pageSize}
           pageSizeOptions={[10, 20, 50]}
           onChange={(newPage, newPageSize) => {
