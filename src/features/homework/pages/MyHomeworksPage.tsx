@@ -8,8 +8,7 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { Link } from "react-router";
-import { PageHeader } from "@/components/common";
-import { Pagination } from "@/components/common/Pagination";
+import { PageHeader, Pagination } from "@/components/common";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
