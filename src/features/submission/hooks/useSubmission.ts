@@ -15,7 +15,7 @@ export const submissionKeys = {
     homeworkId: string,
     params?: {
       page?: number;
-      page_size?: number;
+      size?: number;
       status?: string;
       latest_only?: boolean;
     },
@@ -45,7 +45,7 @@ export function useSubmissionList(
   homeworkId: string,
   params?: {
     page?: number;
-    page_size?: number;
+    size?: number;
     status?: string;
     latest_only?: boolean;
   },

@@ -17,7 +17,7 @@ export const notificationKeys = {
 // Queries
 export function useNotificationList(params?: {
   page?: number;
-  page_size?: number;
+  size?: number;
   is_read?: boolean;
   type?: string;
 }) {
