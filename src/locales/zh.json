@@ -238,6 +238,8 @@
       "forgotPassword": "忘记密码？",
       "loginButton": "登录账户",
       "loggingIn": "登录中...",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
       "noAccount": "还没有账户？",
       "register": "立即注册",
       "validation": {

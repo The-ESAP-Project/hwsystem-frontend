@@ -238,6 +238,8 @@
       "forgotPassword": "Forgot password?",
       "loginButton": "Login",
       "loggingIn": "Logging in...",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
       "noAccount": "Don't have an account?",
       "register": "Register now",
       "validation": {

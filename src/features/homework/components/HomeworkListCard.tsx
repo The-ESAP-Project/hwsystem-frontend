@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiBook, FiPlus, FiSearch } from "react-icons/fi";
 import { Link } from "react-router";
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
+import { SMALL_LIST_PAGE_SIZE, SMALL_PAGE_SIZE_OPTIONS } from "@/lib/constants";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useHomeworkList } from "../hooks/useHomework";
 import { HomeworkListItem } from "./HomeworkListItem";
@@ -42,22 +44,15 @@ export function HomeworkListCard({
 }: HomeworkListCardProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabValue>("all");
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sort, setSort] = useState<SortValue>("deadline");
   const [onlyMine, setOnlyMine] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(SMALL_LIST_PAGE_SIZE);
   const currentUser = useCurrentUser();
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1); // 搜索变化时重置页码
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const { search, setSearch, debouncedSearch } = useDebouncedSearch({
+    onSearchChange: () => setPage(1),
+  });
 
   // Fetch data with server-side search
   const { data: homeworkData, isLoading } = useHomeworkList(classId, {
@@ -244,7 +239,7 @@ export function HomeworkListCard({
             current={page}
             total={filteredItems.length}
             pageSize={pageSize}
-            pageSizeOptions={[5, 10, 20]}
+            pageSizeOptions={SMALL_PAGE_SIZE_OPTIONS}
             onChange={(newPage, newPageSize) => {
               setPage(newPage);
               setPageSize(newPageSize);

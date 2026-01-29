@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiDownload,
@@ -44,6 +44,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
+import { DEFAULT_PAGE_SIZE, TABLE_PAGE_SIZE_OPTIONS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { UserExportDialog } from "../components/UserExportDialog";
@@ -81,9 +83,7 @@ export default function UserListPage() {
   };
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "all">("all");
   const [deleteTarget, setDeleteTarget] = useState<UserDetail | null>(null);
@@ -93,13 +93,9 @@ export default function UserListPage() {
   // 批量选择状态
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const { search, setSearch, debouncedSearch } = useDebouncedSearch({
+    onSearchChange: () => setPage(1),
+  });
 
   const { data, isLoading, error } = useUserList({
     page,
@@ -430,7 +426,7 @@ export default function UserListPage() {
           current={page}
           total={Number(data.pagination.total)}
           pageSize={pageSize}
-          pageSizeOptions={[10, 20, 50, 100]}
+          pageSizeOptions={TABLE_PAGE_SIZE_OPTIONS}
           onChange={handlePageChange}
           showTotal
           showSizeChanger

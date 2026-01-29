@@ -8,6 +8,7 @@ import { useUserStore } from "@/stores/useUserStore";
 import type { ApiResponse } from "@/types/generated";
 import { ErrorCode } from "@/types/generated/error_code";
 import { getApiBaseUrl } from "./config";
+import { API_TIMEOUT } from "./constants";
 import { type ApiError, getErrorMessage } from "./errors";
 
 // Token 刷新 Promise（用于防止并发刷新）
@@ -44,7 +45,7 @@ function getRefreshToken(): Promise<string> {
 
 const api = axios.create({
   baseURL: getApiBaseUrl(),
-  timeout: 10000,
+  timeout: API_TIMEOUT,
   headers: {
     "Content-Type": "application/json",
   },

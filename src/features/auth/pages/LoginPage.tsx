@@ -119,6 +119,11 @@ export function LoginPage() {
                           size="icon"
                           className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={
+                            showPassword
+                              ? t("auth.login.hidePassword")
+                              : t("auth.login.showPassword")
+                          }
                         >
                           {showPassword ? (
                             <FiEyeOff className="h-4 w-4 text-muted-foreground" />

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiArrowLeft,
@@ -50,6 +50,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
+import { DEFAULT_PAGE_SIZE, TABLE_PAGE_SIZE_OPTIONS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import {
@@ -77,20 +79,13 @@ export function ClassStudentsPage() {
     id: string;
     name: string;
   } | null>(null);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  // debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1); // 搜索变化时重置页码
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const { search, setSearch, debouncedSearch } = useDebouncedSearch({
+    onSearchChange: () => setPage(1),
+  });
 
   const queryParams = useMemo(() => {
     const params: {
@@ -415,7 +410,7 @@ export function ClassStudentsPage() {
           current={page}
           total={Number(membersData.pagination.total)}
           pageSize={pageSize}
-          pageSizeOptions={[10, 20, 50]}
+          pageSizeOptions={TABLE_PAGE_SIZE_OPTIONS}
           onChange={(newPage, newPageSize) => {
             setPage(newPage);
             setPageSize(newPageSize);

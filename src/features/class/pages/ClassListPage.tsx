@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FiBook,
@@ -30,6 +30,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
+import { CARD_LIST_PAGE_SIZE, CARD_PAGE_SIZE_OPTIONS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useClassList, useJoinClass } from "../hooks/useClass";
@@ -37,21 +39,15 @@ import { useRoutePrefix } from "../hooks/useClassBasePath";
 
 export function ClassListPage() {
   const { t } = useTranslation();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(12); // 适配 3 列网格
+  const [pageSize, setPageSize] = useState(CARD_LIST_PAGE_SIZE);
   const prefix = useRoutePrefix();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim());
-      setPage(1); // 搜索变化时重置页码
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const { search, setSearch, debouncedSearch } = useDebouncedSearch({
+    onSearchChange: () => setPage(1),
+  });
 
   const { data, isLoading, error } = useClassList({
     page,
@@ -259,7 +255,7 @@ export function ClassListPage() {
           current={page}
           total={Number(data.pagination.total)}
           pageSize={pageSize}
-          pageSizeOptions={[6, 12, 24]}
+          pageSizeOptions={CARD_PAGE_SIZE_OPTIONS}
           onChange={(newPage, newPageSize) => {
             setPage(newPage);
             setPageSize(newPageSize);
