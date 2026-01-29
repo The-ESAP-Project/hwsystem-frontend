@@ -30,12 +30,10 @@ export const userService = {
   list: async (
     params: UserListParamsInput = {},
   ): Promise<UserListResponseStringified> => {
-    // 转换 page_size 为 size
-    const { page_size, ...rest } = params;
     const { data } = await api.get<{ data: Stringify<UserListResponse> }>(
       "/users",
       {
-        params: { ...rest, size: page_size },
+        params,
       },
     );
     return data.data;

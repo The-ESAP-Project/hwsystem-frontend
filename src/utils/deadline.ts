@@ -126,7 +126,6 @@ export function getDeadlineClassName(status: DeadlineStatus): string {
       return "text-yellow-600";
     case "normal":
       return "text-gray-600";
-    case "none":
     default:
       return "text-gray-400";
   }

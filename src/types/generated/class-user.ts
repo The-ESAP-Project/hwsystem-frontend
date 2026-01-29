@@ -13,14 +13,12 @@ export type ClassUserDetail = { id: bigint, class_id: bigint, user_id: bigint, r
  */
 export type ClassUserDetailListResponse = { pagination: PaginationInfo, items: Array<ClassUserDetail>, };
 
-export type ClassUserListParams = { search: string | null, role: ClassUserRole | null, page: bigint, size: bigint, };
+export type ClassUserListQuery = { search: string | null, role: ClassUserRole | null, page: number, page_size: number, };
 
 /**
  * 班级学生列表响应
  */
 export type ClassUserListResponse = { pagination: PaginationInfo, items: Array<ClassUser>, };
-
-export type ClassUserQuery = { page: bigint | null, size: bigint | null, search: string | null, role: ClassUserRole | null, };
 
 export type ClassUserRole = "student" | "class_representative" | "teacher";
 

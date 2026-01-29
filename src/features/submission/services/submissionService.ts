@@ -19,7 +19,7 @@ export type SubmissionCreateInput = Omit<
 // 前端友好的查询参数类型
 export interface SubmissionSummaryQueryInput {
   page?: number;
-  size?: number;
+  page_size?: number;
   graded?: boolean;
 }
 

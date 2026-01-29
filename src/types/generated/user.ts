@@ -15,9 +15,7 @@ export type UserExportParams = { format: string, role: UserRole | null, status: 
 
 export type UserImportResponse = { total: number, success: number, skipped: number, failed: number, errors: Array<ImportRowError>, };
 
-export type UserListParams = { role: UserRole | null, status: UserStatus | null, search: string | null, page: bigint, size: bigint, };
-
-export type UserListQuery = { page: bigint | null, size: bigint | null, role: UserRole | null, status: UserStatus | null, search: string | null, };
+export type UserListQuery = { role: UserRole | null, status: UserStatus | null, search: string | null, page: number, page_size: number, };
 
 export type UserListResponse = { items: Array<User>, pagination: PaginationInfo, };
 

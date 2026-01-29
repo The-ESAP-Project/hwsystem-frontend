@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiEye, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router";
+import { Pagination } from "@/components/common/Pagination";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +31,7 @@ import type { ClassDetailStringified } from "@/features/class/services/classServ
 export default function ClassManagementPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [deleteTarget, setDeleteTarget] =
@@ -45,7 +47,7 @@ export default function ClassManagementPage() {
 
   const { data, isLoading, error } = useClassList({
     page,
-    page_size: 20,
+    page_size: pageSize,
     search: debouncedSearch || undefined,
   });
 
@@ -201,38 +203,23 @@ export default function ClassManagementPage() {
       </Card>
 
       {/* 分页 */}
-      {data?.pagination && Number(data.pagination.total_pages) > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            {t("admin.classes.pagination", {
-              total: data.pagination.total,
-              page,
-              totalPages: data.pagination.total_pages,
-            })}
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-            >
-              {t("admin.classes.prevPage")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setPage((p) =>
-                  Math.min(Number(data.pagination!.total_pages), p + 1),
-                )
-              }
-              disabled={page >= Number(data.pagination.total_pages)}
-            >
-              {t("admin.classes.nextPage")}
-            </Button>
-          </div>
-        </div>
+      {data?.pagination && (
+        <Pagination
+          current={page}
+          total={Number(data.pagination.total)}
+          pageSize={pageSize}
+          pageSizeOptions={[10, 20, 50]}
+          onChange={(newPage, newPageSize) => {
+            if (newPageSize !== pageSize) {
+              setPageSize(newPageSize);
+              setPage(1);
+            } else {
+              setPage(newPage);
+            }
+          }}
+          showTotal
+          showSizeChanger
+        />
       )}
 
       {/* 删除确认对话框 */}

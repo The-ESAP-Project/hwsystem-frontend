@@ -252,7 +252,7 @@ export function ClassListPage() {
       )}
 
       {/* 分页 */}
-      {data && (
+      {data?.pagination && (
         <Pagination
           current={page}
           total={Number(data.pagination.total)}

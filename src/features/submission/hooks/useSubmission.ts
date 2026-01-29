@@ -30,7 +30,7 @@ export const submissionKeys = {
   // 新增：提交概览
   summary: (
     homeworkId: string,
-    params?: { page?: number; size?: number; graded?: boolean },
+    params?: { page?: number; page_size?: number; graded?: boolean },
   ) => [...submissionKeys.all, "summary", homeworkId, params] as const,
   // 新增：某学生的提交历史（教师视角）
   userSubmissions: (homeworkId: string, userId: string) =>
@@ -105,7 +105,7 @@ export function useMyLatestSubmission(homeworkId: string) {
 // 新增：获取提交概览（按学生聚合，教师视图）
 export function useSubmissionSummary(
   homeworkId: string,
-  params?: { page?: number; size?: number; graded?: boolean },
+  params?: { page?: number; page_size?: number; graded?: boolean },
 ) {
   return useQuery({
     queryKey: submissionKeys.summary(homeworkId, params),

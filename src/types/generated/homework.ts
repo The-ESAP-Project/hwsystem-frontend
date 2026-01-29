@@ -3,9 +3,9 @@ import type { FileInfo } from "./file";
 import type { PaginationInfo } from "./pagination";
 
 /**
- * 跨班级作业列表查询参数（HTTP 请求）
+ * 跨班级作业列表查询参数
  */
-export type AllHomeworksParams = { 
+export type AllHomeworksQuery = { 
 /**
  * 作业状态过滤（学生视角：pending/submitted/graded）
  */
@@ -21,7 +21,7 @@ search: string | null,
 /**
  * 是否包含统计信息（教师/管理员视角）
  */
-include_stats: boolean | null, page: bigint, size: bigint, };
+include_stats: boolean | null, page: number, page_size: number, };
 
 /**
  * 跨班级作业列表响应
@@ -65,13 +65,13 @@ my_submission: MySubmissionSummary | null,
 stats_summary: HomeworkStatsSummary | null, id: bigint, class_id: bigint, title: string, description: string | null, max_score: number, deadline: string | null, allow_late: boolean, created_by: bigint, created_at: string, updated_at: string, };
 
 /**
- * 作业列表查询参数（HTTP 请求）
+ * 作业列表查询参数
  */
-export type HomeworkListParams = { class_id: bigint | null, created_by: bigint | null, search: string | null, 
+export type HomeworkListQuery = { class_id: bigint | null, created_by: bigint | null, search: string | null, 
 /**
  * 是否包含统计信息（教师/管理员视角）
  */
-include_stats: boolean | null, page: bigint, size: bigint, };
+include_stats: boolean | null, page: number, page_size: number, };
 
 export type HomeworkListResponse = { items: Array<HomeworkListItem>, pagination: PaginationInfo, };
 

@@ -14,6 +14,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // 图表
+          charts: ["recharts"],
           // 路由
           router: ["react-router"],
           // UI 组件库

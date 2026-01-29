@@ -40,7 +40,7 @@ export type SubmissionListItem = { id: bigint, homework_id: bigint, creator_id: 
 /**
  * 提交列表查询参数
  */
-export type SubmissionListParams = { homework_id: bigint | null, creator_id: bigint | null, status: string | null, page: bigint, size: bigint, };
+export type SubmissionListQuery = { homework_id: bigint | null, creator_id: bigint | null, status: string | null, page: number, page_size: number, };
 
 /**
  * 提交列表响应
@@ -65,11 +65,11 @@ export type SubmissionSummaryItem = { creator: SubmissionCreator, latest_submiss
 /**
  * 提交概览分页查询参数
  */
-export type SubmissionSummaryQuery = { page: bigint | null, size: bigint | null, 
+export type SubmissionSummaryQuery = { 
 /**
  * 筛选是否已批改：true=已批改，false=待批改，None=全部
  */
-graded: boolean | null, };
+graded: boolean | null, page: number, page_size: number, };
 
 /**
  * 提交概览响应

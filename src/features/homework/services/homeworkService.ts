@@ -48,9 +48,9 @@ export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
 
 // 作业列表项类型 - 学生视角包含提交状态和创建者
 export type HomeworkListItemStringified = Stringify<Homework> & {
-  my_submission?: HomeworkMySubmission;
-  creator?: HomeworkCreatorStringified;
-  stats_summary?: Stringify<HomeworkStatsSummary>;
+  my_submission?: HomeworkMySubmission | null;
+  creator?: HomeworkCreatorStringified | null;
+  stats_summary?: Stringify<HomeworkStatsSummary> | null;
 };
 
 // 作业列表响应类型

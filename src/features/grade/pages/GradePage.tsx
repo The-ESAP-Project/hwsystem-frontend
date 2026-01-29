@@ -225,7 +225,7 @@ export function GradePage() {
           // 获取下一个待批改的提交
           const nextPending = await submissionService.getSummary(homeworkId, {
             graded: false,
-            size: 1,
+            page_size: 1,
           });
 
           if (nextPending.items.length > 0) {
@@ -240,7 +240,7 @@ export function GradePage() {
                 homeworkId,
                 {
                   graded: false,
-                  size: 2,
+                  page_size: 2,
                 },
               );
               const filtered = retryPending.items.filter(

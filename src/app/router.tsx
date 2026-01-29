@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, redirect } from "react-router";
 import { RouteErrorBoundary } from "@/components/common/RouteErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -10,55 +11,70 @@ import {
   userNavItems,
 } from "@/components/layout/DashboardLayout";
 import { DefaultLayout } from "@/components/layout/DefaultLayout";
-// 管理员页面
-import { AdminDashboardPage } from "@/features/admin/pages/AdminDashboardPage";
-import ClassManagementPage from "@/features/admin/pages/ClassManagementPage";
-import { SystemSettingsPage } from "@/features/admin/pages/SystemSettingsPage";
-import UserCreatePage from "@/features/admin/pages/UserCreatePage";
-import UserDetailPage from "@/features/admin/pages/UserDetailPage";
-import UserEditPage from "@/features/admin/pages/UserEditPage";
-import UserListPage from "@/features/admin/pages/UserListPage";
-import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
+
+// ============ 同步加载（首屏/入口页面）============
+// 公共页面
+import { HomePage } from "@/features/public/pages/HomePage";
+import { AboutPage } from "@/features/public/pages/AboutPage";
+import { ContactPage } from "@/features/public/pages/ContactPage";
+import { PrivacyPage } from "@/features/public/pages/PrivacyPage";
+import { TermsPage } from "@/features/public/pages/TermsPage";
+import { NotFoundPage } from "@/features/public/pages/NotFoundPage";
 // 认证页面
 import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { RegisterPage } from "@/features/auth/pages/RegisterPage";
-import { ClassCreatePage } from "@/features/class/pages/ClassCreatePage";
-import { ClassDetailPage } from "@/features/class/pages/ClassDetailPage";
-import { ClassEditPage } from "@/features/class/pages/ClassEditPage";
+import { ForgotPasswordPage } from "@/features/auth/pages/ForgotPasswordPage";
+// Index 页面
+import { UserIndexPage } from "@/features/user/pages/UserIndexPage";
+import { TeacherIndexPage } from "@/features/teacher/pages/TeacherIndexPage";
+
+// ============ 懒加载（二级页面/低频页面）============
+// 管理员页面
+const AdminDashboardPage = lazy(() => import("@/features/admin/pages/AdminDashboardPage").then(m => ({ default: m.AdminDashboardPage })));
+const ClassManagementPage = lazy(() => import("@/features/admin/pages/ClassManagementPage"));
+const SystemSettingsPage = lazy(() => import("@/features/admin/pages/SystemSettingsPage").then(m => ({ default: m.SystemSettingsPage })));
+const UserCreatePage = lazy(() => import("@/features/admin/pages/UserCreatePage"));
+const UserDetailPage = lazy(() => import("@/features/admin/pages/UserDetailPage"));
+const UserEditPage = lazy(() => import("@/features/admin/pages/UserEditPage"));
+const UserListPage = lazy(() => import("@/features/admin/pages/UserListPage"));
 // 班级页面
 import { ClassListPage } from "@/features/class/pages/ClassListPage";
-import { ClassStudentsPage } from "@/features/class/pages/ClassStudentsPage";
+const ClassCreatePage = lazy(() => import("@/features/class/pages/ClassCreatePage").then(m => ({ default: m.ClassCreatePage })));
+const ClassDetailPage = lazy(() => import("@/features/class/pages/ClassDetailPage").then(m => ({ default: m.ClassDetailPage })));
+const ClassEditPage = lazy(() => import("@/features/class/pages/ClassEditPage").then(m => ({ default: m.ClassEditPage })));
+const ClassStudentsPage = lazy(() => import("@/features/class/pages/ClassStudentsPage").then(m => ({ default: m.ClassStudentsPage })));
 // 评分页面
-import { GradePage } from "@/features/grade/pages/GradePage";
-import { HomeworkCreatePage } from "@/features/homework/pages/HomeworkCreatePage";
+const GradePage = lazy(() => import("@/features/grade/pages/GradePage").then(m => ({ default: m.GradePage })));
 // 作业页面
-import { HomeworkDetailPage } from "@/features/homework/pages/HomeworkDetailPage";
-import { HomeworkEditPage } from "@/features/homework/pages/HomeworkEditPage";
-import { HomeworkStatsPage } from "@/features/homework/pages/HomeworkStatsPage";
-import { MyHomeworksPage } from "@/features/homework/pages/MyHomeworksPage";
-import { TeacherHomeworksPage } from "@/features/homework/pages/TeacherHomeworksPage";
+const HomeworkCreatePage = lazy(() => import("@/features/homework/pages/HomeworkCreatePage").then(m => ({ default: m.HomeworkCreatePage })));
+const HomeworkDetailPage = lazy(() => import("@/features/homework/pages/HomeworkDetailPage").then(m => ({ default: m.HomeworkDetailPage })));
+const HomeworkEditPage = lazy(() => import("@/features/homework/pages/HomeworkEditPage").then(m => ({ default: m.HomeworkEditPage })));
+const HomeworkStatsPage = lazy(() => import("@/features/homework/pages/HomeworkStatsPage").then(m => ({ default: m.HomeworkStatsPage })));
+const MyHomeworksPage = lazy(() => import("@/features/homework/pages/MyHomeworksPage").then(m => ({ default: m.MyHomeworksPage })));
+const TeacherHomeworksPage = lazy(() => import("@/features/homework/pages/TeacherHomeworksPage").then(m => ({ default: m.TeacherHomeworksPage })));
 // 通知页面
-import { NotificationListPage } from "@/features/notification/pages/NotificationListPage";
-import { AboutPage } from "@/features/public/pages/AboutPage";
-import { ContactPage } from "@/features/public/pages/ContactPage";
-// 公共页面
-import { HomePage } from "@/features/public/pages/HomePage";
-import { NotFoundPage } from "@/features/public/pages/NotFoundPage";
-import { PrivacyPage } from "@/features/public/pages/PrivacyPage";
-import { TermsPage } from "@/features/public/pages/TermsPage";
+const NotificationListPage = lazy(() => import("@/features/notification/pages/NotificationListPage").then(m => ({ default: m.NotificationListPage })));
 // 设置页面
-import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import { MySubmissionsPage } from "@/features/submission/pages/MySubmissionsPage";
-import { SubmissionListPage } from "@/features/submission/pages/SubmissionListPage";
+const SettingsPage = lazy(() => import("@/features/settings/pages/SettingsPage").then(m => ({ default: m.SettingsPage })));
 // 提交页面
-import { SubmitHomeworkPage } from "@/features/submission/pages/SubmitHomeworkPage";
-import { TeacherDashboardPage } from "@/features/teacher/pages/TeacherDashboardPage";
+const MySubmissionsPage = lazy(() => import("@/features/submission/pages/MySubmissionsPage").then(m => ({ default: m.MySubmissionsPage })));
+const SubmissionListPage = lazy(() => import("@/features/submission/pages/SubmissionListPage").then(m => ({ default: m.SubmissionListPage })));
+const SubmitHomeworkPage = lazy(() => import("@/features/submission/pages/SubmitHomeworkPage").then(m => ({ default: m.SubmitHomeworkPage })));
 // 教师页面
-import { TeacherIndexPage } from "@/features/teacher/pages/TeacherIndexPage";
-import { UserDashboardPage } from "@/features/user/pages/UserDashboardPage";
+const TeacherDashboardPage = lazy(() => import("@/features/teacher/pages/TeacherDashboardPage").then(m => ({ default: m.TeacherDashboardPage })));
 // 学生页面
-import { UserIndexPage } from "@/features/user/pages/UserIndexPage";
+const UserDashboardPage = lazy(() => import("@/features/user/pages/UserDashboardPage").then(m => ({ default: m.UserDashboardPage })));
+
 import { useCurrentUser, useUserStore } from "@/stores/useUserStore";
+
+// 懒加载包装器
+function LazyPage({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64">Loading...</div>}>
+      {children}
+    </Suspense>
+  );
+}
 
 // 路由守卫 Loader
 const requireAuth = async () => {
@@ -183,37 +199,37 @@ export const router = createBrowserRouter([
     loader: requireRole(["user", "teacher", "admin"]),
     children: [
       { index: true, element: <UserIndexPage /> },
-      { path: "dashboard", element: <UserDashboardPage /> },
+      { path: "dashboard", element: <LazyPage><UserDashboardPage /></LazyPage> },
       // 班级
       { path: "classes", element: <ClassListPage /> },
-      { path: "classes/:classId", element: <ClassDetailPage /> },
+      { path: "classes/:classId", element: <LazyPage><ClassDetailPage /></LazyPage> },
       // 作业详情
       {
         path: "classes/:classId/homework/:homeworkId",
-        element: <HomeworkDetailPage />,
+        element: <LazyPage><HomeworkDetailPage /></LazyPage>,
       },
       // 作业统计（课代表可访问）
       {
         path: "classes/:classId/homework/:homeworkId/stats",
-        element: <HomeworkStatsPage />,
+        element: <LazyPage><HomeworkStatsPage /></LazyPage>,
       },
       // 提交列表（课代表可访问）
       {
         path: "classes/:classId/homework/:homeworkId/submissions",
-        element: <SubmissionListPage />,
+        element: <LazyPage><SubmissionListPage /></LazyPage>,
       },
       // 提交作业
       {
         path: "classes/:classId/homework/:homeworkId/submit",
-        element: <SubmitHomeworkPage />,
+        element: <LazyPage><SubmitHomeworkPage /></LazyPage>,
       },
       // 我的提交历史
       {
         path: "homework/:homeworkId/submissions",
-        element: <MySubmissionsPage />,
+        element: <LazyPage><MySubmissionsPage /></LazyPage>,
       },
       // 我的所有提交
-      { path: "homeworks", element: <MyHomeworksPage /> },
+      { path: "homeworks", element: <LazyPage><MyHomeworksPage /></LazyPage> },
     ],
   },
 
@@ -223,7 +239,7 @@ export const router = createBrowserRouter([
     element: <NotificationLayout />,
     errorElement: <RouteErrorBoundary />,
     loader: requireRole(["user", "teacher", "admin"]),
-    children: [{ index: true, element: <NotificationListPage /> }],
+    children: [{ index: true, element: <LazyPage><NotificationListPage /></LazyPage> }],
   },
 
   // 设置页面 (所有登录用户可访问)
@@ -232,7 +248,7 @@ export const router = createBrowserRouter([
     element: <SettingsLayout />,
     errorElement: <RouteErrorBoundary />,
     loader: requireRole(["user", "teacher", "admin"]),
-    children: [{ index: true, element: <SettingsPage /> }],
+    children: [{ index: true, element: <LazyPage><SettingsPage /></LazyPage> }],
   },
 
   // 教师页面 (teacher 和 admin 可访问)
@@ -248,38 +264,38 @@ export const router = createBrowserRouter([
     loader: requireRole(["teacher", "admin"]),
     children: [
       { index: true, element: <TeacherIndexPage /> },
-      { path: "dashboard", element: <TeacherDashboardPage /> },
+      { path: "dashboard", element: <LazyPage><TeacherDashboardPage /></LazyPage> },
       // 已布置作业
-      { path: "homeworks", element: <TeacherHomeworksPage /> },
+      { path: "homeworks", element: <LazyPage><TeacherHomeworksPage /></LazyPage> },
       // 班级管理
       { path: "classes", element: <ClassListPage /> },
-      { path: "classes/create", element: <ClassCreatePage /> },
-      { path: "classes/:classId", element: <ClassDetailPage /> },
-      { path: "classes/:classId/edit", element: <ClassEditPage /> },
-      { path: "classes/:classId/students", element: <ClassStudentsPage /> },
+      { path: "classes/create", element: <LazyPage><ClassCreatePage /></LazyPage> },
+      { path: "classes/:classId", element: <LazyPage><ClassDetailPage /></LazyPage> },
+      { path: "classes/:classId/edit", element: <LazyPage><ClassEditPage /></LazyPage> },
+      { path: "classes/:classId/students", element: <LazyPage><ClassStudentsPage /></LazyPage> },
       // 作业管理
       {
         path: "classes/:classId/homework/create",
-        element: <HomeworkCreatePage />,
+        element: <LazyPage><HomeworkCreatePage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId",
-        element: <HomeworkDetailPage />,
+        element: <LazyPage><HomeworkDetailPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/edit",
-        element: <HomeworkEditPage />,
+        element: <LazyPage><HomeworkEditPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/stats",
-        element: <HomeworkStatsPage />,
+        element: <LazyPage><HomeworkStatsPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/submissions",
-        element: <SubmissionListPage />,
+        element: <LazyPage><SubmissionListPage /></LazyPage>,
       },
       // 评分
-      { path: "submissions/:submissionId/grade", element: <GradePage /> },
+      { path: "submissions/:submissionId/grade", element: <LazyPage><GradePage /></LazyPage> },
     ],
   },
 
@@ -295,45 +311,45 @@ export const router = createBrowserRouter([
     errorElement: <RouteErrorBoundary />,
     loader: requireRole(["admin"]),
     children: [
-      { path: "dashboard", element: <AdminDashboardPage /> },
+      { path: "dashboard", element: <LazyPage><AdminDashboardPage /></LazyPage> },
       // 用户管理
-      { path: "users", element: <UserListPage /> },
-      { path: "users/create", element: <UserCreatePage /> },
-      { path: "users/:userId", element: <UserDetailPage /> },
-      { path: "users/:userId/edit", element: <UserEditPage /> },
+      { path: "users", element: <LazyPage><UserListPage /></LazyPage> },
+      { path: "users/create", element: <LazyPage><UserCreatePage /></LazyPage> },
+      { path: "users/:userId", element: <LazyPage><UserDetailPage /></LazyPage> },
+      { path: "users/:userId/edit", element: <LazyPage><UserEditPage /></LazyPage> },
       // 班级管理
-      { path: "classes", element: <ClassManagementPage /> },
-      { path: "classes/create", element: <ClassCreatePage /> },
-      { path: "classes/:classId", element: <ClassDetailPage /> },
-      { path: "classes/:classId/edit", element: <ClassEditPage /> },
-      { path: "classes/:classId/students", element: <ClassStudentsPage /> },
+      { path: "classes", element: <LazyPage><ClassManagementPage /></LazyPage> },
+      { path: "classes/create", element: <LazyPage><ClassCreatePage /></LazyPage> },
+      { path: "classes/:classId", element: <LazyPage><ClassDetailPage /></LazyPage> },
+      { path: "classes/:classId/edit", element: <LazyPage><ClassEditPage /></LazyPage> },
+      { path: "classes/:classId/students", element: <LazyPage><ClassStudentsPage /></LazyPage> },
       {
         path: "classes/:classId/homework/create",
-        element: <HomeworkCreatePage />,
+        element: <LazyPage><HomeworkCreatePage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId",
-        element: <HomeworkDetailPage />,
+        element: <LazyPage><HomeworkDetailPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/edit",
-        element: <HomeworkEditPage />,
+        element: <LazyPage><HomeworkEditPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/stats",
-        element: <HomeworkStatsPage />,
+        element: <LazyPage><HomeworkStatsPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/submissions",
-        element: <SubmissionListPage />,
+        element: <LazyPage><SubmissionListPage /></LazyPage>,
       },
       {
         path: "classes/:classId/homework/:homeworkId/submit",
-        element: <SubmitHomeworkPage />,
+        element: <LazyPage><SubmitHomeworkPage /></LazyPage>,
       },
-      { path: "submissions/:submissionId/grade", element: <GradePage /> },
+      { path: "submissions/:submissionId/grade", element: <LazyPage><GradePage /></LazyPage> },
       // 系统设置
-      { path: "settings", element: <SystemSettingsPage /> },
+      { path: "settings", element: <LazyPage><SystemSettingsPage /></LazyPage> },
     ],
   },
 
