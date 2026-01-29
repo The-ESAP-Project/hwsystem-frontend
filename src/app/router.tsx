@@ -152,7 +152,7 @@ const UserDashboardPage = lazy(() =>
   })),
 );
 
-import { useCurrentUser, useUserStore } from "@/stores/useUserStore";
+import { useRoleNavItems, useUserStore } from "@/stores/useUserStore";
 
 // 懒加载包装器
 function LazyPage({ children }: { children: React.ReactNode }) {
@@ -221,32 +221,10 @@ const requireGuest = async () => {
   return null;
 };
 
-// 通知页面布局组件 - 根据用户角色选择对应的导航项
-function NotificationLayout() {
-  const user = useCurrentUser();
-  const navItems =
-    user?.role === "admin"
-      ? adminNavItems
-      : user?.role === "teacher"
-        ? teacherNavItems
-        : userNavItems;
-
-  return (
-    <DashboardLayout navItems={navItems} titleKey="common.notifications" />
-  );
-}
-
-// 设置页面布局组件 - 根据用户角色选择对应的导航项
-function SettingsLayout() {
-  const user = useCurrentUser();
-  const navItems =
-    user?.role === "admin"
-      ? adminNavItems
-      : user?.role === "teacher"
-        ? teacherNavItems
-        : userNavItems;
-
-  return <DashboardLayout navItems={navItems} titleKey="common.settings" />;
+// 基于角色的布局组件 - 用于通知、设置等跨角色页面
+function RoleBasedLayout({ titleKey }: { titleKey: string }) {
+  const navItems = useRoleNavItems();
+  return <DashboardLayout navItems={navItems} titleKey={titleKey} />;
 }
 
 export const router = createBrowserRouter([
@@ -368,7 +346,7 @@ export const router = createBrowserRouter([
   // 通知页面 (所有登录用户可访问，根据角色显示对应导航)
   {
     path: "/notifications",
-    element: <NotificationLayout />,
+    element: <RoleBasedLayout titleKey="common.notifications" />,
     errorElement: <RouteErrorBoundary />,
     loader: requireRole(["user", "teacher", "admin"]),
     children: [
@@ -386,7 +364,7 @@ export const router = createBrowserRouter([
   // 设置页面 (所有登录用户可访问)
   {
     path: "/settings",
-    element: <SettingsLayout />,
+    element: <RoleBasedLayout titleKey="common.settings" />,
     errorElement: <RouteErrorBoundary />,
     loader: requireRole(["user", "teacher", "admin"]),
     children: [

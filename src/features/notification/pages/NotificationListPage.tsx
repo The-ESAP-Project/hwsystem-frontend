@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
-import { useCurrentUser } from "@/stores/useUserStore";
+import { useRolePrefix } from "@/stores/useUserStore";
 import type { NotificationType, ReferenceType } from "@/types/generated";
 import {
   useDeleteNotification,
@@ -50,7 +50,6 @@ export function NotificationListPage() {
   const [filter, setFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const currentUser = useCurrentUser();
   const { data, isLoading, error } = useNotificationList({
     page,
     page_size: pageSize,
@@ -75,13 +74,7 @@ export function NotificationListPage() {
     class_role_changed: t("notification.type.classRoleChanged"),
   };
 
-  // 根据用户角色确定路由前缀
-  const rolePrefix =
-    currentUser?.role === "admin"
-      ? "admin"
-      : currentUser?.role === "teacher"
-        ? "teacher"
-        : "user";
+  const rolePrefix = useRolePrefix();
 
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();

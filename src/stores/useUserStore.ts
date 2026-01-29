@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import i18n from "@/app/i18n";
+import {
+  adminNavItems,
+  teacherNavItems,
+  userNavItems,
+} from "@/components/layout/DashboardLayout";
 import { authService } from "@/features/auth/services/auth";
 import { logger } from "@/lib/logger";
 import type { LoginRequest, User } from "@/types/generated";
@@ -199,5 +204,29 @@ export const useUserAvatarColor = () => {
       return "bg-gradient-to-r from-green-500 to-emerald-500";
     default:
       return "bg-gradient-to-r from-gray-500 to-gray-600";
+  }
+};
+
+export const useRoleNavItems = () => {
+  const role = useUserStore((s) => s.currentUser?.role);
+  switch (role) {
+    case "admin":
+      return adminNavItems;
+    case "teacher":
+      return teacherNavItems;
+    default:
+      return userNavItems;
+  }
+};
+
+export const useRolePrefix = () => {
+  const role = useUserStore((s) => s.currentUser?.role);
+  switch (role) {
+    case "admin":
+      return "admin";
+    case "teacher":
+      return "teacher";
+    default:
+      return "user";
   }
 };
