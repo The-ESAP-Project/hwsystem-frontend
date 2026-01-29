@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { FiAlertTriangle, FiRefreshCw } from "react-icons/fi";
 import i18n from "@/app/i18n";
+import { logger } from "@/lib/logger";
 
 interface Props {
   children: ReactNode;
@@ -34,10 +35,8 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
 
-    // 在生产环境可以上报错误到监控服务
-    if (import.meta.env.PROD) {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
-    }
+    // 记录错误到日志（生产环境可上报到监控服务）
+    logger.error("ErrorBoundary caught an error", error, errorInfo);
   }
 
   handleReset = (): void => {

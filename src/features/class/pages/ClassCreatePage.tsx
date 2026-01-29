@@ -33,6 +33,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useUserList } from "@/features/admin/hooks/useUsers";
 import { usePermission } from "@/features/auth/hooks/usePermission";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useCreateClass } from "../hooks/useClass";
@@ -96,15 +97,15 @@ export function ClassCreatePage() {
       const newClass = await createClass.mutateAsync({
         name: values.name,
         description: values.description || null,
-        teacher_id:
-          isAdmin && values.teacher_id ? Number(values.teacher_id) : null,
+        teacher_id: isAdmin && values.teacher_id ? values.teacher_id : null,
       });
       notify.success(
         t("notify.class.createSuccess"),
         `邀请码: ${newClass.invite_code}`,
       );
       navigate(`${prefix}/classes/${newClass.id}`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to create class", error);
       notify.error(t("notify.class.createFailed"), t("notify.tryAgainLater"));
     }
   };

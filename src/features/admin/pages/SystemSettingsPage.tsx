@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { logger } from "@/lib/logger";
 import {
   useAdminSettings,
   useSettingAudits,
@@ -54,7 +55,8 @@ function formatDateTime(dateStr: string): string {
       minute: "2-digit",
       second: "2-digit",
     });
-  } catch {
+  } catch (error) {
+    logger.warn("Failed to format datetime", error);
     return dateStr;
   }
 }
@@ -103,7 +105,8 @@ function EditableSetting({
       try {
         const arr = JSON.parse(value);
         return Array.isArray(arr) ? arr.join(", ") : value;
-      } catch {
+      } catch (error) {
+        logger.warn("Failed to parse JSON array value", error);
         return value;
       }
     }

@@ -40,6 +40,7 @@ import {
   useSubmissionSummary,
 } from "@/features/submission/hooks/useSubmission";
 import type { GradeNavigationState } from "@/features/submission/pages/SubmissionListPage";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useDeleteHomework, useHomework } from "../hooks/useHomework";
@@ -113,7 +114,8 @@ export function HomeworkDetailPage() {
       await deleteHomework.mutateAsync(homeworkId!);
       notify.success(t("notify.homework.deleteSuccess"));
       navigate(`${prefix}/classes/${classId}`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to delete homework", error);
       notify.error(t("notify.homework.deleteFailed"));
     }
   };

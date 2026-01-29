@@ -4,12 +4,12 @@ import type { PaginationInfo } from "./pagination";
 /**
  * 标记全部已读响应
  */
-export type MarkAllReadResponse = { marked_count: bigint, };
+export type MarkAllReadResponse = { marked_count: string, };
 
 /**
  * 通知实体
  */
-export type Notification = { id: bigint, user_id: bigint, notification_type: NotificationType, title: string, content: string | null, reference_type: ReferenceType | null, reference_id: bigint | null, is_read: boolean, created_at: string, };
+export type Notification = { id: string, user_id: string, notification_type: NotificationType, title: string, content: string | null, reference_type: ReferenceType | null, reference_id: string | null, is_read: boolean, created_at: string, };
 
 /**
  * 通知列表查询参数
@@ -38,4 +38,4 @@ export type ReferenceType = "homework" | "submission" | "grade" | "class";
 /**
  * 未读通知数量响应
  */
-export type UnreadCountResponse = { unread_count: bigint, };
+export type UnreadCountResponse = { unread_count: string, };

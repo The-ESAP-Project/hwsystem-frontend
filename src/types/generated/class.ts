@@ -2,28 +2,28 @@
 import type { ClassUserRole } from "./class-user";
 import type { PaginationInfo } from "./pagination";
 
-export type Class = { id: bigint, name: string, description: string | null, teacher_id: bigint, invite_code: string, created_at: string, updated_at: string, };
+export type Class = { id: string, name: string, description: string | null, teacher_id: string, invite_code: string, created_at: string, updated_at: string, };
 
 /**
  * 班级详情（包含教师信息和成员数量）
  */
-export type ClassDetail = { teacher: TeacherInfo, member_count: bigint, 
+export type ClassDetail = { teacher: TeacherInfo, member_count: string, 
 /**
  * 当前用户在该班级的角色（仅当用户是班级成员时有值）
  */
-my_role: ClassUserRole | null, id: bigint, name: string, description: string | null, teacher_id: bigint, invite_code: string, created_at: string, updated_at: string, };
+my_role: ClassUserRole | null, id: string, name: string, description: string | null, teacher_id: string, invite_code: string, created_at: string, updated_at: string, };
 
 export type ClassDetailListResponse = { pagination: PaginationInfo, items: Array<ClassDetail>, };
 
-export type ClassListQuery = { teacher_id: bigint | null, search: string | null, page: number, page_size: number, };
+export type ClassListQuery = { teacher_id: string | null, search: string | null, page: number, page_size: number, };
 
 export type ClassListResponse = { pagination: PaginationInfo, items: Array<Class>, };
 
-export type CreateClassRequest = { teacher_id: bigint | null, name: string, description: string | null, };
+export type CreateClassRequest = { teacher_id: string | null, name: string, description: string | null, };
 
 /**
  * 教师简要信息
  */
-export type TeacherInfo = { id: bigint, username: string, display_name: string | null, };
+export type TeacherInfo = { id: string, username: string, display_name: string | null, };
 
 export type UpdateClassRequest = { name: string | null, description: string | null, };

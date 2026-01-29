@@ -44,6 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { UserExportDialog } from "../components/UserExportDialog";
 import { UserImportDialog } from "../components/UserImportDialog";
@@ -154,7 +155,8 @@ export default function UserListPage() {
       }
       notify.success(t("notify.user.batchDeleteSuccess", { count }));
       clearSelection();
-    } catch {
+    } catch (error) {
+      logger.error("Failed to batch delete users", error);
       notify.error(t("notify.user.batchDeleteFailed"));
     }
   };

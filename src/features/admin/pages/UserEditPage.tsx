@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { logger } from "@/lib/logger";
 import { useUpdateUser, useUser } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/userService";
 
@@ -108,7 +109,8 @@ export default function UserEditPage() {
         },
       });
       navigate(`/admin/users/${userId}`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to update user", error);
       // 错误已在 hook 中处理
     }
   };

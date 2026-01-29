@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { getErrorMessage, isApiError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 
 export interface UseApiErrorOptions {
@@ -46,7 +47,7 @@ export function useApiError() {
 
       // 在开发环境输出详细错误
       if (import.meta.env.DEV) {
-        console.error("[useApiError]", error);
+        logger.debug("[useApiError]", error);
       }
 
       return message;

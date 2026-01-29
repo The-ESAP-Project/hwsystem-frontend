@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getWsBaseUrl } from "@/lib/config";
+import { logger } from "@/lib/logger";
 import { useUserStore } from "@/stores/useUserStore";
 
 export type WebSocketStatus =
@@ -145,7 +146,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
           setLastMessage(message);
           onMessage?.(message);
         } catch {
-          console.warn("Failed to parse WebSocket message:", event.data);
+          logger.warn("Failed to parse WebSocket message", event.data);
         }
       };
 
@@ -176,7 +177,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
 
       wsRef.current = ws;
     } catch (error) {
-      console.error("WebSocket connection error:", error);
+      logger.error("WebSocket connection error", error);
       setStatus("error");
     }
   }, [
@@ -198,7 +199,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
   // 发送消息
   const send = useCallback((message: WebSocketMessage | string) => {
     if (wsRef.current?.readyState !== WebSocket.OPEN) {
-      console.warn("WebSocket is not connected");
+      logger.warn("WebSocket is not connected");
       return false;
     }
 

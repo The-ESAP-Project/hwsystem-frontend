@@ -32,6 +32,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
+import { logger } from "@/lib/logger";
 import { useHomework, useHomeworkStats } from "../hooks/useHomework";
 import { homeworkService } from "../services/homeworkService";
 
@@ -70,7 +71,7 @@ export function HomeworkStatsPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      console.error("Export failed:", err);
+      logger.error("Export failed", err);
     } finally {
       setIsExporting(false);
     }

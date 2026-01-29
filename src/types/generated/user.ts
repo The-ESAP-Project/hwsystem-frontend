@@ -9,7 +9,7 @@ export type ImportTemplateParams = { format: string, };
 
 export type UpdateUserRequest = { email: string | null, password: string | null, role: UserRole | null, status: UserStatus | null, display_name: string | null, avatar_url: string | null, };
 
-export type User = { id: bigint, username: string, email: string, role: UserRole, status: UserStatus, display_name: string | null, avatar_url: string | null, last_login: string | null, created_at: string, updated_at: string, };
+export type User = { id: string, username: string, email: string, role: UserRole, status: UserStatus, display_name: string | null, avatar_url: string | null, last_login: string | null, created_at: string, updated_at: string, };
 
 export type UserExportParams = { format: string, role: UserRole | null, status: UserStatus | null, search: string | null, };
 
@@ -30,27 +30,27 @@ export type UserStatsResponse = {
 /**
  * 班级数量
  */
-class_count: bigint, 
+class_count: string, 
 /**
  * 学生总数（教师视角）
  */
-total_students: bigint, 
+total_students: string, 
 /**
  * 待完成作业（学生视角：未提交）
  */
-homework_pending: bigint, 
+homework_pending: string, 
 /**
  * 已提交作业（学生视角：已提交待批改）
  */
-homework_submitted: bigint, 
+homework_submitted: string, 
 /**
  * 已批改作业（学生视角：已批改）
  */
-homework_graded: bigint, 
+homework_graded: string, 
 /**
  * 待批改数（教师视角：待批改的提交数）
  */
-pending_review: bigint, 
+pending_review: string, 
 /**
  * 服务器时间（ISO 8601）
  */

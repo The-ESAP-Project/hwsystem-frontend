@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useClassList, useJoinClass } from "../hooks/useClass";
 import { useRoutePrefix } from "../hooks/useClassBasePath";
@@ -70,7 +71,8 @@ export function ClassListPage() {
       notify.success(t("notify.class.joinSuccess"));
       setInviteCode("");
       setIsJoinDialogOpen(false);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to join class", error);
       notify.error(
         t("notify.class.joinFailed"),
         t("notify.class.inviteCodeInvalid"),

@@ -4,17 +4,17 @@ import type { PaginationInfo } from "./pagination";
 /**
  * 创建评分请求
  */
-export type CreateGradeRequest = { submission_id: bigint, score: number, comment: string | null, };
+export type CreateGradeRequest = { submission_id: string, score: number, comment: string | null, };
 
 /**
  * 评分实体
  */
-export type Grade = { id: bigint, submission_id: bigint, grader_id: bigint, score: number, comment: string | null, graded_at: string, updated_at: string, };
+export type Grade = { id: string, submission_id: string, grader_id: string, score: number, comment: string | null, graded_at: string, updated_at: string, };
 
 /**
  * 评分列表查询参数
  */
-export type GradeListQuery = { submission_id: bigint | null, grader_id: bigint | null, homework_id: bigint | null, page: number, page_size: number, };
+export type GradeListQuery = { submission_id: string | null, grader_id: string | null, homework_id: string | null, page: number, page_size: number, };
 
 /**
  * 评分列表响应
@@ -24,12 +24,12 @@ export type GradeListResponse = { items: Array<Grade>, pagination: PaginationInf
 /**
  * 评分响应
  */
-export type GradeResponse = { id: bigint, submission_id: bigint, grader: Grader, score: number, comment: string | null, graded_at: string, };
+export type GradeResponse = { id: string, submission_id: string, grader: Grader, score: number, comment: string | null, graded_at: string, };
 
 /**
  * 评分者信息
  */
-export type Grader = { id: bigint, username: string, display_name: string | null, };
+export type Grader = { id: string, username: string, display_name: string | null, };
 
 /**
  * 更新评分请求

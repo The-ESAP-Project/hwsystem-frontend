@@ -14,7 +14,7 @@ export type BatchUpdateSettingsRequest = { settings: Array<UpdateSettingItem>, }
 /**
  * 设置审计日志实体
  */
-export type SettingAudit = { id: bigint, setting_key: string, old_value: string | null, new_value: string, changed_by: bigint, changed_at: string, ip_address: string | null, };
+export type SettingAudit = { id: string, setting_key: string, old_value: string | null, new_value: string, changed_by: string, changed_at: string, ip_address: string | null, };
 
 /**
  * 审计日志列表响应
@@ -39,9 +39,9 @@ export type SettingValueType = "string" | "integer" | "boolean" | "json_array";
 /**
  * 系统设置实体
  */
-export type SystemSetting = { key: string, value: string, value_type: SettingValueType, description: string | null, updated_at: string, updated_by: bigint | null, };
+export type SystemSetting = { key: string, value: string, value_type: SettingValueType, description: string | null, updated_at: string, updated_by: string | null, };
 
-export type SystemSettingsResponse = { system_name: string, max_file_size: bigint, allowed_file_types: Array<string>, environment: string, log_level: string, };
+export type SystemSettingsResponse = { system_name: string, max_file_size: string, allowed_file_types: Array<string>, environment: string, log_level: string, };
 
 export type UpdateSettingItem = { key: string, value: string, };
 

@@ -32,6 +32,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePermission } from "@/features/auth/hooks/usePermission";
 import { HomeworkListCard } from "@/features/homework/components";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useClass, useDeleteClass, useLeaveClass } from "../hooks/useClass";
@@ -67,7 +68,8 @@ export function ClassDetailPage() {
     try {
       await classService.exportClassReport(classId);
       notify.success(t("classPage.exportSuccess"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to export class report", error);
       notify.error(t("classPage.exportFailed"));
     } finally {
       setIsExporting(false);
@@ -86,7 +88,8 @@ export function ClassDetailPage() {
       await deleteClass.mutateAsync(classId!);
       notify.success(t("notify.class.deleteSuccess"));
       navigate(`${prefix}/classes`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to delete class", error);
       notify.error(t("notify.class.deleteFailed"));
     }
   };
@@ -97,7 +100,8 @@ export function ClassDetailPage() {
       await leaveClass.mutateAsync({ classId, userId: user.id });
       notify.success(t("classPage.leaveSuccess"));
       navigate(`${prefix}/classes`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to leave class", error);
       notify.error(t("classPage.leaveFailed"));
     }
   };

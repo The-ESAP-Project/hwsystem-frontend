@@ -3,7 +3,6 @@ import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { homeworkKeys } from "@/features/homework/hooks/useHomework";
 import { submissionKeys } from "@/features/submission/hooks/useSubmission";
 import { useCurrentUser } from "@/stores/useUserStore";
-import type { Stringify } from "@/types";
 import type { UpdateClassRequest } from "@/types/generated";
 import { classService } from "../services/classService";
 
@@ -79,7 +78,7 @@ export function useCreateClass() {
     mutationFn: (data: {
       name: string;
       description?: string | null;
-      teacher_id?: number | null;
+      teacher_id?: string | null;
     }) => classService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: classKeys.lists() });
@@ -91,7 +90,7 @@ export function useUpdateClass(classId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Stringify<UpdateClassRequest>) =>
+    mutationFn: (data: UpdateClassRequest) =>
       classService.update(classId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: classKeys.detail(classId) });

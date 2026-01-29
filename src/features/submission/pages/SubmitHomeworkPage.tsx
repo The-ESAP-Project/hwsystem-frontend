@@ -34,6 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
 import { useHomework } from "@/features/homework/hooks/useHomework";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import {
   useCreateSubmission,
@@ -109,7 +110,8 @@ export function SubmitHomeworkPage() {
         ]);
       }
       notify.success(t("notify.file.uploadSuccess"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to upload file", error);
       notify.error(t("notify.file.uploadFailed"));
     } finally {
       setUploading(false);
@@ -137,7 +139,8 @@ export function SubmitHomeworkPage() {
       });
       notify.success(t("notify.submission.success"));
       navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to submit homework", error);
       notify.error(t("notify.submission.failed"), t("notify.tryAgainLater"));
     }
   };

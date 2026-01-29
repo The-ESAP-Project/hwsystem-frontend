@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { logger } from "@/lib/logger";
 import { useCreateUser } from "../hooks/useUsers";
 import type { UserRole } from "../services/userService";
 
@@ -84,7 +85,8 @@ export default function UserCreatePage() {
         avatar_url: null,
       });
       navigate("/admin/users");
-    } catch {
+    } catch (error) {
+      logger.error("Failed to create user", error);
       // 错误已在 hook 中处理
     }
   };

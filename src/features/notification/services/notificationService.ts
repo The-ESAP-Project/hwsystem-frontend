@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   MarkAllReadResponse,
   Notification,
@@ -7,13 +6,13 @@ import type {
   UnreadCountResponse,
 } from "@/types/generated";
 
-// API 响应类型 - 直接使用生成类型的 Stringify 版本
+// API 响应类型
 // Notification 包含 notification_type（不是 type）
-export type NotificationDetail = Stringify<Notification>;
+export type NotificationDetail = Notification;
 
 export interface NotificationListResponseStringified {
   items: NotificationDetail[];
-  pagination: Stringify<NotificationListResponse>["pagination"];
+  pagination: NotificationListResponse["pagination"];
 }
 
 export const notificationService = {
@@ -31,11 +30,11 @@ export const notificationService = {
   },
 
   // 获取未读数量
-  getUnreadCount: async (): Promise<Stringify<UnreadCountResponse>> => {
+  getUnreadCount: async (): Promise<UnreadCountResponse> => {
     const { data } = await api.get<{ data: UnreadCountResponse }>(
       "/notifications/unread-count",
     );
-    return data.data as unknown as Stringify<UnreadCountResponse>;
+    return data.data;
   },
 
   // 标记为已读
@@ -45,7 +44,7 @@ export const notificationService = {
 
   // 标记所有为已读
   markAllAsRead: async () => {
-    const { data } = await api.put<{ data: Stringify<MarkAllReadResponse> }>(
+    const { data } = await api.put<{ data: MarkAllReadResponse }>(
       "/notifications/read-all",
     );
     return data.data;

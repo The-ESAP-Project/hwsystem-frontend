@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   CreateGradeRequest,
   GradeResponse,
@@ -9,15 +8,15 @@ import type {
 // submission_id 从 URL 参数获取，不需要写入请求体
 export type CreateGradeInput = Omit<CreateGradeRequest, "submission_id">;
 
-// API 响应类型 - 直接使用生成类型的 Stringify 版本
-export type GradeDetail = Stringify<GradeResponse>;
+// API 响应类型
+export type GradeDetail = GradeResponse;
 
 export const gradeService = {
   // 创建评分
   create: async (submissionId: string, req: CreateGradeInput) => {
     const { data } = await api.post<{ data: GradeDetail }>("/grades", {
       ...req,
-      submission_id: Number(submissionId),
+      submission_id: submissionId,
     });
     return data.data;
   },

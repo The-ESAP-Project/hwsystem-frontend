@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import i18n from "@/app/i18n";
 import { authService } from "@/features/auth/services/auth";
-import type { Stringify } from "@/types";
+import { logger } from "@/lib/logger";
 import type { LoginRequest, User } from "@/types/generated";
 import { useNotificationStore } from "./useNotificationStore";
 
@@ -11,15 +11,15 @@ let initPromise: Promise<void> | null = null;
 
 interface UserState {
   // 状态
-  currentUser: Stringify<User> | null;
+  currentUser: User | null;
   isLoading: boolean;
   isInitialized: boolean;
 
   // Actions
-  login: (credentials: LoginRequest) => Promise<Stringify<User>>;
+  login: (credentials: LoginRequest) => Promise<User>;
   logout: () => Promise<void>;
   initAuth: () => Promise<void>;
-  refreshUserInfo: () => Promise<Stringify<User> | null>;
+  refreshUserInfo: () => Promise<User | null>;
   clearAuthData: () => void;
 }
 
@@ -69,8 +69,12 @@ export const useUserStore = create<UserState>()(
         // 调用后端登出 API 清除 Refresh Token Cookie
         try {
           await authService.logout();
-        } catch {
+        } catch (error) {
           // 即使 API 调用失败也继续清除本地状态
+          logger.warn(
+            "Logout API failed, continuing with local cleanup",
+            error,
+          );
         }
 
         // 清除状态和存储
@@ -108,8 +112,9 @@ export const useUserStore = create<UserState>()(
                 }
               }
             }
-          } catch {
-            // 初始化认证时的错误静默处理
+          } catch (error) {
+            // 认证初始化失败时记录错误，但不阻塞应用
+            logger.error("Auth initialization failed", error);
           } finally {
             set({ isLoading: false });
           }
@@ -125,9 +130,10 @@ export const useUserStore = create<UserState>()(
           const user = await authService.getCurrentUser();
           set({ currentUser: user });
           return user;
-        } catch {
+        } catch (error) {
+          logger.error("Failed to refresh user info", error);
           get().logout();
-          throw new Error(i18n.t("error.refreshUserInfoFailed"));
+          throw error;
         }
       },
 

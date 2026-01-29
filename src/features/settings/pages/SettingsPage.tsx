@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import { useUpdateProfile } from "../hooks/useSettings";
@@ -137,7 +138,8 @@ export function SettingsPage() {
       // 清空密码字段
       form.setValue("password", "");
       form.setValue("confirm_password", "");
-    } catch {
+    } catch (error) {
+      logger.error("Failed to update profile", error);
       notify.error(
         t("notify.settings.updateFailed"),
         t("notify.tryAgainLater"),

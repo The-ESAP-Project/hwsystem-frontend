@@ -47,6 +47,7 @@ import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { useSubmission } from "@/features/submission/hooks/useSubmission";
 import type { GradeNavigationState } from "@/features/submission/pages/SubmissionListPage";
 import { submissionService } from "@/features/submission/services/submissionService";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCreateGrade, useUpdateGrade } from "../hooks/useGrade";
 
@@ -278,7 +279,8 @@ export function GradePage() {
             notify.success(t("grade.navigation.allCompleted"));
             setTimeout(() => goBackToList(), 1200);
           }
-        } catch {
+        } catch (error) {
+          logger.warn("Failed to get next pending submission", error);
           // 获取下一个失败，直接返回列表
           setTimeout(() => goBackToList(), 500);
         }
@@ -286,7 +288,8 @@ export function GradePage() {
         // 没有 homeworkId，直接返回
         setTimeout(() => navigate(-1), 500);
       }
-    } catch {
+    } catch (error) {
+      logger.error("Failed to submit grade", error);
       notify.error(t("grade.error.failed"), t("grade.error.retry"));
     }
   };

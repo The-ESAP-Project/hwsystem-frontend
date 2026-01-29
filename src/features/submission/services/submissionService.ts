@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   CreateSubmissionRequest,
   GradeResponse,
@@ -12,7 +11,7 @@ import type {
 
 // homework_id 从 URL 参数获取，不需要写入请求体
 export type SubmissionCreateInput = Omit<
-  Stringify<CreateSubmissionRequest>,
+  CreateSubmissionRequest,
   "homework_id"
 >;
 
@@ -23,10 +22,10 @@ export interface SubmissionSummaryQueryInput {
   graded?: boolean;
 }
 
-// API 响应类型 - 直接使用生成类型的 Stringify 版本
-export type SubmissionDetail = Stringify<SubmissionResponse>;
-export type SubmissionListItemStringified = Stringify<SubmissionListItem>;
-export type SubmissionSummaryItemStringified = Stringify<SubmissionSummaryItem>;
+// API 响应类型
+export type SubmissionDetail = SubmissionResponse;
+export type SubmissionListItemStringified = SubmissionListItem;
+export type SubmissionSummaryItemStringified = SubmissionSummaryItem;
 
 // 扩展类型：用于需要 version/is_late/homework 字段的详情响应
 // SubmissionResponse 本身不含这些字段，但 API 返回的完整提交详情包含
@@ -44,12 +43,12 @@ export type SubmissionDetailWithHistory = SubmissionDetail & {
 
 export interface SubmissionListResponseStringified {
   items: SubmissionListItemStringified[];
-  pagination?: Stringify<SubmissionListResponse>["pagination"];
+  pagination?: SubmissionListResponse["pagination"];
 }
 
 export interface SubmissionSummaryResponseStringified {
   items: SubmissionSummaryItemStringified[];
-  pagination?: Stringify<SubmissionSummaryResponse>["pagination"];
+  pagination?: SubmissionSummaryResponse["pagination"];
 }
 
 export const submissionService = {
@@ -67,7 +66,7 @@ export const submissionService = {
       "/submissions",
       {
         params: {
-          homework_id: Number(homeworkId),
+          homework_id: homeworkId,
           page: params?.page,
           page_size: params?.page_size,
           status: params?.status,
@@ -82,7 +81,7 @@ export const submissionService = {
   create: async (homeworkId: string, req: SubmissionCreateInput) => {
     const { data } = await api.post<{ data: SubmissionDetail }>(
       "/submissions",
-      { ...req, homework_id: Number(homeworkId) },
+      { ...req, homework_id: homeworkId },
     );
     return data.data;
   },
@@ -139,7 +138,7 @@ export const submissionService = {
 
   // 获取提交的评分（学生查询自己的评分）
   getGrade: async (submissionId: string) => {
-    const { data } = await api.get<{ data: Stringify<GradeResponse> }>(
+    const { data } = await api.get<{ data: GradeResponse }>(
       `/submissions/${submissionId}/grade`,
     );
     return data.data;

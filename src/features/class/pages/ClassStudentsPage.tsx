@@ -50,6 +50,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import {
   useClass,
@@ -128,7 +129,8 @@ export function ClassStudentsPage() {
     try {
       await updateRole.mutateAsync({ userId, role });
       notify.success(t("notify.member.roleUpdated"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to update member role", error);
       notify.error(t("notify.member.operationFailed"));
     }
   };
@@ -140,7 +142,8 @@ export function ClassStudentsPage() {
       notify.success(t("notify.member.removed"));
       setRemoveDialogOpen(false);
       setSelectedMember(null);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to remove member", error);
       notify.error(t("notify.member.operationFailed"));
     }
   };
@@ -150,7 +153,8 @@ export function ClassStudentsPage() {
     try {
       await navigator.clipboard.writeText(classData.invite_code);
       notify.success(t("notify.class.inviteCodeCopied"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to copy invite code", error);
       notify.error(t("common.copyFailed"));
     }
   };

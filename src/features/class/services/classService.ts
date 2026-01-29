@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   ClassDetail,
   ClassListResponse,
@@ -12,24 +11,24 @@ import type {
   UserInfo,
 } from "@/types/generated";
 
-// API 响应类型 - 直接使用生成类型的 Stringify 版本
+// API 响应类型
 // ClassDetail 已包含 teacher: TeacherInfo, member_count 等字段
-export type ClassDetailStringified = Stringify<ClassDetail> & {
+export type ClassDetailStringified = ClassDetail & {
   // 当前用户在该班级的角色（后端在认证请求时附加）
   my_role?: ClassUserRole;
 };
 
-export type ClassTeacherStringified = Stringify<TeacherInfo>;
+export type ClassTeacherStringified = TeacherInfo;
 
 export interface ClassListResponseStringified {
   items: ClassDetailStringified[];
-  pagination?: Stringify<ClassListResponse>["pagination"];
+  pagination?: ClassListResponse["pagination"];
 }
 
-// 成员相关类型 - 直接使用生成类型的 Stringify 版本
-export type ClassMember = Stringify<ClassUserDetail>;
-export type ClassMemberUser = Stringify<UserInfo>;
-export type ClassMemberListResponse = Stringify<ClassUserDetailListResponse>;
+// 成员相关类型
+export type ClassMember = ClassUserDetail;
+export type ClassMemberUser = UserInfo;
+export type ClassMemberListResponse = ClassUserDetailListResponse;
 
 export const classService = {
   // 获取班级列表
@@ -65,7 +64,7 @@ export const classService = {
   create: async (req: {
     name: string;
     description?: string | null;
-    teacher_id?: number | null;
+    teacher_id?: string | null;
   }) => {
     const { data } = await api.post<{ data: ClassDetailStringified }>(
       "/classes",
@@ -75,7 +74,7 @@ export const classService = {
   },
 
   // 更新班级
-  update: async (classId: string, req: Stringify<UpdateClassRequest>) => {
+  update: async (classId: string, req: UpdateClassRequest) => {
     const { data } = await api.put<{ data: ClassDetailStringified }>(
       `/classes/${classId}`,
       req,

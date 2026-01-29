@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { authService } from "@/features/auth/services/auth";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { logger } from "@/lib/logger";
 import { useUserStore } from "@/stores/useUserStore";
 import "@/app/i18n";
 
@@ -94,8 +95,9 @@ function TokenRefresher() {
           );
           // 递归调度下次刷新
           scheduleRefresh();
-        } catch {
-          // 刷新失败，清除认证状态
+        } catch (error) {
+          // 刷新失败，记录错误并清除认证状态
+          logger.error("Token refresh failed", error);
           clearAuthData();
         }
       }, refreshTime);

@@ -44,6 +44,7 @@ import {
   useDeleteHomework,
 } from "@/features/homework/hooks/useHomework";
 import type { HomeworkListItemStringified } from "@/features/homework/services/homeworkService";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 
 type TabValue = "active" | "expired" | "all";
@@ -432,7 +433,8 @@ export function TeacherHomeworksPage() {
                     `${t("common.delete")} ${t("common.confirm")}`,
                   );
                   setDeleteTarget(null);
-                } catch {
+                } catch (error) {
+                  logger.error("Failed to delete homework", error);
                   notify.error(t("grade.error.failed"));
                 }
               }}

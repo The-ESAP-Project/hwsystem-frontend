@@ -5,42 +5,42 @@ import type { PaginationInfo } from "./pagination";
 /**
  * 创建提交请求
  */
-export type CreateSubmissionRequest = { homework_id: bigint, content: string, attachments: Array<string> | null, };
+export type CreateSubmissionRequest = { homework_id: string, content: string, attachments: Array<string> | null, };
 
 /**
  * 最新提交信息（概览用）
  */
-export type LatestSubmissionInfo = { id: bigint, version: number, status: string, is_late: boolean, submitted_at: string, };
+export type LatestSubmissionInfo = { id: string, version: number, status: string, is_late: boolean, submitted_at: string, };
 
 /**
  * 提交实体
  */
-export type Submission = { id: bigint, homework_id: bigint, creator_id: bigint, version: number, content: string | null, status: SubmissionStatus, is_late: boolean, submitted_at: string, };
+export type Submission = { id: string, homework_id: string, creator_id: string, version: number, content: string | null, status: SubmissionStatus, is_late: boolean, submitted_at: string, };
 
 /**
  * 提交者信息
  */
-export type SubmissionCreator = { id: bigint, username: string, display_name: string | null, avatar_url: string | null, };
+export type SubmissionCreator = { id: string, username: string, display_name: string | null, avatar_url: string | null, };
 
 /**
  * 提交中的评分信息
  */
-export type SubmissionGradeInfo = { id: bigint, score: number, comment: string | null, graded_at: string, };
+export type SubmissionGradeInfo = { id: string, score: number, comment: string | null, graded_at: string, };
 
 /**
  * 提交关联的作业信息
  */
-export type SubmissionHomeworkInfo = { id: bigint, title: string, max_score: number, deadline: string | null, };
+export type SubmissionHomeworkInfo = { id: string, title: string, max_score: number, deadline: string | null, };
 
 /**
  * 提交列表项（包含提交者信息）
  */
-export type SubmissionListItem = { id: bigint, homework_id: bigint, creator_id: bigint, creator: SubmissionCreator, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, };
+export type SubmissionListItem = { id: string, homework_id: string, creator_id: string, creator: SubmissionCreator, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, };
 
 /**
  * 提交列表查询参数
  */
-export type SubmissionListQuery = { homework_id: bigint | null, creator_id: bigint | null, status: string | null, page: number, page_size: number, };
+export type SubmissionListQuery = { homework_id: string | null, creator_id: string | null, status: string | null, page: number, page_size: number, };
 
 /**
  * 提交列表响应
@@ -50,7 +50,7 @@ export type SubmissionListResponse = { items: Array<SubmissionListItem>, paginat
 /**
  * 提交响应
  */
-export type SubmissionResponse = { id: bigint, homework_id: bigint, creator: SubmissionCreator, content: string, attachments: Array<FileInfo>, status: string, submitted_at: string, grade: SubmissionGradeInfo | null, version: number, is_late: boolean, homework: SubmissionHomeworkInfo | null, };
+export type SubmissionResponse = { id: string, homework_id: string, creator: SubmissionCreator, content: string, attachments: Array<FileInfo>, status: string, submitted_at: string, grade: SubmissionGradeInfo | null, version: number, is_late: boolean, homework: SubmissionHomeworkInfo | null, };
 
 /**
  * 提交状态
@@ -84,7 +84,7 @@ export type UpdateSubmissionRequest = { content: string | null, attachments: Arr
 /**
  * 用户提交历史项（包含评分信息）
  */
-export type UserSubmissionHistoryItem = { id: bigint, homework_id: bigint, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, attachments: Array<FileInfo>, grade: SubmissionGradeInfo | null, };
+export type UserSubmissionHistoryItem = { id: string, homework_id: string, version: number, content: string | null, status: string, is_late: boolean, submitted_at: string, attachments: Array<FileInfo>, grade: SubmissionGradeInfo | null, };
 
 /**
  * 用户提交历史响应（无分页）

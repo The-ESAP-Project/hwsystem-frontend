@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   CreateUserRequest,
   UpdateUserRequest,
@@ -12,10 +11,10 @@ import type {
   UserStatus,
 } from "@/types/generated";
 
-// API 响应类型 - 直接使用生成类型的 Stringify 版本
-export type UserDetail = Stringify<User>;
-export type UserListResponseStringified = Stringify<UserListResponse>;
-export type UserImportResponseStringified = Stringify<UserImportResponse>;
+// API 响应类型
+export type UserDetail = User;
+export type UserListResponseStringified = UserListResponse;
+export type UserImportResponseStringified = UserImportResponse;
 
 // 前端友好的查询参数类型（使用 page_size 而非 size）
 export interface UserListParamsInput {
@@ -30,24 +29,19 @@ export const userService = {
   list: async (
     params: UserListParamsInput = {},
   ): Promise<UserListResponseStringified> => {
-    const { data } = await api.get<{ data: Stringify<UserListResponse> }>(
-      "/users",
-      {
-        params,
-      },
-    );
+    const { data } = await api.get<{ data: UserListResponse }>("/users", {
+      params,
+    });
     return data.data;
   },
 
   get: async (id: string): Promise<UserDetail> => {
-    const { data } = await api.get<{ data: Stringify<UserResponse> }>(
-      `/users/${id}`,
-    );
+    const { data } = await api.get<{ data: UserResponse }>(`/users/${id}`);
     return data.data.user;
   },
 
   create: async (createData: CreateUserRequest): Promise<UserDetail> => {
-    const response = await api.post<{ data: Stringify<UserResponse> }>(
+    const response = await api.post<{ data: UserResponse }>(
       "/users",
       createData,
     );
@@ -58,7 +52,7 @@ export const userService = {
     id: string,
     updateData: UpdateUserRequest,
   ): Promise<UserDetail> => {
-    const response = await api.put<{ data: Stringify<UserResponse> }>(
+    const response = await api.put<{ data: UserResponse }>(
       `/users/${id}`,
       updateData,
     );
@@ -82,13 +76,15 @@ export const userService = {
   import: async (file: File): Promise<UserImportResponseStringified> => {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await api.post<{
-      data: Stringify<UserImportResponse>;
-    }>("/users/import", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await api.post<{ data: UserImportResponse }>(
+      "/users/import",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
     return response.data.data;
   },
 

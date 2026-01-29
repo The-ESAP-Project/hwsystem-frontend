@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCurrentUser } from "@/stores/useUserStore";
 import type { NotificationType, ReferenceType } from "@/types/generated";
@@ -87,7 +88,8 @@ export function NotificationListPage() {
     e.stopPropagation();
     try {
       await markAsRead.mutateAsync(id);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to mark notification as read", error);
       notify.error(t("notify.notification.operationFailed"));
     }
   };
@@ -96,7 +98,8 @@ export function NotificationListPage() {
     try {
       await markAllAsRead.mutateAsync();
       notify.success(t("notify.notification.markedAllRead"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to mark all notifications as read", error);
       notify.error(t("notify.notification.operationFailed"));
     }
   };
@@ -107,7 +110,8 @@ export function NotificationListPage() {
     try {
       await deleteNotification.mutateAsync(id);
       notify.success(t("notify.notification.deleteSuccess"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to delete notification", error);
       notify.error(t("notify.notification.deleteFailed"));
     }
   };

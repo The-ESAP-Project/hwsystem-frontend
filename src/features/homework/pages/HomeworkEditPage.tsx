@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
+import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useHomework, useUpdateHomework } from "../hooks/useHomework";
 
@@ -134,7 +135,8 @@ export function HomeworkEditPage() {
         ]);
       }
       notify.success(t("notify.file.uploadSuccess"));
-    } catch {
+    } catch (error) {
+      logger.error("Failed to upload file", error);
       notify.error(t("notify.file.uploadFailed"));
     } finally {
       setUploading(false);
@@ -163,7 +165,8 @@ export function HomeworkEditPage() {
       });
       notify.success(t("notify.homework.updateSuccess"));
       navigate(`${prefix}/classes/${classId}/homework/${homeworkId}`);
-    } catch {
+    } catch (error) {
+      logger.error("Failed to update homework", error);
       notify.error(
         t("notify.homework.updateFailed"),
         t("notify.tryAgainLater"),

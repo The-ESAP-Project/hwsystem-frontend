@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-import type { Stringify } from "@/types";
 import type {
   AllHomeworksResponse,
   CreateHomeworkRequest,
@@ -22,24 +21,21 @@ import type {
 import type { FileInfo } from "@/types/generated/file";
 
 // 前端友好的输入类型（用于创建）- 从生成类型派生
-export type CreateHomeworkInput = Omit<
-  Stringify<CreateHomeworkRequest>,
-  "class_id"
->;
+export type CreateHomeworkInput = Omit<CreateHomeworkRequest, "class_id">;
 
-export type UpdateHomeworkInput = Partial<Stringify<UpdateHomeworkRequest>>;
+export type UpdateHomeworkInput = Partial<UpdateHomeworkRequest>;
 
 // API 响应中的我的提交摘要（学生视角）- 使用生成类型
-export type HomeworkMySubmission = Stringify<MySubmissionSummary>;
+export type HomeworkMySubmission = MySubmissionSummary;
 
 // 附件信息类型（前端使用）- 直接使用生成类型
-export type HomeworkAttachment = Stringify<FileInfo>;
+export type HomeworkAttachment = FileInfo;
 
 // 创建者信息类型
-export type HomeworkCreatorStringified = Stringify<HomeworkCreator>;
+export type HomeworkCreatorStringified = HomeworkCreator;
 
 // 作业详情响应类型 - 使用生成类型 HomeworkDetail 并扩展学生视角字段
-export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
+export type HomeworkDetailStringified = HomeworkDetail & {
   // 学生视角：我的提交状态（后端在学生请求时附加）
   my_submission?: HomeworkMySubmission;
   // 兼容字段名：后端用 allow_late，部分页面用 allow_late_submission
@@ -47,20 +43,20 @@ export type HomeworkDetailStringified = Stringify<HomeworkDetail> & {
 };
 
 // 作业列表项类型 - 学生视角包含提交状态和创建者
-export type HomeworkListItemStringified = Stringify<Homework> & {
+export type HomeworkListItemStringified = Homework & {
   my_submission?: HomeworkMySubmission | null;
   creator?: HomeworkCreatorStringified | null;
-  stats_summary?: Stringify<HomeworkStatsSummary> | null;
+  stats_summary?: HomeworkStatsSummary | null;
 };
 
 // 作业列表响应类型
 export interface HomeworkListResponseStringified {
   items: HomeworkListItemStringified[];
-  pagination?: Stringify<HomeworkListResponse>["pagination"];
+  pagination?: HomeworkListResponse["pagination"];
 }
 
-// 作业统计响应类型（直接使用生成类型的 Stringify 版本）
-export type HomeworkStats = Stringify<HomeworkStatsResponse>;
+// 作业统计响应类型
+export type HomeworkStats = HomeworkStatsResponse;
 
 // 重导出子类型供页面使用
 export type {
@@ -72,7 +68,7 @@ export type {
 };
 
 // 跨班级作业列表响应类型
-export type AllHomeworksResponseStringified = Stringify<AllHomeworksResponse>;
+export type AllHomeworksResponseStringified = AllHomeworksResponse;
 
 // 跨班级作业列表查询参数
 export interface AllHomeworksParams {
@@ -126,7 +122,7 @@ export const homeworkService = {
   create: async (classId: string, req: CreateHomeworkInput) => {
     const { data } = await api.post<{ data: HomeworkDetailStringified }>(
       "/homeworks",
-      { ...req, class_id: Number(classId) },
+      { ...req, class_id: classId },
     );
     return data.data;
   },
@@ -166,7 +162,7 @@ export const homeworkService = {
     const { data } = await api.get<{ data: MyHomeworkStatsResponse }>(
       "/homeworks/my/stats",
     );
-    return data.data as unknown as Stringify<MyHomeworkStatsResponse>;
+    return data.data;
   },
 
   // 获取教师作业统计（跨所有班级）
@@ -174,7 +170,7 @@ export const homeworkService = {
     const { data } = await api.get<{ data: TeacherHomeworkStatsResponse }>(
       "/homeworks/teacher/stats",
     );
-    return data.data as unknown as Stringify<TeacherHomeworkStatsResponse>;
+    return data.data;
   },
 
   // 获取所有班级的作业列表（跨班级）

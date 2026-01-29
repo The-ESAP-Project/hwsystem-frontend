@@ -15,9 +15,9 @@ password: string,
  */
 remember_me: boolean, };
 
-export type LoginResponse = { access_token: string, expires_in: bigint, user: User, created_at: string, };
+export type LoginResponse = { access_token: string, expires_in: string, user: User, created_at: string, };
 
-export type RefreshTokenResponse = { access_token: string, expires_in: bigint, };
+export type RefreshTokenResponse = { access_token: string, expires_in: string, };
 
 export type TokenVerificationResponse = { is_valid: boolean, };
 
