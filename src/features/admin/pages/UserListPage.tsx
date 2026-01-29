@@ -80,6 +80,7 @@ export default function UserListPage() {
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
   const [statusFilter, setStatusFilter] = useState<UserStatus | "all">("all");
   const [deleteTarget, setDeleteTarget] = useState<UserDetail | null>(null);
+  const [batchDeleteOpen, setBatchDeleteOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
@@ -109,10 +110,14 @@ export default function UserListPage() {
     isAllSelected,
   } = useBatchSelection(items);
 
-  // 批量删除
-  const handleBatchDelete = async () => {
+  // 批量删除 - 打开确认对话框
+  const handleBatchDelete = () => {
     if (selectedIds.size === 0) return;
-    // 显示确认对话框后批量删除
+    setBatchDeleteOpen(true);
+  };
+
+  // 确认批量删除
+  const confirmBatchDelete = async () => {
     const count = selectedIds.size;
     try {
       for (const id of selectedIds) {
@@ -120,6 +125,7 @@ export default function UserListPage() {
       }
       notify.success(t("notify.user.batchDeleteSuccess", { count }));
       clearSelection();
+      setBatchDeleteOpen(false);
     } catch (error) {
       logger.error("Failed to batch delete users", error);
       notify.error(t("notify.user.batchDeleteFailed"));
@@ -373,6 +379,31 @@ export default function UserListPage() {
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {deleteUser.isPending
+                ? t("common.deleting")
+                : t("common.confirmDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 批量删除确认对话框 */}
+      <AlertDialog open={batchDeleteOpen} onOpenChange={setBatchDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("userDetail.batchDeleteConfirm")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("userDetail.batchDeleteWarning", { count: selectedIds.size })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBatchDelete}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
               {deleteUser.isPending

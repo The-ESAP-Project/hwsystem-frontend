@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { createBrowserRouter, redirect } from "react-router";
 import { RouteErrorBoundary } from "@/components/common/RouteErrorBoundary";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -156,10 +157,13 @@ import { useRoleNavItems, useUserStore } from "@/stores/useUserStore";
 
 // 懒加载包装器
 function LazyPage({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center h-64">Loading...</div>
+        <div className="flex items-center justify-center h-64">
+          {t("common.loading")}
+        </div>
       }
     >
       {children}

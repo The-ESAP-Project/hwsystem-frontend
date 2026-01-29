@@ -1395,7 +1395,9 @@
     "lastLogin": "最后登录",
     "neverLoggedIn": "从未登录",
     "deleteConfirm": "确认删除用户？",
-    "deleteWarning": "即将删除用户 {{username}}，此操作不可撤销。删除后该用户将无法登录系统。"
+    "deleteWarning": "即将删除用户 {{username}}，此操作不可撤销。删除后该用户将无法登录系统。",
+    "batchDeleteConfirm": "确认批量删除用户？",
+    "batchDeleteWarning": "即将删除 {{count}} 个用户，此操作不可撤销。"
   },
   "notification": {
     "center": "通知中心",

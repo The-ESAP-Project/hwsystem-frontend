@@ -1395,7 +1395,9 @@
     "lastLogin": "Last Login",
     "neverLoggedIn": "Never logged in",
     "deleteConfirm": "Delete this user?",
-    "deleteWarning": "User {{username}} will be permanently deleted. This action cannot be undone."
+    "deleteWarning": "User {{username}} will be permanently deleted. This action cannot be undone.",
+    "batchDeleteConfirm": "Delete selected users?",
+    "batchDeleteWarning": "{{count}} users will be permanently deleted. This action cannot be undone."
   },
   "notification": {
     "center": "Notification Center",
