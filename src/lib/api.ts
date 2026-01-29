@@ -29,8 +29,8 @@ function getRefreshToken(): Promise<string> {
     )
     .then((response) => {
       const { access_token, expires_in } = response.data.data!;
-      localStorage.setItem("authToken", access_token);
-      localStorage.setItem("tokenExpiresIn", expires_in.toString());
+      // Token 存入内存 store（不再存 localStorage）
+      useUserStore.getState().setAccessToken(access_token, expires_in);
       return access_token;
     })
     .finally(() => {
@@ -54,7 +54,8 @@ const api = axios.create({
 // 请求拦截器：添加 Token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    // 从内存 store 获取 token（不再从 localStorage）
+    const token = useUserStore.getState().accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

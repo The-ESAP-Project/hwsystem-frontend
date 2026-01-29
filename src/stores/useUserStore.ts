@@ -19,6 +19,9 @@ interface UserState {
   currentUser: User | null;
   isLoading: boolean;
   isInitialized: boolean;
+  // Token 存储在内存中（XSS 防护）
+  accessToken: string | null;
+  tokenExpiresAt: number | null; // 毫秒时间戳
 
   // Actions
   login: (credentials: LoginRequest) => Promise<User>;
@@ -26,6 +29,7 @@ interface UserState {
   initAuth: () => Promise<void>;
   refreshUserInfo: () => Promise<User | null>;
   clearAuthData: () => void;
+  setAccessToken: (token: string, expiresIn: number) => void;
 }
 
 export const useUserStore = create<UserState>()(
@@ -34,21 +38,27 @@ export const useUserStore = create<UserState>()(
       currentUser: null,
       isLoading: false,
       isInitialized: false,
+      accessToken: null,
+      tokenExpiresAt: null,
+
+      setAccessToken: (token, expiresIn) => {
+        set({
+          accessToken: token,
+          tokenExpiresAt: Date.now() + Number(expiresIn) * 1000,
+        });
+      },
 
       login: async (credentials) => {
         set({ isLoading: true });
         try {
           const response = await authService.login(credentials);
 
-          // 保存 Token
-          localStorage.setItem("authToken", response.access_token);
-          localStorage.setItem(
-            "tokenExpiresIn",
-            response.expires_in.toString(),
-          );
-
-          // 更新状态
-          set({ currentUser: response.user });
+          // Token 存入内存 store（不再存 localStorage）
+          set({
+            currentUser: response.user,
+            accessToken: response.access_token,
+            tokenExpiresAt: Date.now() + Number(response.expires_in) * 1000,
+          });
 
           // 显示通知
           const userName = response.user.display_name || response.user.username;
@@ -103,18 +113,25 @@ export const useUserStore = create<UserState>()(
         initPromise = (async () => {
           set({ isInitialized: true, isLoading: true });
 
+          // 清理旧版 localStorage 数据（迁移）
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("tokenExpiresIn");
+          localStorage.removeItem("refreshToken");
+
           try {
-            const token = localStorage.getItem("authToken");
             const storedUser = get().currentUser;
 
-            if (token && storedUser) {
-              // 异步验证 Token
-              const result = await authService.verifyToken();
-
-              if (!result.isValid) {
-                if (!result.isNetworkError) {
-                  get().clearAuthData();
-                }
+            // 页面刷新后 accessToken 为 null，需要通过 refresh token 恢复
+            if (storedUser && !get().accessToken) {
+              try {
+                const response = await authService.refreshToken();
+                get().setAccessToken(
+                  response.access_token,
+                  Number(response.expires_in),
+                );
+              } catch {
+                // refresh 失败，清除用户状态
+                get().clearAuthData();
               }
             }
           } catch (error) {
@@ -143,10 +160,7 @@ export const useUserStore = create<UserState>()(
       },
 
       clearAuthData: () => {
-        set({ currentUser: null });
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("tokenExpiresIn");
-        localStorage.removeItem("refreshToken");
+        set({ currentUser: null, accessToken: null, tokenExpiresAt: null });
       },
     }),
     {

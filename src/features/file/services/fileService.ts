@@ -1,9 +1,13 @@
 import api from "@/lib/api";
 import { getApiBaseUrl } from "@/lib/config";
+import { useUserStore } from "@/stores/useUserStore";
 import type { FileUploadResponse } from "@/types/generated";
 
 // 直接使用生成的类型
 export type FileUploadResult = FileUploadResponse;
+
+// 从内存 store 获取 token
+const getAuthToken = () => useUserStore.getState().accessToken;
 
 export const fileService = {
   // 上传文件
@@ -30,7 +34,7 @@ export const fileService = {
 
   // 下载文件（使用 fetch + blob，携带 JWT 认证）
   download: async (token: string, fileName?: string) => {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
     const response = await fetch(url, {
@@ -65,7 +69,7 @@ export const fileService = {
 
   // 预览文件 - 返回 blob URL（用于图片/PDF/视频）
   preview: async (token: string): Promise<string> => {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
     const response = await fetch(url, {
@@ -84,7 +88,7 @@ export const fileService = {
 
   // 获取文本文件内容
   getTextContent: async (token: string): Promise<string> => {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
     const response = await fetch(url, {

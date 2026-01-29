@@ -110,7 +110,8 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
 
   // 连接 WebSocket
   const connect = useCallback(() => {
-    const token = localStorage.getItem("authToken");
+    // 从内存 store 获取 token（不再从 localStorage）
+    const token = useUserStore.getState().accessToken;
 
     if (!isAuthenticated || !token) {
       return;

@@ -66,11 +66,13 @@ function CacheManager() {
  */
 function TokenRefresher() {
   const currentUser = useUserStore((s) => s.currentUser);
+  const tokenExpiresAt = useUserStore((s) => s.tokenExpiresAt);
+  const setAccessToken = useUserStore((s) => s.setAccessToken);
   const clearAuthData = useUserStore((s) => s.clearAuthData);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentUser || !tokenExpiresAt) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -79,20 +81,14 @@ function TokenRefresher() {
     }
 
     const scheduleRefresh = () => {
-      const expiresIn = localStorage.getItem("tokenExpiresIn");
-      if (!expiresIn) return;
-
-      // 在过期前 1 分钟刷新，最少 60 秒后刷新
-      const refreshTime = Math.max((Number(expiresIn) - 60) * 1000, 60000);
+      // 在过期前 60 秒刷新，最少 60 秒后刷新
+      const now = Date.now();
+      const refreshTime = Math.max(tokenExpiresAt - now - 60000, 60000);
 
       timerRef.current = setTimeout(async () => {
         try {
           const response = await authService.refreshToken();
-          localStorage.setItem("authToken", response.access_token);
-          localStorage.setItem(
-            "tokenExpiresIn",
-            response.expires_in.toString(),
-          );
+          setAccessToken(response.access_token, Number(response.expires_in));
           // 递归调度下次刷新
           scheduleRefresh();
         } catch (error) {
@@ -111,7 +107,7 @@ function TokenRefresher() {
         timerRef.current = null;
       }
     };
-  }, [currentUser, clearAuthData]);
+  }, [currentUser, tokenExpiresAt, setAccessToken, clearAuthData]);
 
   return null;
 }
