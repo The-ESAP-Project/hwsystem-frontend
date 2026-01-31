@@ -1,8 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { FiArrowLeft, FiFile, FiUpload, FiX } from "react-icons/fi";
+import {
+  FiAlertCircle,
+  FiArrowLeft,
+  FiClock,
+  FiFile,
+  FiUpload,
+  FiX,
+} from "react-icons/fi";
 import { Link, useNavigate, useParams } from "react-router";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -66,6 +74,15 @@ interface UploadedFile {
   size: number;
 }
 
+interface UploadTask {
+  file: File;
+  progress: number;
+  controller: AbortController;
+  status: "pending" | "uploading" | "completed" | "cancelled" | "error";
+}
+
+const MAX_CONCURRENT_UPLOADS = 3;
+
 export function HomeworkCreatePage() {
   const { t } = useTranslation();
   const formSchema = useFormSchema();
@@ -74,11 +91,29 @@ export function HomeworkCreatePage() {
   const prefix = useRoutePrefix();
   const createHomework = useCreateHomework(classId!);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
-    {},
+  const [uploadTasks, setUploadTasks] = useState<Map<string, UploadTask>>(
+    new Map(),
   );
 
-  const isUploading = Object.keys(uploadProgress).length > 0;
+  // 取消单个上传
+  const handleCancelUpload = (fileName: string) => {
+    const task = uploadTasks.get(fileName);
+    if (task) {
+      task.controller.abort();
+      setUploadTasks((prev) => {
+        const next = new Map(prev);
+        next.set(fileName, { ...task, status: "cancelled" });
+        setTimeout(() => {
+          setUploadTasks((p) => {
+            const n = new Map(p);
+            n.delete(fileName);
+            return n;
+          });
+        }, 1000);
+        return next;
+      });
+    }
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -108,15 +143,42 @@ export function HomeworkCreatePage() {
       return;
     }
 
-    // 上传步骤
-    for (const file of Array.from(files)) {
-      // 初始化进度
-      setUploadProgress((prev) => ({ ...prev, [file.name]: 0 }));
+    const fileList = Array.from(files);
+
+    // 创建所有任务
+    const newTasks = new Map<string, UploadTask>();
+    for (const file of fileList) {
+      newTasks.set(file.name, {
+        file,
+        progress: 0,
+        controller: new AbortController(),
+        status: "pending",
+      });
+    }
+    setUploadTasks((prev) => new Map([...prev, ...newTasks]));
+
+    // 上传单个文件
+    const uploadOne = async (file: File) => {
+      const task = newTasks.get(file.name)!;
+
+      setUploadTasks((prev) => {
+        const next = new Map(prev);
+        next.set(file.name, { ...task, status: "uploading" });
+        return next;
+      });
 
       try {
         const result = await fileService.upload(file, {
+          signal: task.controller.signal,
           onProgress: (percent) => {
-            setUploadProgress((prev) => ({ ...prev, [file.name]: percent }));
+            setUploadTasks((prev) => {
+              const next = new Map(prev);
+              const current = next.get(file.name);
+              if (current) {
+                next.set(file.name, { ...current, progress: percent });
+              }
+              return next;
+            });
           },
         });
 
@@ -128,19 +190,52 @@ export function HomeworkCreatePage() {
             size: Number(result.size),
           },
         ]);
+
+        setUploadTasks((prev) => {
+          const next = new Map(prev);
+          next.delete(file.name);
+          return next;
+        });
       } catch (error) {
+        // 用户取消，不显示错误
+        if (axios.isCancel(error)) {
+          return;
+        }
         logger.error("Failed to upload file", error);
         notify.error(t("notify.file.uploadFailed"));
-      } finally {
-        // 移除进度状态
-        setUploadProgress((prev) => {
-          const { [file.name]: _, ...rest } = prev;
-          return rest;
+
+        setUploadTasks((prev) => {
+          const next = new Map(prev);
+          next.set(file.name, { ...task, status: "error" });
+          setTimeout(() => {
+            setUploadTasks((p) => {
+              const n = new Map(p);
+              n.delete(file.name);
+              return n;
+            });
+          }, 2000);
+          return next;
         });
       }
-    }
+    };
 
-    notify.success(t("notify.file.uploadSuccess"));
+    // 并行上传（限制并发数）
+    const pool: Promise<void>[] = [];
+    for (const file of fileList) {
+      const promise = uploadOne(file);
+      pool.push(promise);
+
+      if (pool.length >= MAX_CONCURRENT_UPLOADS) {
+        await Promise.race(pool);
+        // 移除已完成的 Promise
+        const completedIndex = await Promise.race(
+          pool.map((p, i) => p.then(() => i)),
+        );
+        pool.splice(completedIndex, 1);
+      }
+    }
+    await Promise.all(pool);
+
     e.target.value = "";
   };
 
@@ -294,15 +389,12 @@ export function HomeworkCreatePage() {
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={isUploading}
                     onClick={() =>
                       document.getElementById("file-upload")?.click()
                     }
                   >
                     <FiUpload className="mr-2 h-4 w-4" />
-                    {isUploading
-                      ? t("homeworkForm.uploading")
-                      : t("homeworkForm.uploadFile")}
+                    {t("homeworkForm.uploadFile")}
                   </Button>
                   <input
                     id="file-upload"
@@ -315,19 +407,37 @@ export function HomeworkCreatePage() {
                 </div>
 
                 {/* 正在上传的文件 */}
-                {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                {[...uploadTasks.entries()].map(([fileName, task]) => (
                   <div
                     key={fileName}
                     className="p-3 rounded-lg border bg-muted/50"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <FiUpload className="h-4 w-4 text-primary animate-pulse" />
-                      <span className="text-sm">{fileName}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {progress}%
+                      {task.status === "uploading" ? (
+                        <FiUpload className="h-4 w-4 text-primary animate-pulse" />
+                      ) : task.status === "error" ? (
+                        <FiAlertCircle className="h-4 w-4 text-destructive" />
+                      ) : task.status === "cancelled" ? (
+                        <FiX className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <FiClock className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="text-sm truncate flex-1">{fileName}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {task.progress}%
                       </span>
+                      {(task.status === "uploading" ||
+                        task.status === "pending") && (
+                        <button
+                          type="button"
+                          onClick={() => handleCancelUpload(fileName)}
+                          className="p-1 hover:bg-muted rounded"
+                        >
+                          <FiX className="h-4 w-4" />
+                        </button>
+                      )}
                     </div>
-                    <Progress value={progress} className="h-1" />
+                    <Progress value={task.progress} className="h-1" />
                   </div>
                 ))}
 

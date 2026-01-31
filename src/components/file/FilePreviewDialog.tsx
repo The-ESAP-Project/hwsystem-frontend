@@ -14,6 +14,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { fileService } from "@/features/file/services/fileService";
 import { isApiError } from "@/lib/errors";
+import { PdfViewer } from "./PdfViewer";
 
 export interface FilePreviewDialogProps {
   file: {
@@ -175,13 +176,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
         ) : null;
 
       case "pdf":
-        return blobUrl ? (
-          <iframe
-            src={blobUrl}
-            title={file.original_name}
-            className="w-full h-[60vh] border-0"
-          />
-        ) : null;
+        return blobUrl ? <PdfViewer url={blobUrl} /> : null;
 
       case "video":
         return blobUrl ? (

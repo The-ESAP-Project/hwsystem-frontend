@@ -91,6 +91,11 @@ api.interceptors.response.use(
     return Promise.reject(apiError);
   },
   (error: AxiosError) => {
+    // 优先检查取消错误，直接 reject 原始 error
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };

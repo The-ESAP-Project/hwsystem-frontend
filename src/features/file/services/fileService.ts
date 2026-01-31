@@ -10,6 +10,7 @@ export type FileUploadResult = FileUploadResponse;
 // 上传选项
 export interface UploadOptions {
   onProgress?: (percent: number) => void;
+  signal?: AbortSignal;
 }
 
 // 从内存 store 获取 token
@@ -54,6 +55,7 @@ export const fileService = {
           "Content-Type": "multipart/form-data",
         },
         timeout: AppConfig.fileOperationTimeout,
+        signal: options?.signal,
         onUploadProgress: (progressEvent) => {
           if (options?.onProgress && progressEvent.total) {
             const percent = Math.round(
