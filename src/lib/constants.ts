@@ -8,6 +8,9 @@
 /** API 请求超时时间（毫秒） */
 export const API_TIMEOUT = 10000;
 
+/** 文件操作超时时间（毫秒）- 上传/导入/导出等大文件操作 */
+export const FILE_OPERATION_TIMEOUT = 120000;
+
 // ============ 分页配置 ============
 
 /** 默认页码 */

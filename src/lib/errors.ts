@@ -38,6 +38,7 @@ const errorCodeToI18nKey: Partial<Record<ErrorCode, string>> = {
   [ErrorCode.FileTypeNotAllowed]: "error.fileTypeNotAllowed",
   [ErrorCode.FileSizeExceeded]: "error.fileSizeExceeded",
   [ErrorCode.MultifileUploadNotAllowed]: "error.multifileUploadNotAllowed",
+  [ErrorCode.FileOperationTimeout]: "error.fileOperationTimeout",
   // 用户
   [ErrorCode.UserNotFound]: "error.userNotFound",
   [ErrorCode.UserAlreadyExists]: "error.userAlreadyExists",

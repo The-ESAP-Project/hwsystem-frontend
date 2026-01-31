@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { FILE_OPERATION_TIMEOUT } from "@/lib/constants";
 import type {
   ClassDetail,
   ClassListResponse,
@@ -142,6 +143,7 @@ export const classService = {
   exportClassReport: async (classId: string) => {
     const response = await api.get(`/classes/${classId}/export`, {
       responseType: "blob",
+      timeout: FILE_OPERATION_TIMEOUT,
     });
     // 触发下载
     const blob = new Blob([response.data], {

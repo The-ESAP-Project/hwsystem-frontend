@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import { getApiBaseUrl } from "@/lib/config";
+import { FILE_OPERATION_TIMEOUT } from "@/lib/constants";
 import { useUserStore } from "@/stores/useUserStore";
 import type { FileUploadResponse } from "@/types/generated";
 
@@ -8,6 +9,28 @@ export type FileUploadResult = FileUploadResponse;
 
 // 从内存 store 获取 token
 const getAuthToken = () => useUserStore.getState().accessToken;
+
+/**
+ * 带超时的 fetch 封装
+ */
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number = FILE_OPERATION_TIMEOUT,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export const fileService = {
   // 上传文件
@@ -22,6 +45,7 @@ export const fileService = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: FILE_OPERATION_TIMEOUT,
       },
     );
     return data.data;
@@ -37,7 +61,7 @@ export const fileService = {
     const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         Authorization: authToken ? `Bearer ${authToken}` : "",
       },
@@ -72,7 +96,7 @@ export const fileService = {
     const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         Authorization: authToken ? `Bearer ${authToken}` : "",
       },
@@ -91,7 +115,7 @@ export const fileService = {
     const authToken = getAuthToken();
     const url = fileService.getDownloadUrl(token);
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         Authorization: authToken ? `Bearer ${authToken}` : "",
       },

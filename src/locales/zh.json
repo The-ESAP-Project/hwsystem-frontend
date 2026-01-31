@@ -777,6 +777,7 @@
     "fileTypeNotAllowed": "不支持的文件类型",
     "fileSizeExceeded": "文件大小超出限制",
     "multifileUploadNotAllowed": "不支持多文件上传",
+    "fileOperationTimeout": "文件操作超时，请检查网络后重试",
     "userNotFound": "用户不存在",
     "userAlreadyExists": "用户已存在",
     "userUpdateFailed": "用户信息更新失败",

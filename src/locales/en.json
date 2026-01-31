@@ -777,6 +777,7 @@
     "fileTypeNotAllowed": "File type not allowed",
     "fileSizeExceeded": "File size exceeded",
     "multifileUploadNotAllowed": "Multiple file upload not allowed",
+    "fileOperationTimeout": "File operation timed out, please check your network and try again",
     "userNotFound": "User not found",
     "userAlreadyExists": "User already exists",
     "userUpdateFailed": "User update failed",

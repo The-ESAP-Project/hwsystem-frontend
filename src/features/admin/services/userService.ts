@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { FILE_OPERATION_TIMEOUT } from "@/lib/constants";
 import type {
   CreateUserRequest,
   UpdateUserRequest,
@@ -68,6 +69,7 @@ export const userService = {
     const response = await api.get(`/users/export`, {
       params,
       responseType: "blob",
+      timeout: FILE_OPERATION_TIMEOUT,
     });
     return response.data;
   },
@@ -83,6 +85,7 @@ export const userService = {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        timeout: FILE_OPERATION_TIMEOUT,
       },
     );
     return response.data.data;
