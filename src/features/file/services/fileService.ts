@@ -7,6 +7,11 @@ import type { FileUploadResponse } from "@/types/generated";
 // 直接使用生成的类型
 export type FileUploadResult = FileUploadResponse;
 
+// 上传选项
+export interface UploadOptions {
+  onProgress?: (percent: number) => void;
+}
+
 // 从内存 store 获取 token
 const getAuthToken = () => useUserStore.getState().accessToken;
 
@@ -34,7 +39,10 @@ async function fetchWithTimeout(
 
 export const fileService = {
   // 上传文件
-  upload: async (file: File): Promise<FileUploadResult> => {
+  upload: async (
+    file: File,
+    options?: UploadOptions,
+  ): Promise<FileUploadResult> => {
     const formData = new FormData();
     formData.append("file", file);
 
@@ -46,6 +54,14 @@ export const fileService = {
           "Content-Type": "multipart/form-data",
         },
         timeout: AppConfig.fileOperationTimeout,
+        onUploadProgress: (progressEvent) => {
+          if (options?.onProgress && progressEvent.total) {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total,
+            );
+            options.onProgress(percent);
+          }
+        },
       },
     );
     return data.data;

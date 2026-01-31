@@ -29,6 +29,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
@@ -80,7 +81,11 @@ export function SubmitHomeworkPage() {
   const { data: latestSubmission } = useMyLatestSubmission(homeworkId!);
   const createSubmission = useCreateSubmission(homeworkId!);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {},
+  );
+
+  const isUploading = Object.keys(uploadProgress).length > 0;
 
   const isDeadlinePassed = homework?.deadline
     ? new Date(homework.deadline) < new Date()
@@ -112,10 +117,17 @@ export function SubmitHomeworkPage() {
     }
 
     // 上传步骤
-    setUploading(true);
-    try {
-      for (const file of Array.from(files)) {
-        const result = await fileService.upload(file);
+    for (const file of Array.from(files)) {
+      // 初始化进度
+      setUploadProgress((prev) => ({ ...prev, [file.name]: 0 }));
+
+      try {
+        const result = await fileService.upload(file, {
+          onProgress: (percent) => {
+            setUploadProgress((prev) => ({ ...prev, [file.name]: percent }));
+          },
+        });
+
         setUploadedFiles((prev) => [
           ...prev,
           {
@@ -124,15 +136,20 @@ export function SubmitHomeworkPage() {
             size: Number(result.size),
           },
         ]);
+      } catch (error) {
+        logger.error("Failed to upload file", error);
+        notify.error(t("notify.file.uploadFailed"));
+      } finally {
+        // 移除进度状态
+        setUploadProgress((prev) => {
+          const { [file.name]: _, ...rest } = prev;
+          return rest;
+        });
       }
-      notify.success(t("notify.file.uploadSuccess"));
-    } catch (error) {
-      logger.error("Failed to upload file", error);
-      notify.error(t("notify.file.uploadFailed"));
-    } finally {
-      setUploading(false);
-      e.target.value = "";
     }
+
+    notify.success(t("notify.file.uploadSuccess"));
+    e.target.value = "";
   };
 
   const removeFile = (token: string) => {
@@ -249,13 +266,13 @@ export function SubmitHomeworkPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={uploading}
+                    disabled={isUploading}
                     onClick={() =>
                       document.getElementById("file-upload")?.click()
                     }
                   >
                     <FiUpload className="mr-2 h-4 w-4" />
-                    {uploading
+                    {isUploading
                       ? t("submitHomework.uploading")
                       : t("submitHomework.uploadFile")}
                   </Button>
@@ -268,6 +285,25 @@ export function SubmitHomeworkPage() {
                     accept=".pdf,.doc,.docx,.txt,.zip,.png,.jpg,.jpeg"
                   />
                 </div>
+
+                {/* 正在上传的文件 */}
+                {Object.entries(uploadProgress).map(([fileName, progress]) => (
+                  <div
+                    key={fileName}
+                    className="p-3 rounded-lg border bg-muted/50"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <FiUpload className="h-4 w-4 text-primary animate-pulse" />
+                      <span className="text-sm">{fileName}</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {progress}%
+                      </span>
+                    </div>
+                    <Progress value={progress} className="h-1" />
+                  </div>
+                ))}
+
+                {/* 已上传的文件 */}
                 {uploadedFiles.length > 0 && (
                   <div className="space-y-2">
                     {uploadedFiles.map((file) => (
