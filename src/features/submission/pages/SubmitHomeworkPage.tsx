@@ -45,7 +45,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
-import { validateFiles } from "@/features/file/services/fileValidation";
+import { validateFilesWithCompression } from "@/features/file/services/fileValidation";
 import { formatBatchFileValidationErrors } from "@/features/file/utils/formatFileError";
 import { useHomework } from "@/features/homework/hooks/useHomework";
 import { logger } from "@/lib/logger";
@@ -141,8 +141,10 @@ export function SubmitHomeworkPage() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    // 客户端验证
-    const validationResult = validateFiles(Array.from(files));
+    // 客户端验证（带压缩）
+    const validationResult = await validateFilesWithCompression(
+      Array.from(files),
+    );
 
     if (!validationResult.valid) {
       const errorMessage = formatBatchFileValidationErrors(
@@ -154,7 +156,8 @@ export function SubmitHomeworkPage() {
       return;
     }
 
-    const fileList = Array.from(files);
+    // 使用已压缩的文件列表
+    const fileList = validationResult.processedFiles;
 
     // 创建所有任务
     const newTasks = new Map<string, UploadTask>();
@@ -179,8 +182,10 @@ export function SubmitHomeworkPage() {
       });
 
       try {
+        // 文件已经压缩过了，跳过压缩直接上传
         const result = await fileService.upload(file, {
           signal: task.controller.signal,
+          skipCompression: true,
           onProgress: (percent) => {
             setUploadTasks((prev) => {
               const next = new Map(prev);

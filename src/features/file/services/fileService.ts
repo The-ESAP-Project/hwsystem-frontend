@@ -12,6 +12,7 @@ export type FileUploadResult = FileUploadResponse;
 export interface UploadOptions {
   onProgress?: (percent: number) => void;
   signal?: AbortSignal;
+  skipCompression?: boolean; // 跳过压缩（如果文件已经压缩过）
 }
 
 // 从内存 store 获取 token
@@ -45,20 +46,24 @@ export const fileService = {
     file: File,
     options?: UploadOptions,
   ): Promise<FileUploadResult> => {
-    // 上传前尝试压缩图片
+    // 上传前尝试压缩图片（除非已跳过）
     let fileToUpload: File;
-    try {
-      fileToUpload = await compressImage(file, {
-        signal: options?.signal,
-        // 注意：压缩进度不传递给 onProgress，因为会和上传进度混淆
-      });
-    } catch (error) {
-      // 如果压缩被取消，直接抛出
-      if ((error as Error).name === "AbortError") {
-        throw error;
-      }
-      // 其他错误：使用原文件继续上传
+    if (options?.skipCompression) {
       fileToUpload = file;
+    } else {
+      try {
+        fileToUpload = await compressImage(file, {
+          signal: options?.signal,
+          // 注意：压缩进度不传递给 onProgress，因为会和上传进度混淆
+        });
+      } catch (error) {
+        // 如果压缩被取消，直接抛出
+        if ((error as Error).name === "AbortError") {
+          throw error;
+        }
+        // 其他错误：使用原文件继续上传
+        fileToUpload = file;
+      }
     }
 
     const formData = new FormData();
