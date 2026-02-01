@@ -926,7 +926,28 @@
       "maxFileSize": "Max File Size",
       "allowedTypes": "Allowed File Types"
     },
-    "note": "System settings are defined in server configuration files. Contact the system administrator to make changes."
+    "compression": {
+      "title": "Image Compression Tester",
+      "description": "Upload a test image and adjust parameters to see the compression effect",
+      "selectImage": "Select Test Image",
+      "quality": "Compression Quality",
+      "qualityHint": "Current: {{percent}}% (Recommended 70-90%)",
+      "maxWidth": "Max Width (pixels)",
+      "maxHeight": "Max Height (pixels)",
+      "original": "Original",
+      "compressed": "Compressed",
+      "compressing": "Compressing...",
+      "waiting": "Waiting for compression",
+      "size": "Size:",
+      "reduced": "Reduced:",
+      "time": "Time:",
+      "apply": "Apply Settings to System",
+      "download": "Download Compressed Image",
+      "clear": "Clear",
+      "errorNotImage": "Please select an image file",
+      "errorNoFile": "Please upload a test image first",
+      "successApplied": "Compression settings applied to system configuration"
+    }
   },
   "homework": {
     "list": {

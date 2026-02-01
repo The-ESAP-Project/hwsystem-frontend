@@ -926,7 +926,28 @@
       "maxFileSize": "单文件大小限制",
       "allowedTypes": "允许的文件类型"
     },
-    "note": "系统设置由服务端配置文件定义，如需修改请联系系统管理员。"
+    "compression": {
+      "title": "图片压缩测试",
+      "description": "上传测试图片，实时调整参数查看压缩效果",
+      "selectImage": "选择测试图片",
+      "quality": "压缩质量",
+      "qualityHint": "当前: {{percent}}% （推荐 70-90%）",
+      "maxWidth": "最大宽度（像素）",
+      "maxHeight": "最大高度（像素）",
+      "original": "原图",
+      "compressed": "压缩后",
+      "compressing": "压缩中...",
+      "waiting": "等待压缩",
+      "size": "大小:",
+      "reduced": "减少:",
+      "time": "用时:",
+      "apply": "应用参数到系统",
+      "download": "下载压缩后图片",
+      "clear": "清除",
+      "errorNotImage": "请选择图片文件",
+      "errorNoFile": "请先上传测试图片",
+      "successApplied": "压缩参数已应用到系统配置"
+    }
   },
   "homework": {
     "list": {

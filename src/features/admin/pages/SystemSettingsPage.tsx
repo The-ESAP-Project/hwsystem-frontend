@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import {
   FiCheck,
   FiClock,
-  FiDatabase,
   FiEdit2,
   FiFile,
   FiServer,
@@ -350,18 +349,6 @@ export function SystemSettingsPage() {
               );
             }}
           />
-
-          {/* 存储信息提示 */}
-          <Card className="bg-muted/30">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <FiDatabase className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div className="text-sm text-muted-foreground">
-                  <p>{t("systemSettings.note")}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* 配置管理标签页 */}

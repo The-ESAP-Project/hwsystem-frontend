@@ -1,6 +1,7 @@
 import imageCompression from "browser-image-compression";
 import { Download, Upload, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,9 @@ interface ImageCompressionTesterProps {
 export function ImageCompressionTester({
   onApplySettings,
 }: ImageCompressionTesterProps) {
+  const { t } = useTranslation();
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const [file, setFile] = useState<File | null>(null);
   const [quality, setQuality] = useState(0.85);
   const [maxWidth, setMaxWidth] = useState(1920);
@@ -30,18 +34,34 @@ export function ImageCompressionTester({
   const [originalPreview, setOriginalPreview] = useState<string>("");
   const [compressedPreview, setCompressedPreview] = useState<string>("");
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: compressedPreview intentionally omitted to prevent infinite loop
   const compressTestImage = useCallback(async () => {
     if (!file) return;
+
+    // 取消之前的压缩任务
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     setIsCompressing(true);
     const startTime = performance.now();
 
     try {
+      // 检查是否被取消
+      if (signal.aborted) return;
+
       const compressed = await imageCompression(file, {
         maxWidthOrHeight: Math.max(maxWidth, maxHeight),
         useWebWorker: true,
         initialQuality: quality,
+        signal,
       });
+
+      // 再次检查是否被取消
+      if (signal.aborted) return;
 
       setCompressionTime(performance.now() - startTime);
       setCompressedFile(compressed);
@@ -50,17 +70,27 @@ export function ImageCompressionTester({
       if (compressedPreview) URL.revokeObjectURL(compressedPreview);
       setCompressedPreview(URL.createObjectURL(compressed));
     } catch (error) {
-      toast.error(`压缩失败: ${(error as Error).message}`);
+      // 忽略取消错误
+      if ((error as Error).name === "AbortError") return;
+      toast.error(
+        `${t("systemSettings.compression.compressing")} ${(error as Error).message}`,
+      );
     } finally {
-      setIsCompressing(false);
+      if (!signal.aborted) {
+        setIsCompressing(false);
+      }
     }
-  }, [file, quality, maxWidth, maxHeight, compressedPreview]);
+  }, [file, quality, maxWidth, maxHeight, t]);
 
-  // 当参数或文件变化时，自动重新压缩
+  // 当参数或文件变化时，自动重新压缩（带防抖）
   useEffect(() => {
-    if (file) {
+    if (!file) return;
+
+    const timer = setTimeout(() => {
       compressTestImage();
-    }
+    }, 500); // 500ms 防抖
+
+    return () => clearTimeout(timer);
   }, [file, compressTestImage]);
 
   // 清理预览 URL
@@ -76,7 +106,7 @@ export function ImageCompressionTester({
     if (!selectedFile) return;
 
     if (!selectedFile.type.startsWith("image/")) {
-      toast.error("请选择图片文件");
+      toast.error(t("systemSettings.compression.errorNotImage"));
       return;
     }
 
@@ -88,7 +118,7 @@ export function ImageCompressionTester({
 
   const handleApplySettings = () => {
     if (!file) {
-      toast.error("请先上传测试图片");
+      toast.error(t("systemSettings.compression.errorNoFile"));
       return;
     }
 
@@ -97,7 +127,7 @@ export function ImageCompressionTester({
       maxWidth: maxWidth.toString(),
       maxHeight: maxHeight.toString(),
     });
-    toast.success("压缩参数已应用到系统配置");
+    toast.success(t("systemSettings.compression.successApplied"));
   };
 
   const handleDownload = () => {
@@ -138,16 +168,18 @@ export function ImageCompressionTester({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Upload className="h-5 w-5" />
-          图片压缩测试
+          {t("systemSettings.compression.title")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          上传测试图片，实时调整参数查看压缩效果
+          {t("systemSettings.compression.description")}
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* 上传区域 */}
         <div>
-          <Label htmlFor="test-image">选择测试图片</Label>
+          <Label htmlFor="test-image">
+            {t("systemSettings.compression.selectImage")}
+          </Label>
           <div className="mt-2 flex items-center gap-2">
             <Input
               id="test-image"
@@ -172,7 +204,7 @@ export function ImageCompressionTester({
           {/* 压缩质量 */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>压缩质量</Label>
+              <Label>{t("systemSettings.compression.quality")}</Label>
               <Input
                 type="number"
                 min="0.1"
@@ -191,16 +223,19 @@ export function ImageCompressionTester({
               max={1}
               step={0.05}
               className="w-full"
+              aria-label={t("systemSettings.compression.quality")}
             />
             <p className="text-xs text-muted-foreground">
-              当前: {(quality * 100).toFixed(0)}% （推荐 70-90%）
+              {t("systemSettings.compression.qualityHint", {
+                percent: (quality * 100).toFixed(0),
+              })}
             </p>
           </div>
 
           {/* 最大宽度 */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>最大宽度（像素）</Label>
+              <Label>{t("systemSettings.compression.maxWidth")}</Label>
               <Input
                 type="number"
                 min="500"
@@ -219,13 +254,14 @@ export function ImageCompressionTester({
               max={4000}
               step={100}
               className="w-full"
+              aria-label={t("systemSettings.compression.maxWidth")}
             />
           </div>
 
           {/* 最大高度 */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label>最大高度（像素）</Label>
+              <Label>{t("systemSettings.compression.maxHeight")}</Label>
               <Input
                 type="number"
                 min="500"
@@ -244,6 +280,7 @@ export function ImageCompressionTester({
               max={4000}
               step={100}
               className="w-full"
+              aria-label={t("systemSettings.compression.maxHeight")}
             />
           </div>
         </div>
@@ -253,17 +290,19 @@ export function ImageCompressionTester({
           <div className="grid grid-cols-2 gap-4 border rounded-lg p-4">
             {/* 原图 */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">原图</h4>
+              <h4 className="font-medium text-sm">
+                {t("systemSettings.compression.original")}
+              </h4>
               {originalPreview && (
                 <img
                   src={originalPreview}
-                  alt="原图"
+                  alt={t("systemSettings.compression.original")}
                   className="w-full h-48 object-contain border rounded bg-muted"
                 />
               )}
               <div className="text-sm space-y-1">
                 <p className="text-muted-foreground">
-                  大小:{" "}
+                  {t("systemSettings.compression.size")}{" "}
                   <span className="font-medium text-foreground">
                     {formatFileSize(file.size)}
                   </span>
@@ -273,38 +312,44 @@ export function ImageCompressionTester({
 
             {/* 压缩后 */}
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">压缩后</h4>
+              <h4 className="font-medium text-sm">
+                {t("systemSettings.compression.compressed")}
+              </h4>
               {isCompressing ? (
                 <div className="w-full h-48 flex items-center justify-center border rounded bg-muted">
-                  <p className="text-sm text-muted-foreground">压缩中...</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("systemSettings.compression.compressing")}
+                  </p>
                 </div>
               ) : compressedPreview ? (
                 <img
                   src={compressedPreview}
-                  alt="压缩后"
+                  alt={t("systemSettings.compression.compressed")}
                   className="w-full h-48 object-contain border rounded bg-muted"
                 />
               ) : (
                 <div className="w-full h-48 flex items-center justify-center border rounded bg-muted">
-                  <p className="text-sm text-muted-foreground">等待压缩</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("systemSettings.compression.waiting")}
+                  </p>
                 </div>
               )}
               {compressedFile && (
                 <div className="text-sm space-y-1">
                   <p className="text-muted-foreground">
-                    大小:{" "}
+                    {t("systemSettings.compression.size")}{" "}
                     <span className="font-medium text-foreground">
                       {formatFileSize(compressedFile.size)}
                     </span>
                   </p>
                   <p className="text-muted-foreground">
-                    减少:{" "}
+                    {t("systemSettings.compression.reduced")}{" "}
                     <span className="font-medium text-green-600">
                       {compressionRate}%
                     </span>
                   </p>
                   <p className="text-muted-foreground">
-                    用时:{" "}
+                    {t("systemSettings.compression.time")}{" "}
                     <span className="font-medium text-foreground">
                       {compressionTime.toFixed(0)} ms
                     </span>
@@ -318,7 +363,7 @@ export function ImageCompressionTester({
         {/* 操作按钮 */}
         <div className="flex gap-2">
           <Button onClick={handleApplySettings} disabled={!file}>
-            应用参数到系统
+            {t("systemSettings.compression.apply")}
           </Button>
           <Button
             variant="outline"
@@ -326,10 +371,10 @@ export function ImageCompressionTester({
             disabled={!compressedFile}
           >
             <Download className="h-4 w-4 mr-2" />
-            下载压缩后图片
+            {t("systemSettings.compression.download")}
           </Button>
           <Button variant="ghost" onClick={handleClear} disabled={!file}>
-            清除
+            {t("systemSettings.compression.clear")}
           </Button>
         </div>
       </CardContent>
