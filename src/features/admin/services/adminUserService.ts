@@ -26,7 +26,7 @@ export interface UserListParamsInput {
   search?: string;
 }
 
-export const userService = {
+export const adminUserService = {
   list: async (
     params: UserListParamsInput = {},
   ): Promise<UserListResponseStringified> => {

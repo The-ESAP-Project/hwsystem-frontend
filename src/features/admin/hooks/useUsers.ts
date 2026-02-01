@@ -4,16 +4,17 @@ import { classKeys } from "@/features/class/hooks/useClass";
 import { gradeKeys } from "@/features/grade/hooks/useGrade";
 import { submissionKeys } from "@/features/submission/hooks/useSubmission";
 import { useApiError } from "@/hooks/useApiError";
+import { downloadBlob } from "@/lib/download";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import {
+  adminUserService,
   type CreateUserRequest,
   type UpdateUserRequest,
   type UserDetail,
   type UserExportParams,
   type UserImportResponseStringified,
   type UserListParamsInput,
-  userService,
-} from "../services/userService";
+} from "../services/adminUserService";
 
 // Query key factory
 export const userKeys = {
@@ -28,7 +29,8 @@ export const userKeys = {
 export function useUserList(params: UserListParamsInput = {}) {
   return useQuery({
     queryKey: userKeys.list(params),
-    queryFn: () => userService.list(params),
+    queryFn: () => adminUserService.list(params),
+    staleTime: 5 * 60 * 1000, // 5分钟过期
   });
 }
 
@@ -36,8 +38,9 @@ export function useUserList(params: UserListParamsInput = {}) {
 export function useUser(id: string | undefined) {
   return useQuery({
     queryKey: userKeys.detail(id!),
-    queryFn: () => userService.get(id!),
+    queryFn: () => adminUserService.get(id!),
     enabled: !!id,
+    staleTime: 5 * 60 * 1000, // 5分钟过期
   });
 }
 
@@ -49,7 +52,7 @@ export function useCreateUser() {
   const { handleError } = useApiError();
 
   return useMutation({
-    mutationFn: (data: CreateUserRequest) => userService.create(data),
+    mutationFn: (data: CreateUserRequest) => adminUserService.create(data),
     onSuccess: (user) => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
       success(
@@ -72,7 +75,7 @@ export function useUpdateUser() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) =>
-      userService.update(id, data),
+      adminUserService.update(id, data),
     onSuccess: (user) => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
       queryClient.invalidateQueries({ queryKey: userKeys.detail(user.id) });
@@ -99,7 +102,7 @@ export function useDeleteUser() {
   const { handleError } = useApiError();
 
   return useMutation({
-    mutationFn: (id: string) => userService.delete(id),
+    mutationFn: (id: string) => adminUserService.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
       // 清理关联的班级成员、提交和评分缓存
@@ -121,7 +124,7 @@ export function useImportUsers() {
   const { handleError } = useApiError();
 
   return useMutation({
-    mutationFn: (file: File) => userService.import(file),
+    mutationFn: (file: File) => adminUserService.import(file),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
@@ -138,16 +141,9 @@ export function useExportUsers() {
   const success = useNotificationStore((s) => s.success);
 
   return useMutation({
-    mutationFn: (params: UserExportParams) => userService.export(params),
+    mutationFn: (params: UserExportParams) => adminUserService.export(params),
     onSuccess: (blob, params) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `users.${params.format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `users.${params.format}`);
       success(t("notify.user.exportSuccess"), t("notify.user.exported"));
     },
     onError: (err) => {
@@ -163,16 +159,9 @@ export function useDownloadImportTemplate() {
 
   return useMutation({
     mutationFn: (format: "csv" | "xlsx") =>
-      userService.downloadTemplate(format),
+      adminUserService.downloadTemplate(format),
     onSuccess: (blob, format) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `user_import_template.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `user_import_template.${format}`);
     },
     onError: (err) => {
       handleError(err, { title: t("notify.user.templateDownloadFailed") });

@@ -13,7 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useExportUsers } from "../hooks/useUsers";
-import type { UserRole, UserStatus } from "../services/userService";
+import type { UserRole, UserStatus } from "../services/adminUserService";
 
 interface UserExportDialogProps {
   open: boolean;

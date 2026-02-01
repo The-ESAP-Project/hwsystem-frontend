@@ -27,7 +27,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { logger } from "@/lib/logger";
 import { useUpdateUser, useUser } from "../hooks/useUsers";
-import type { UserRole, UserStatus } from "../services/userService";
+import type { UserRole, UserStatus } from "../services/adminUserService";
 
 function useFormSchema() {
   const { t } = useTranslation();

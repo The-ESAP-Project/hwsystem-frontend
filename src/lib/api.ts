@@ -1,5 +1,6 @@
 import axios, {
   type AxiosError,
+  type AxiosRequestConfig,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from "axios";
@@ -182,3 +183,80 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// ============================================
+// API Wrapper Functions
+// 统一处理 response.data.data 解包，减少重复代码
+// ============================================
+
+/**
+ * GET 请求 wrapper，自动解包 data.data
+ */
+export async function apiGet<T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await api.get<ApiResponse<T>>(url, config);
+  return response.data.data as T;
+}
+
+/**
+ * POST 请求 wrapper，自动解包 data.data
+ */
+export async function apiPost<T>(
+  url: string,
+  body?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await api.post<ApiResponse<T>>(url, body, config);
+  return response.data.data as T;
+}
+
+/**
+ * PUT 请求 wrapper，自动解包 data.data
+ */
+export async function apiPut<T>(
+  url: string,
+  body?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await api.put<ApiResponse<T>>(url, body, config);
+  return response.data.data as T;
+}
+
+/**
+ * PATCH 请求 wrapper，自动解包 data.data
+ */
+export async function apiPatch<T>(
+  url: string,
+  body?: unknown,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await api.patch<ApiResponse<T>>(url, body, config);
+  return response.data.data as T;
+}
+
+/**
+ * DELETE 请求 wrapper，自动解包 data.data
+ */
+export async function apiDelete<T>(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<T> {
+  const response = await api.delete<ApiResponse<T>>(url, config);
+  return response.data.data as T;
+}
+
+/**
+ * Blob 下载请求（不走 data.data 解包）
+ */
+export async function apiBlob(
+  url: string,
+  config?: AxiosRequestConfig,
+): Promise<Blob> {
+  const response = await api.get(url, {
+    ...config,
+    responseType: "blob",
+  });
+  return response.data;
+}

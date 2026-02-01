@@ -60,6 +60,7 @@ export function useHomeworkList(
     queryKey: [...homeworkKeys.list(classId, params), userId] as const,
     queryFn: () => homeworkService.list(classId, params),
     enabled: !!classId && !!userId,
+    staleTime: 60 * 1000, // 1分钟过期（作业需要及时更新）
   });
 }
 
@@ -71,6 +72,7 @@ export function useHomework(homeworkId: string) {
     queryKey: [...homeworkKeys.detail(homeworkId), userId] as const,
     queryFn: () => homeworkService.get(homeworkId),
     enabled: !!homeworkId && !!userId,
+    staleTime: 60 * 1000, // 1分钟过期
   });
 }
 

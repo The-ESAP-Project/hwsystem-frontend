@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useApiError } from "@/hooks/useApiError";
+import { downloadBlob } from "@/lib/download";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import { homeworkService } from "../services/homeworkService";
 
@@ -19,18 +20,10 @@ export function useExportHomeworkStats() {
       homeworkTitle?: string;
     }) => {
       const blob = await homeworkService.exportStats(homeworkId);
-      // 触发下载
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
       const filename = homeworkTitle
         ? `${homeworkTitle}_stats.xlsx`
         : `homework_${homeworkId}_stats.xlsx`;
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      downloadBlob(blob, filename);
     },
     onSuccess: () => {
       success(

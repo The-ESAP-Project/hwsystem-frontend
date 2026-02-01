@@ -44,7 +44,7 @@ import { UserExportDialog } from "../components/UserExportDialog";
 import { UserImportDialog } from "../components/UserImportDialog";
 import { UserListFilters } from "../components/UserListFilters";
 import { type UserDetail, useDeleteUser, useUserList } from "../hooks/useUsers";
-import type { UserRole, UserStatus } from "../services/userService";
+import type { UserRole, UserStatus } from "../services/adminUserService";
 
 const roleColors: Record<UserRole, string> = {
   admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",

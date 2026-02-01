@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCurrentUser } from "@/stores/useUserStore";
-import { userService } from "../services/userService";
+import { profileService } from "../services/profileService";
 
 // Query Keys
 export const userKeys = {
@@ -18,7 +18,7 @@ export function useUserStats() {
 
   return useQuery({
     queryKey: [...userKeys.myStats(), userId] as const,
-    queryFn: () => userService.getMyStats(),
+    queryFn: () => profileService.getMyStats(),
     enabled: !!userId,
     staleTime: 60 * 1000, // 1分钟过期
   });

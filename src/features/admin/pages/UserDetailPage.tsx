@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDeleteUser, useUser } from "../hooks/useUsers";
-import type { UserRole, UserStatus } from "../services/userService";
+import type { UserRole, UserStatus } from "../services/adminUserService";
 
 const roleColors: Record<UserRole, string> = {
   admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",

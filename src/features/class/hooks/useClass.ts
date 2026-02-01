@@ -32,6 +32,7 @@ export function useClassList(params?: {
     queryKey: [...classKeys.list(params), userId] as const,
     queryFn: () => classService.list(params),
     enabled: !!userId,
+    staleTime: 10 * 60 * 1000, // 10分钟过期（班级变化不频繁）
   });
 }
 
@@ -43,6 +44,7 @@ export function useClass(classId: string) {
     queryKey: [...classKeys.detail(classId), userId] as const,
     queryFn: () => classService.get(classId),
     enabled: !!classId && !!userId,
+    staleTime: 5 * 60 * 1000, // 5分钟过期
   });
 }
 

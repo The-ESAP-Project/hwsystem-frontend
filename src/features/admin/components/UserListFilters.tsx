@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { UserRole, UserStatus } from "../services/userService";
+import type { UserRole, UserStatus } from "../services/adminUserService";
 
 interface UserListFiltersProps {
   search: string;

@@ -1,5 +1,6 @@
 import api from "@/lib/api";
 import { AppConfig } from "@/lib/appConfig";
+import { downloadBlob } from "@/lib/download";
 import type {
   ClassDetail,
   ClassListResponse,
@@ -145,13 +146,9 @@ export const classService = {
       responseType: "blob",
       timeout: AppConfig.fileOperationTimeout,
     });
-    // 触发下载
     const blob = new Blob([response.data], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
     // 从 Content-Disposition 获取文件名，或使用默认文件名
     const contentDisposition = response.headers["content-disposition"];
     let filename = `class_${classId}_report.xlsx`;
@@ -161,10 +158,6 @@ export const classService = {
         filename = match[1];
       }
     }
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+    downloadBlob(blob, filename);
   },
 };

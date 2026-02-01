@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { logger } from "@/lib/logger";
 import { useCreateUser } from "../hooks/useUsers";
-import type { UserRole } from "../services/userService";
+import type { UserRole } from "../services/adminUserService";
 
 function useFormSchema() {
   const { t } = useTranslation();

@@ -1,6 +1,7 @@
 import api from "@/lib/api";
 import { AppConfig } from "@/lib/appConfig";
 import { getApiBaseUrl } from "@/lib/config";
+import { downloadBlob } from "@/lib/download";
 import { useUserStore } from "@/stores/useUserStore";
 import type { FileUploadResponse } from "@/types/generated";
 import { compressImage } from "./imageCompression";
@@ -122,18 +123,7 @@ export const fileService = {
   download: async (token: string, fileName?: string) => {
     const response = await fetchFileContent(token);
     const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-
-    // 创建临时链接并触发下载
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = fileName || "download";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 释放 blob URL
-    URL.revokeObjectURL(blobUrl);
+    downloadBlob(blob, fileName || "download");
   },
 
   // 删除文件
