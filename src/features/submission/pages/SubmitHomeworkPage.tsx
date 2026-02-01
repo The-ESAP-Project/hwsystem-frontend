@@ -47,8 +47,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
 import { validateFiles } from "@/features/file/services/fileValidation";
+import type { UploadedFile, UploadTask } from "@/features/file/types/upload";
 import { formatBatchFileValidationErrors } from "@/features/file/utils/formatFileError";
 import { useHomework } from "@/features/homework/hooks/useHomework";
+import { MAX_CONCURRENT_UPLOADS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import {
@@ -71,21 +73,6 @@ function useFormSchema() {
 }
 
 type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
-
-interface UploadedFile {
-  download_token: string;
-  name: string;
-  size: number;
-}
-
-interface UploadTask {
-  file: File;
-  progress: number;
-  controller: AbortController;
-  status: "pending" | "uploading" | "completed" | "cancelled" | "error";
-}
-
-const MAX_CONCURRENT_UPLOADS = 3;
 
 export function SubmitHomeworkPage() {
   const { t } = useTranslation();

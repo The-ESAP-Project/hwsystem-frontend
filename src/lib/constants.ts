@@ -36,3 +36,22 @@ export const SMALL_PAGE_SIZE_OPTIONS = [5, 10, 20];
 
 /** 搜索防抖延迟时间（毫秒） */
 export const DEBOUNCE_DELAY = 300;
+
+// ============ 时间常量 ============
+
+/** 1 分钟（毫秒） */
+export const ONE_MINUTE_MS = 60 * 1000;
+
+/** 1 小时（毫秒） */
+export const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
+
+/** 1 天（毫秒） */
+export const ONE_DAY_MS = 24 * ONE_HOUR_MS;
+
+/** 3 天（毫秒） */
+export const THREE_DAYS_MS = 3 * ONE_DAY_MS;
+
+// ============ 文件上传配置 ============
+
+/** 最大并发上传数 */
+export const MAX_CONCURRENT_UPLOADS = 3;

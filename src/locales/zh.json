@@ -42,7 +42,9 @@
   "notify": {
     "file": {
       "uploadSuccess": "文件上传成功",
-      "uploadFailed": "文件上传失败"
+      "uploadFailed": "文件上传失败",
+      "compressedSizeExceeded": "文件「{{fileName}}」压缩后仍超过大小限制 ({{maxSize}}MB)",
+      "fetchFailed": "获取文件失败"
     },
     "submission": {
       "success": "作业提交成功",

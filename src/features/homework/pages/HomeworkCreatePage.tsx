@@ -38,7 +38,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useRoutePrefix } from "@/features/class/hooks/useClassBasePath";
 import { fileService } from "@/features/file/services/fileService";
 import { validateFiles } from "@/features/file/services/fileValidation";
+import type { UploadedFile, UploadTask } from "@/features/file/types/upload";
 import { formatBatchFileValidationErrors } from "@/features/file/utils/formatFileError";
+import { MAX_CONCURRENT_UPLOADS } from "@/lib/constants";
 import { logger } from "@/lib/logger";
 import { notify } from "@/stores/useNotificationStore";
 import { useCreateHomework } from "../hooks/useHomework";
@@ -68,21 +70,6 @@ function useFormSchema() {
 }
 
 type FormValues = z.infer<ReturnType<typeof useFormSchema>>;
-
-interface UploadedFile {
-  download_token: string;
-  name: string;
-  size: number;
-}
-
-interface UploadTask {
-  file: File;
-  progress: number;
-  controller: AbortController;
-  status: "pending" | "uploading" | "completed" | "cancelled" | "error";
-}
-
-const MAX_CONCURRENT_UPLOADS = 3;
 
 export function HomeworkCreatePage() {
   const { t } = useTranslation();
@@ -208,7 +195,10 @@ export function HomeworkCreatePage() {
             return;
           }
           logger.error("Failed to upload file", error);
-          notify.error(t("notify.file.uploadFailed"));
+          notify.error(
+            t("notify.file.uploadFailed"),
+            error instanceof Error ? error.message : undefined,
+          );
 
           setUploadTasks((prev) => {
             const next = new Map(prev);

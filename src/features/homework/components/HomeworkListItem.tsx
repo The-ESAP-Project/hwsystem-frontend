@@ -6,8 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import {
   type DeadlineStatus,
   formatRemainingTime,
-  getDeadlineStatus,
-} from "@/lib/utils";
+  getDeadlineInfo,
+} from "@/utils/deadline";
 import type { HomeworkListItemStringified } from "../services/homeworkService";
 
 const deadlineColorMap: Record<DeadlineStatus, string> = {
@@ -30,9 +30,9 @@ export function HomeworkListItem({
   isTeacher,
 }: HomeworkListItemProps) {
   const { t, i18n } = useTranslation();
-  const { status: deadlineStatus, remainingMs } = getDeadlineStatus(
-    homework.deadline ?? null,
-  );
+  const deadlineInfo = getDeadlineInfo(homework.deadline ?? null);
+  const deadlineStatus: DeadlineStatus = deadlineInfo?.status ?? "none";
+  const remainingMs = deadlineInfo?.remainingMs ?? null;
   const locale = i18n.language === "zh" ? "zh" : "en";
 
   const renderDeadlineText = () => {

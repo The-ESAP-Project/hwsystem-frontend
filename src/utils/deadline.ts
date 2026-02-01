@@ -1,3 +1,5 @@
+import { ONE_DAY_MS, THREE_DAYS_MS } from "@/lib/constants";
+
 /**
  * 截止日期状态
  */
@@ -43,9 +45,8 @@ export function getDeadlineInfo(
   const remainingMs = deadlineTime - now;
 
   const isExpired = remainingMs <= 0;
-  const isUrgent = !isExpired && remainingMs <= 24 * 60 * 60 * 1000;
-  const isWarning =
-    !isExpired && !isUrgent && remainingMs <= 3 * 24 * 60 * 60 * 1000;
+  const isUrgent = !isExpired && remainingMs <= ONE_DAY_MS;
+  const isWarning = !isExpired && !isUrgent && remainingMs <= THREE_DAYS_MS;
 
   let status: DeadlineStatus;
   if (isExpired) {
@@ -91,8 +92,8 @@ export function formatRemainingTime(ms: number, locale = "zh-CN"): string {
   const isNegative = ms < 0;
   const absMs = Math.abs(ms);
 
-  const days = Math.floor(absMs / (24 * 60 * 60 * 1000));
-  const hours = Math.floor((absMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const days = Math.floor(absMs / ONE_DAY_MS);
+  const hours = Math.floor((absMs % ONE_DAY_MS) / (60 * 60 * 1000));
   const minutes = Math.floor((absMs % (60 * 60 * 1000)) / (60 * 1000));
 
   const isZh = locale.startsWith("zh");

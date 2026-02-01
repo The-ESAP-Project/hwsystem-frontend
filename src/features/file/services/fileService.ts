@@ -1,3 +1,4 @@
+import i18n from "@/app/i18n";
 import api from "@/lib/api";
 import { AppConfig } from "@/lib/appConfig";
 import { getApiBaseUrl } from "@/lib/config";
@@ -54,7 +55,7 @@ async function fetchFileContent(token: string): Promise<Response> {
   });
 
   if (!response.ok) {
-    throw new Error(`获取文件失败: ${response.status}`);
+    throw new Error(i18n.t("notify.file.fetchFailed"));
   }
 
   return response;
@@ -86,7 +87,12 @@ export const fileService = {
     const maxSize = AppConfig.maxFileSize;
     if (fileToUpload.size > maxSize) {
       const sizeMB = (maxSize / 1024 / 1024).toFixed(1);
-      throw new Error(`文件 "${file.name}" 压缩后仍超过大小限制 (${sizeMB}MB)`);
+      throw new Error(
+        i18n.t("notify.file.compressedSizeExceeded", {
+          fileName: file.name,
+          maxSize: sizeMB,
+        }),
+      );
     }
 
     const formData = new FormData();

@@ -24,22 +24,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { roleColors, statusColors } from "../constants";
 import { useDeleteUser, useUser } from "../hooks/useUsers";
 import type { UserRole, UserStatus } from "../services/adminUserService";
-
-const roleColors: Record<UserRole, string> = {
-  admin: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  teacher: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  user: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-};
-
-const statusColors: Record<UserStatus, string> = {
-  active:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
-  suspended:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  banned: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-};
 
 export default function UserDetailPage() {
   const { t } = useTranslation();
