@@ -8,6 +8,7 @@ import {
   FiArrowLeft,
   FiClock,
   FiFile,
+  FiLoader,
   FiUpload,
   FiX,
 } from "react-icons/fi";
@@ -94,6 +95,7 @@ export function HomeworkCreatePage() {
   const [uploadTasks, setUploadTasks] = useState<Map<string, UploadTask>>(
     new Map(),
   );
+  const [isValidating, setIsValidating] = useState(false);
 
   // 取消单个上传
   const handleCancelUpload = (fileName: string) => {
@@ -130,113 +132,120 @@ export function HomeworkCreatePage() {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    // 客户端验证
-    const validationResult = validateFiles(Array.from(files));
+    // 显示验证中状态
+    setIsValidating(true);
 
-    if (!validationResult.valid) {
-      const errorMessage = formatBatchFileValidationErrors(
-        validationResult.errors,
-        t,
-      );
-      notify.error(t("error.fileValidationFailed"), errorMessage);
-      e.target.value = "";
-      return;
-    }
+    try {
+      // 客户端验证
+      const validationResult = await validateFiles(Array.from(files));
 
-    const fileList = Array.from(files);
-
-    // 创建所有任务
-    const newTasks = new Map<string, UploadTask>();
-    for (const file of fileList) {
-      newTasks.set(file.name, {
-        file,
-        progress: 0,
-        controller: new AbortController(),
-        status: "pending",
-      });
-    }
-    setUploadTasks((prev) => new Map([...prev, ...newTasks]));
-
-    // 上传单个文件
-    const uploadOne = async (file: File) => {
-      const task = newTasks.get(file.name)!;
-
-      setUploadTasks((prev) => {
-        const next = new Map(prev);
-        next.set(file.name, { ...task, status: "uploading" });
-        return next;
-      });
-
-      try {
-        const result = await fileService.upload(file, {
-          signal: task.controller.signal,
-          onProgress: (percent) => {
-            setUploadTasks((prev) => {
-              const next = new Map(prev);
-              const current = next.get(file.name);
-              if (current) {
-                next.set(file.name, { ...current, progress: percent });
-              }
-              return next;
-            });
-          },
-        });
-
-        setUploadedFiles((prev) => [
-          ...prev,
-          {
-            download_token: result.download_token,
-            name: result.file_name,
-            size: Number(result.size),
-          },
-        ]);
-
-        setUploadTasks((prev) => {
-          const next = new Map(prev);
-          next.delete(file.name);
-          return next;
-        });
-      } catch (error) {
-        // 用户取消，不显示错误
-        if (axios.isCancel(error)) {
-          return;
-        }
-        logger.error("Failed to upload file", error);
-        notify.error(t("notify.file.uploadFailed"));
-
-        setUploadTasks((prev) => {
-          const next = new Map(prev);
-          next.set(file.name, { ...task, status: "error" });
-          setTimeout(() => {
-            setUploadTasks((p) => {
-              const n = new Map(p);
-              n.delete(file.name);
-              return n;
-            });
-          }, 2000);
-          return next;
-        });
-      }
-    };
-
-    // 并行上传（限制并发数）
-    const pool: Promise<void>[] = [];
-    for (const file of fileList) {
-      const promise = uploadOne(file);
-      pool.push(promise);
-
-      if (pool.length >= MAX_CONCURRENT_UPLOADS) {
-        await Promise.race(pool);
-        // 移除已完成的 Promise
-        const completedIndex = await Promise.race(
-          pool.map((p, i) => p.then(() => i)),
+      if (!validationResult.valid) {
+        const errorMessage = formatBatchFileValidationErrors(
+          validationResult.errors,
+          t,
         );
-        pool.splice(completedIndex, 1);
+        notify.error(t("error.fileValidationFailed"), errorMessage);
+        e.target.value = "";
+        return;
       }
-    }
-    await Promise.all(pool);
 
-    e.target.value = "";
+      const fileList = Array.from(files);
+
+      // 创建所有任务
+      const newTasks = new Map<string, UploadTask>();
+      for (const file of fileList) {
+        newTasks.set(file.name, {
+          file,
+          progress: 0,
+          controller: new AbortController(),
+          status: "pending",
+        });
+      }
+      setUploadTasks((prev) => new Map([...prev, ...newTasks]));
+
+      // 上传单个文件
+      const uploadOne = async (file: File) => {
+        const task = newTasks.get(file.name)!;
+
+        setUploadTasks((prev) => {
+          const next = new Map(prev);
+          next.set(file.name, { ...task, status: "uploading" });
+          return next;
+        });
+
+        try {
+          const result = await fileService.upload(file, {
+            signal: task.controller.signal,
+            onProgress: (percent) => {
+              setUploadTasks((prev) => {
+                const next = new Map(prev);
+                const current = next.get(file.name);
+                if (current) {
+                  next.set(file.name, { ...current, progress: percent });
+                }
+                return next;
+              });
+            },
+          });
+
+          setUploadedFiles((prev) => [
+            ...prev,
+            {
+              download_token: result.download_token,
+              name: result.file_name,
+              size: Number(result.size),
+            },
+          ]);
+
+          setUploadTasks((prev) => {
+            const next = new Map(prev);
+            next.delete(file.name);
+            return next;
+          });
+        } catch (error) {
+          // 用户取消，不显示错误
+          if (axios.isCancel(error)) {
+            return;
+          }
+          logger.error("Failed to upload file", error);
+          notify.error(t("notify.file.uploadFailed"));
+
+          setUploadTasks((prev) => {
+            const next = new Map(prev);
+            next.set(file.name, { ...task, status: "error" });
+            setTimeout(() => {
+              setUploadTasks((p) => {
+                const n = new Map(p);
+                n.delete(file.name);
+                return n;
+              });
+            }, 2000);
+            return next;
+          });
+        }
+      };
+
+      // 并行上传（限制并发数）
+      const pool: Promise<void>[] = [];
+      for (const file of fileList) {
+        const promise = uploadOne(file);
+        pool.push(promise);
+
+        if (pool.length >= MAX_CONCURRENT_UPLOADS) {
+          await Promise.race(pool);
+          // 移除已完成的 Promise
+          const completedIndex = await Promise.race(
+            pool.map((p, i) => p.then(() => i)),
+          );
+          pool.splice(completedIndex, 1);
+        }
+      }
+      await Promise.all(pool);
+
+      e.target.value = "";
+    } finally {
+      setIsValidating(false);
+    }
   };
 
   const removeFile = (token: string) => {
@@ -389,12 +398,22 @@ export function HomeworkCreatePage() {
                   <Button
                     type="button"
                     variant="outline"
+                    disabled={isValidating}
                     onClick={() =>
                       document.getElementById("file-upload")?.click()
                     }
                   >
-                    <FiUpload className="mr-2 h-4 w-4" />
-                    {t("homeworkForm.uploadFile")}
+                    {isValidating ? (
+                      <>
+                        <FiLoader className="mr-2 h-4 w-4 animate-spin" />
+                        {t("common.validating")}
+                      </>
+                    ) : (
+                      <>
+                        <FiUpload className="mr-2 h-4 w-4" />
+                        {t("homeworkForm.uploadFile")}
+                      </>
+                    )}
                   </Button>
                   <input
                     id="file-upload"

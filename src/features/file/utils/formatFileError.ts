@@ -34,6 +34,14 @@ export function formatFileValidationError(
       });
     }
 
+    case "mismatch": {
+      return t("error.fileMismatchDetail", {
+        fileName,
+        claimedType: error.claimedType || t("common.unknown"),
+        detectedType: error.detectedType || t("common.unknown"),
+      });
+    }
+
     default:
       return t("error.fileValidationFailed", { fileName });
   }

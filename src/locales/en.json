@@ -35,7 +35,9 @@
     "actions": "Actions",
     "search": "Search",
     "score": "Score",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "validating": "Validating...",
+    "validatingFiles": "Detecting file types..."
   },
   "notify": {
     "file": {
@@ -782,6 +784,8 @@
     "fileSizeExceededDetail": "File '{{fileName}}' exceeds size limit (actual: {{actualSize}} MB, limit: {{maxSize}} MB)",
     "fileTypeNotAllowedDetail": "File '{{fileName}}' type not allowed (allowed types: {{allowedTypes}})",
     "fileValidationFailed": "File validation failed",
+    "fileMismatch": "File content does not match extension",
+    "fileMismatchDetail": "File \"{{fileName}}\" claims to be {{claimedType}}, but detected as {{detectedType}}",
     "andMoreFiles": "And {{count}} more file(s) have issues",
     "multifileUploadNotAllowed": "Multiple file upload not allowed",
     "fileOperationTimeout": "File operation timed out, please check your network and try again",

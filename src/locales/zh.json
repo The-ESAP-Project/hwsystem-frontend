@@ -20,7 +20,7 @@
     "viewAll": "查看全部",
     "manage": "管理",
     "loadError": "加载失败，请刷新重试",
-    "unknownError": "发生未知错误，请稍后重试",
+    "unknownError": "发生未知错误，请稀后重试",
     "operationFailed": "操作失败",
     "retry": "重试",
     "refresh": "刷新",
@@ -35,7 +35,9 @@
     "actions": "操作",
     "search": "搜索",
     "score": "分",
-    "unknown": "未知"
+    "unknown": "未知",
+    "validating": "检测中...",
+    "validatingFiles": "正在检测文件类型..."
   },
   "notify": {
     "file": {
@@ -782,6 +784,8 @@
     "fileSizeExceededDetail": "文件「{{fileName}}」超出大小限制（实际: {{actualSize}} MB，限制: {{maxSize}} MB）",
     "fileTypeNotAllowedDetail": "文件「{{fileName}}」类型不支持（允许的类型: {{allowedTypes}}）",
     "fileValidationFailed": "文件验证失败",
+    "fileMismatch": "文件内容与扩展名不匹配",
+    "fileMismatchDetail": "文件「{{fileName}}」声称是 {{claimedType}}，但检测到是 {{detectedType}}",
     "andMoreFiles": "还有 {{count}} 个文件存在问题",
     "multifileUploadNotAllowed": "不支持多文件上传",
     "fileOperationTimeout": "文件操作超时，请检查网络后重试",

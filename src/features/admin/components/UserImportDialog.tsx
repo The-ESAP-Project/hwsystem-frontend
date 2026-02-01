@@ -5,6 +5,7 @@ import {
   FiAlertTriangle,
   FiCheckCircle,
   FiDownload,
+  FiLoader,
   FiUpload,
 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
@@ -41,43 +42,49 @@ export function UserImportDialog({
   const [importResult, setImportResult] =
     useState<UserImportResponseStringified | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   const importMutation = useImportUsers();
   const downloadTemplateMutation = useDownloadImportTemplate();
 
   const handleFileSelect = useCallback(
-    (file: File | null) => {
+    async (file: File | null) => {
       if (file) {
-        // 1. CSV/XLSX 类型检查（保留现有逻辑）
-        const validTypes = [
-          "text/csv",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          "application/vnd.ms-excel",
-        ];
-        const isValidType =
-          validTypes.includes(file.type) ||
-          file.name.endsWith(".csv") ||
-          file.name.endsWith(".xlsx");
+        setIsValidating(true);
+        try {
+          // 1. CSV/XLSX 类型检查（保留现有逻辑）
+          const validTypes = [
+            "text/csv",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.ms-excel",
+          ];
+          const isValidType =
+            validTypes.includes(file.type) ||
+            file.name.endsWith(".csv") ||
+            file.name.endsWith(".xlsx");
 
-        if (!isValidType) {
-          notify.error(
-            t("error.fileTypeNotAllowed"),
-            t("admin.users.import.supportedFormats"),
-          );
-          return;
-        }
+          if (!isValidType) {
+            notify.error(
+              t("error.fileTypeNotAllowed"),
+              t("admin.users.import.supportedFormats"),
+            );
+            return;
+          }
 
-        // 2. 文件大小和空文件验证（新增）
-        const validationError = validateFile(file);
-        if (validationError) {
-          const errorMessage = formatFileValidationError(validationError, t);
-          notify.error(
-            validationError.errorType === "size"
-              ? t("error.fileSizeExceeded")
-              : t("error.fileValidationFailed"),
-            errorMessage,
-          );
-          return;
+          // 2. 文件大小和空文件验证（新增）
+          const validationError = await validateFile(file);
+          if (validationError) {
+            const errorMessage = formatFileValidationError(validationError, t);
+            notify.error(
+              validationError.errorType === "size"
+                ? t("error.fileSizeExceeded")
+                : t("error.fileValidationFailed"),
+              errorMessage,
+            );
+            return;
+          }
+        } finally {
+          setIsValidating(false);
         }
       }
       setSelectedFile(file);
@@ -191,7 +198,14 @@ export function UserImportDialog({
               className="hidden"
               onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
             />
-            {selectedFile ? (
+            {isValidating ? (
+              <div className="space-y-2">
+                <FiLoader className="mx-auto h-8 w-8 text-primary animate-spin" />
+                <p className="text-sm text-muted-foreground">
+                  {t("common.validatingFiles")}
+                </p>
+              </div>
+            ) : selectedFile ? (
               <div className="space-y-2">
                 <FiCheckCircle className="mx-auto h-8 w-8 text-green-500" />
                 <p className="font-medium">{selectedFile.name}</p>

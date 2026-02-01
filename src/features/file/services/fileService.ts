@@ -39,6 +39,26 @@ async function fetchWithTimeout(
   }
 }
 
+/**
+ * 获取文件内容（带认证）
+ */
+async function fetchFileContent(token: string): Promise<Response> {
+  const authToken = getAuthToken();
+  const url = `${getApiBaseUrl()}/files/download/${token}`;
+
+  const response = await fetchWithTimeout(url, {
+    headers: {
+      Authorization: authToken ? `Bearer ${authToken}` : "",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`获取文件失败: ${response.status}`);
+  }
+
+  return response;
+}
+
 export const fileService = {
   // 上传文件
   upload: async (
@@ -100,19 +120,7 @@ export const fileService = {
 
   // 下载文件（使用 fetch + blob，携带 JWT 认证）
   download: async (token: string, fileName?: string) => {
-    const authToken = getAuthToken();
-    const url = fileService.getDownloadUrl(token);
-
-    const response = await fetchWithTimeout(url, {
-      headers: {
-        Authorization: authToken ? `Bearer ${authToken}` : "",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`下载失败: ${response.status}`);
-    }
-
+    const response = await fetchFileContent(token);
     const blob = await response.blob();
     const blobUrl = URL.createObjectURL(blob);
 
@@ -135,38 +143,14 @@ export const fileService = {
 
   // 预览文件 - 返回 blob URL（用于图片/PDF/视频）
   preview: async (token: string): Promise<string> => {
-    const authToken = getAuthToken();
-    const url = fileService.getDownloadUrl(token);
-
-    const response = await fetchWithTimeout(url, {
-      headers: {
-        Authorization: authToken ? `Bearer ${authToken}` : "",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`获取文件失败: ${response.status}`);
-    }
-
+    const response = await fetchFileContent(token);
     const blob = await response.blob();
     return URL.createObjectURL(blob);
   },
 
   // 获取文本文件内容
   getTextContent: async (token: string): Promise<string> => {
-    const authToken = getAuthToken();
-    const url = fileService.getDownloadUrl(token);
-
-    const response = await fetchWithTimeout(url, {
-      headers: {
-        Authorization: authToken ? `Bearer ${authToken}` : "",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`获取文件失败: ${response.status}`);
-    }
-
+    const response = await fetchFileContent(token);
     return response.text();
   },
 };

@@ -1,6 +1,8 @@
 import imageCompression from "browser-image-compression";
+import { fileTypeFromBuffer } from "file-type";
 import { AppConfig } from "@/lib/appConfig";
 import { logger } from "@/lib/logger";
+import { IMAGE_EXTENSIONS } from "../constants/fileTypes";
 
 export interface CompressionOptions {
   signal?: AbortSignal;
@@ -8,23 +10,73 @@ export interface CompressionOptions {
 }
 
 /**
- * 判断文件是否为图片
+ * 从文件名提取扩展名（小写）
  */
-export function isImageFile(file: File): boolean {
-  return file.type.startsWith("image/");
+function getFileExtension(fileName: string): string {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  if (lastDotIndex === -1 || lastDotIndex === fileName.length - 1) {
+    return "";
+  }
+  return fileName.slice(lastDotIndex).toLowerCase();
+}
+
+/**
+ * 判断文件是否为图片（基于扩展名，同步版本）
+ */
+export function isImageFileByExtension(file: File): boolean {
+  const ext = getFileExtension(file.name);
+  return IMAGE_EXTENSIONS.includes(ext as (typeof IMAGE_EXTENSIONS)[number]);
+}
+
+/**
+ * 检测文件实际类型（返回友好名称）
+ */
+export async function detectFileType(file: File): Promise<string | null> {
+  try {
+    const buffer = await file.slice(0, 4100).arrayBuffer();
+    const type = await fileTypeFromBuffer(buffer);
+
+    if (!type) return null;
+
+    // 返回友好名称，如 "PDF"
+    return type.ext.toUpperCase();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 判断文件是否为图片（基于文件头魔数）
+ */
+export async function isImageFile(file: File): Promise<boolean> {
+  try {
+    // 读取文件头（前 4100 字节足够判断大多数格式）
+    const buffer = await file.slice(0, 4100).arrayBuffer();
+    const type = await fileTypeFromBuffer(buffer);
+
+    if (!type) {
+      // 无法识别的格式，降级到扩展名判断
+      return isImageFileByExtension(file);
+    }
+
+    return type.mime.startsWith("image/");
+  } catch {
+    // 读取失败，降级到扩展名判断
+    return isImageFileByExtension(file);
+  }
 }
 
 /**
  * 判断是否需要压缩
  */
-function shouldCompress(file: File): boolean {
+async function shouldCompress(file: File): Promise<boolean> {
   // 1. 检查是否启用压缩
   if (!AppConfig.clientCompressEnabled) {
     return false;
   }
 
   // 2. 检查是否为图片
-  if (!isImageFile(file)) {
+  if (!(await isImageFile(file))) {
     return false;
   }
 
@@ -48,7 +100,7 @@ export async function compressImage(
   options?: CompressionOptions,
 ): Promise<File> {
   // 检查是否需要压缩
-  if (!shouldCompress(file)) {
+  if (!(await shouldCompress(file))) {
     return file;
   }
 
