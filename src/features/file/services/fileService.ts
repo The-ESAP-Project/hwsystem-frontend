@@ -61,6 +61,13 @@ export const fileService = {
       fileToUpload = file;
     }
 
+    // 压缩后验证大小（图片文件在初始验证时跳过了大小检查）
+    const maxSize = AppConfig.maxFileSize;
+    if (fileToUpload.size > maxSize) {
+      const sizeMB = (maxSize / 1024 / 1024).toFixed(1);
+      throw new Error(`文件 "${file.name}" 压缩后仍超过大小限制 (${sizeMB}MB)`);
+    }
+
     const formData = new FormData();
     formData.append("file", fileToUpload);
 

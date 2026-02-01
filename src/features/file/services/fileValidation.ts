@@ -3,6 +3,7 @@ import type {
   FileValidationError,
   FileValidationResult,
 } from "../types/validation";
+import { isImageFile } from "./imageCompression";
 
 /**
  * 从文件名提取扩展名（带点号，小写）
@@ -35,8 +36,8 @@ export function validateFile(file: File): FileValidationError | null {
     };
   }
 
-  // 2. 检查文件大小
-  if (file.size > maxSize) {
+  // 2. 检查文件大小（图片文件跳过，压缩后再检查）
+  if (!isImageFile(file) && file.size > maxSize) {
     return {
       fileName: file.name,
       errorType: "size",

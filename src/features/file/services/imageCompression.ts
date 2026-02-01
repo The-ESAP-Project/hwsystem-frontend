@@ -10,7 +10,7 @@ export interface CompressionOptions {
 /**
  * 判断文件是否为图片
  */
-function isImageFile(file: File): boolean {
+export function isImageFile(file: File): boolean {
   return file.type.startsWith("image/");
 }
 
