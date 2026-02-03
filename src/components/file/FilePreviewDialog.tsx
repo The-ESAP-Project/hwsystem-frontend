@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fileService } from "@/features/file/services/fileService";
 import { isApiError } from "@/lib/errors";
 import { PdfViewer } from "./PdfViewer";
+import { ThumbnailImage } from "./ThumbnailImage";
 
 interface FileInfo {
   download_token: string;
@@ -32,6 +33,7 @@ export interface FilePreviewDialogProps {
   file: FileInfo;
   files?: FileInfo[];
   initialIndex?: number;
+  showThumbnail?: boolean;
 }
 
 type PreviewType = "image" | "pdf" | "video" | "text" | "unsupported";
@@ -42,6 +44,10 @@ function getPreviewType(mimeType: string): PreviewType {
   if (mimeType.startsWith("video/")) return "video";
   if (mimeType.startsWith("text/")) return "text";
   return "unsupported";
+}
+
+function isImageType(mimeType: string): boolean {
+  return mimeType.startsWith("image/") && !mimeType.includes("svg");
 }
 
 function formatFileSize(size: string | number): string {
@@ -55,6 +61,7 @@ export function FilePreviewDialog({
   file,
   files,
   initialIndex = 0,
+  showThumbnail = false,
 }: FilePreviewDialogProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -280,20 +287,69 @@ export function FilePreviewDialog({
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
+  // 截断文件名显示
+  const truncateFileName = (name: string, maxLength = 20) => {
+    if (name.length <= maxLength) return name;
+    const ext = name.lastIndexOf(".");
+    if (ext > 0 && name.length - ext <= 6) {
+      // 保留扩展名
+      const extPart = name.slice(ext);
+      const namePart = name.slice(0, maxLength - extPart.length - 3);
+      return `${namePart}...${extPart}`;
+    }
+    return `${name.slice(0, maxLength - 3)}...`;
+  };
+
+  // 渲染触发器：图片缩略图模式 vs 普通列表模式
+  const renderTrigger = () => {
+    const isImage = showThumbnail && isImageType(file.file_type);
+
+    if (isImage) {
+      // 图片卡片样式
+      return (
         <button
           type="button"
-          className="w-full flex items-center gap-2 p-3 rounded-lg border hover:bg-accent transition-colors text-left"
+          className="group relative overflow-hidden rounded-lg border bg-muted/30 hover:bg-accent transition-all hover:shadow-md"
         >
-          <FiFile className="h-4 w-4 text-muted-foreground" />
-          <span className="flex-1 text-sm">{file.original_name}</span>
-          <span className="text-xs text-muted-foreground">
-            {formatFileSize(file.file_size)}
-          </span>
+          <div className="aspect-square w-full">
+            <ThumbnailImage
+              token={file.download_token}
+              alt={file.original_name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+            <p className="text-xs text-white truncate font-medium">
+              {truncateFileName(file.original_name)}
+            </p>
+            <p className="text-xs text-white/70">
+              {formatFileSize(file.file_size)}
+            </p>
+          </div>
         </button>
-      </DialogTrigger>
+      );
+    }
+
+    // 普通列表样式
+    return (
+      <button
+        type="button"
+        className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors text-left"
+      >
+        <FiFile className="h-5 w-5 text-muted-foreground shrink-0" />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm truncate">{file.original_name}</p>
+          <p className="text-xs text-muted-foreground">
+            {formatFileSize(file.file_size)}
+          </p>
+        </div>
+      </button>
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>{renderTrigger()}</DialogTrigger>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="truncate pr-8">

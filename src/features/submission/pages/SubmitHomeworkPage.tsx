@@ -382,13 +382,14 @@ export function SubmitHomeworkPage() {
                           <p className="text-sm font-medium mb-2">
                             {t("submitHomework.referenceAttachments")}:
                           </p>
-                          <div className="space-y-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {homework.attachments.map((file, index) => (
                               <FilePreviewDialog
                                 key={file.download_token}
                                 file={file}
                                 files={homework.attachments}
                                 initialIndex={index}
+                                showThumbnail
                               />
                             ))}
                           </div>

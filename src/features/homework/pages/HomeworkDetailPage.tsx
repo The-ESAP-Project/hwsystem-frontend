@@ -220,13 +220,14 @@ export function HomeworkDetailPage() {
                     <FiPaperclip className="inline-block mr-2 h-4 w-4" />
                     {t("homeworkPage.attachments")}
                   </h3>
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {homework.attachments.map((file, index) => (
                       <FilePreviewDialog
                         key={file.download_token}
                         file={file}
                         files={homework.attachments}
                         initialIndex={index}
+                        showThumbnail
                       />
                     ))}
                   </div>

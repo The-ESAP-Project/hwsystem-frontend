@@ -44,9 +44,13 @@ async function fetchWithTimeout(
 /**
  * 获取文件内容（带认证）
  */
-async function fetchFileContent(token: string): Promise<Response> {
+async function fetchFileContent(
+  token: string,
+  options?: { thumbnail?: boolean },
+): Promise<Response> {
   const authToken = getAuthToken();
-  const url = `${getApiBaseUrl()}/files/download/${token}`;
+  const params = options?.thumbnail ? "?thumbnail=true" : "";
+  const url = `${getApiBaseUrl()}/files/download/${token}${params}`;
 
   const response = await fetchWithTimeout(url, {
     headers: {
@@ -148,5 +152,12 @@ export const fileService = {
   getTextContent: async (token: string): Promise<string> => {
     const response = await fetchFileContent(token);
     return response.text();
+  },
+
+  // 获取缩略图 - 返回 blob URL
+  thumbnail: async (token: string): Promise<string> => {
+    const response = await fetchFileContent(token, { thumbnail: true });
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
   },
 };

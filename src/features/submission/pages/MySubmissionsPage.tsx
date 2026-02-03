@@ -116,13 +116,14 @@ export function MySubmissionsPage() {
                       <p className="text-sm font-medium text-muted-foreground mb-2">
                         附件
                       </p>
-                      <div className="space-y-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {submission.attachments.map((file, index) => (
                           <FilePreviewDialog
                             key={file.download_token}
                             file={file}
                             files={submission.attachments}
                             initialIndex={index}
+                            showThumbnail
                           />
                         ))}
                       </div>
