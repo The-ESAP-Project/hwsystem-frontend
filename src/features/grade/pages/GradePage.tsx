@@ -466,10 +466,12 @@ export function GradePage() {
                     {t("grade.attachments")} ({submission.attachments.length})
                   </p>
                   <div className="space-y-2">
-                    {submission.attachments.map((file) => (
+                    {submission.attachments.map((file, index) => (
                       <FilePreviewDialog
                         key={file.download_token}
                         file={file}
+                        files={submission.attachments}
+                        initialIndex={index}
                       />
                     ))}
                   </div>

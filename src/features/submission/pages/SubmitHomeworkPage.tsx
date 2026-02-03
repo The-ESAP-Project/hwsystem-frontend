@@ -383,10 +383,12 @@ export function SubmitHomeworkPage() {
                             {t("submitHomework.referenceAttachments")}:
                           </p>
                           <div className="space-y-2">
-                            {homework.attachments.map((file) => (
+                            {homework.attachments.map((file, index) => (
                               <FilePreviewDialog
                                 key={file.download_token}
                                 file={file}
+                                files={homework.attachments}
+                                initialIndex={index}
                               />
                             ))}
                           </div>

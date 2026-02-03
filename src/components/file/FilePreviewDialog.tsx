@@ -1,6 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FiDownload, FiFile } from "react-icons/fi";
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiDownload,
+  FiFile,
+} from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,13 +21,17 @@ import { fileService } from "@/features/file/services/fileService";
 import { isApiError } from "@/lib/errors";
 import { PdfViewer } from "./PdfViewer";
 
+interface FileInfo {
+  download_token: string;
+  original_name: string;
+  file_size: string | number;
+  file_type: string;
+}
+
 export interface FilePreviewDialogProps {
-  file: {
-    download_token: string;
-    original_name: string;
-    file_size: string | number;
-    file_type: string;
-  };
+  file: FileInfo;
+  files?: FileInfo[];
+  initialIndex?: number;
 }
 
 type PreviewType = "image" | "pdf" | "video" | "text" | "unsupported";
@@ -42,18 +51,45 @@ function formatFileSize(size: string | number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
+export function FilePreviewDialog({
+  file,
+  files,
+  initialIndex = 0,
+}: FilePreviewDialogProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [textContent, setTextContent] = useState<string | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
   // 用于追踪需要清理的 blob URL
   const blobUrlRef = useRef<string | null>(null);
 
-  const previewType = getPreviewType(file.file_type);
+  // 多文件导航模式
+  const hasNavigation = files && files.length > 1;
+  const currentFile = useMemo(() => {
+    if (hasNavigation && files) {
+      return files[currentIndex] ?? file;
+    }
+    return file;
+  }, [hasNavigation, files, currentIndex, file]);
+
+  const hasPrev = hasNavigation && currentIndex > 0;
+  const hasNext = hasNavigation && files && currentIndex < files.length - 1;
+
+  const previewType = getPreviewType(currentFile.file_type);
+
+  // 清理当前 blob URL
+  const cleanupBlobUrl = useCallback(() => {
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
+    setBlobUrl(null);
+    setTextContent(null);
+  }, []);
 
   // 加载预览
   useEffect(() => {
@@ -69,12 +105,14 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
 
       try {
         if (previewType === "text") {
-          const content = await fileService.getTextContent(file.download_token);
+          const content = await fileService.getTextContent(
+            currentFile.download_token,
+          );
           if (!cancelled) {
             setTextContent(content);
           }
         } else {
-          const url = await fileService.preview(file.download_token);
+          const url = await fileService.preview(currentFile.download_token);
           if (!cancelled) {
             blobUrlRef.current = url;
             setBlobUrl(url);
@@ -104,7 +142,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
     return () => {
       cancelled = true;
     };
-  }, [open, file.download_token, previewType, t]);
+  }, [open, currentFile.download_token, previewType, t]);
 
   // 组件卸载时清理
   useEffect(() => {
@@ -115,31 +153,65 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
     };
   }, []);
 
+  // 切换文件时清理旧资源
+  const navigateTo = useCallback(
+    (index: number) => {
+      cleanupBlobUrl();
+      setError(null);
+      setCurrentIndex(index);
+    },
+    [cleanupBlobUrl],
+  );
+
+  const goToPrev = useCallback(() => {
+    if (hasPrev) {
+      navigateTo(currentIndex - 1);
+    }
+  }, [hasPrev, currentIndex, navigateTo]);
+
+  const goToNext = useCallback(() => {
+    if (hasNext) {
+      navigateTo(currentIndex + 1);
+    }
+  }, [hasNext, currentIndex, navigateTo]);
+
+  // 键盘快捷键
+  useEffect(() => {
+    if (!open || !hasNavigation) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft" && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        goToPrev();
+      }
+      if (e.key === "ArrowRight" && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        goToNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, hasNavigation, goToPrev, goToNext]);
+
   // 对话框关闭时清理
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
-      // 清理资源
-      if (blobUrlRef.current) {
-        URL.revokeObjectURL(blobUrlRef.current);
-        blobUrlRef.current = null;
-      }
-      setBlobUrl(null);
-      setTextContent(null);
+      cleanupBlobUrl();
       setError(null);
       setLoading(false);
+      setCurrentIndex(initialIndex);
     }
     setOpen(newOpen);
   };
 
   const handleDownload = () => {
-    fileService.download(file.download_token, file.original_name);
+    fileService.download(currentFile.download_token, currentFile.original_name);
   };
 
   const handleRetry = () => {
-    // 触发重新加载
     setError(null);
-    setBlobUrl(null);
-    setTextContent(null);
+    cleanupBlobUrl();
     // 通过关闭再打开来触发 effect
     setOpen(false);
     setTimeout(() => setOpen(true), 0);
@@ -170,7 +242,7 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
         return blobUrl ? (
           <img
             src={blobUrl}
-            alt={file.original_name}
+            alt={currentFile.original_name}
             className="max-w-full max-h-[60vh] object-contain mx-auto"
           />
         ) : null;
@@ -225,14 +297,39 @@ export function FilePreviewDialog({ file }: FilePreviewDialogProps) {
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="truncate pr-8">
-            {file.original_name}
+            {currentFile.original_name}
           </DialogTitle>
           <DialogDescription>
-            {formatFileSize(file.file_size)} · {file.file_type}
+            {formatFileSize(currentFile.file_size)} · {currentFile.file_type}
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-auto py-4">{renderPreview()}</div>
-        <DialogFooter>
+        <DialogFooter className="flex-row justify-between sm:justify-between gap-2">
+          {hasNavigation && files ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToPrev}
+                disabled={!hasPrev}
+              >
+                <FiChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-muted-foreground min-w-[60px] text-center">
+                {currentIndex + 1} / {files.length}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToNext}
+                disabled={!hasNext}
+              >
+                <FiChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <div />
+          )}
           <Button variant="outline" onClick={handleDownload}>
             <FiDownload className="mr-2 h-4 w-4" />
             {t("common.download")}
