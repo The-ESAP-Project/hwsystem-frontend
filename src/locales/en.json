@@ -1522,5 +1522,9 @@
     "videoNotSupported": "Your browser does not support video playback",
     "unsupportedType": "This file type is not supported for preview",
     "downloadToView": "Please download to view"
+  },
+  "pwa": {
+    "updateAvailable": "New version available",
+    "refresh": "Refresh"
   }
 }

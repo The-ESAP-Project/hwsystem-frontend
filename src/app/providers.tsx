@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { authService } from "@/features/auth/services/auth";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { usePwaUpdate } from "@/hooks/usePwaUpdate";
 import { logger } from "@/lib/logger";
 import { useUserStore } from "@/stores/useUserStore";
 import "@/app/i18n";
@@ -24,6 +25,9 @@ const queryClient = new QueryClient({
 function AuthInitializer({ children }: { children: ReactNode }) {
   const initAuth = useUserStore((s) => s.initAuth);
   const initDarkMode = useDarkMode((s) => s.init);
+
+  // PWA 更新检测
+  usePwaUpdate();
 
   useEffect(() => {
     initAuth();

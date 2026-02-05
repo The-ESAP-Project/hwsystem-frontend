@@ -1522,5 +1522,9 @@
     "videoNotSupported": "您的浏览器不支持视频播放",
     "unsupportedType": "该文件类型不支持预览",
     "downloadToView": "请下载后查看"
+  },
+  "pwa": {
+    "updateAvailable": "有新版本可用",
+    "refresh": "刷新"
   }
 }

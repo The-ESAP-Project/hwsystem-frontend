@@ -20,6 +20,8 @@ i18n
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],
     },
+    // 关掉 i18next 的广告
+    showSupportNotice: false,
   });
 
 export default i18n;

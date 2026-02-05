@@ -258,7 +258,7 @@ export function SubmitHomeworkPage() {
 
     // 至少有内容或文件，且没有正在上传的文件
     return (hasContent || hasFiles) && !isUploading;
-  }, [form.watch, uploadedFiles.length, uploadTasks.size]);
+  }, [form, uploadedFiles.length, uploadTasks.size]);
 
   const onSubmit = async (values: FormValues) => {
     try {
